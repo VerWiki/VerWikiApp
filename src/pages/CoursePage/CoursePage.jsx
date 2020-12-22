@@ -1,13 +1,13 @@
-import React from 'react';
-import styles from './CoursePage.module.css';
-import { Navigation } from '../../components/Navigation/Navigation';
-import { TreeViewer } from '../../components/TreeViewer/TreeViewer';
-import { useParams } from 'react-router-dom';
-import { courseData } from '../../model/courseData';
+import React from "react";
+import styles from "./CoursePage.module.css";
+import { Navigation } from "../../components/Navigation/Navigation";
+import { TreeViewer } from "../../components/TreeViewer/TreeViewer";
+import { useParams } from "react-router-dom";
+import { courseData } from "../../model/courseData";
 
 export const CoursePage = () => {
   let { courseId } = useParams();
-  
+
   return (
     <>
       <Navigation />
@@ -15,4 +15,4 @@ export const CoursePage = () => {
       <TreeViewer courseId={courseId} />
     </>
   );
-}
+};

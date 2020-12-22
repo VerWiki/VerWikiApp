@@ -1,10 +1,10 @@
-import React from 'react';
-import './App.css';
-import { Switch, Route, BrowserRouter as Router } from 'react-router-dom';
-import { ExplorePage } from './pages/ExplorePage/ExplorePage';
-import { CoursePage } from './pages/CoursePage/CoursePage';
+import React from "react";
+import "./App.css";
+import { Switch, Route, BrowserRouter as Router } from "react-router-dom";
+import { ExplorePage } from "./pages/ExplorePage/ExplorePage";
+import { CoursePage } from "./pages/CoursePage/CoursePage";
 
-function App() {
+function App   (  ) {
   return (
     <div className="App">
       <Router>

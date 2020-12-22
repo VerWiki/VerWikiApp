@@ -1,15 +1,15 @@
-import React from 'react';
-import styles from './Navigation.module.css';
-import { Link } from 'react-router-dom';
+import React from "react";
+import styles from "./Navigation.module.css";
+import { Link } from "react-router-dom";
 
-export const Navigation = () => { 
+export const Navigation = () => {
   return (
     <div className={styles.nav}>
-        <ul>
+      <ul>
         <li>
-            <Link to={'/'}>Explore</Link>
+          <Link to={"/"}>Explore</Link>
         </li>
-        </ul>
+      </ul>
     </div>
   );
-}
+};
