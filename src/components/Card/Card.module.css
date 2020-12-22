@@ -1,0 +1,16 @@
+.card {
+    padding: 20px;
+    background-color: rgb(220, 153, 10);
+    border-radius: 5px;
+    transition: 0.1s;
+}
+
+.card:hover {
+    background-color: rgb(201, 140, 9);
+}
+
+.card { text-decoration: none; color:white; }
+.card:visited { text-decoration: none; color:white; }
+.card:hover { text-decoration: none; color:white; }
+.card:focus { text-decoration: none; color:white; }
+.card:hover, a:active { text-decoration: none; color:white }
