@@ -33,9 +33,6 @@ jobs:
       - name: Check Compilation
         run: npm run build --if-present
 
-      - name: Run ESLint
-        run: npm run lint
-
       - name: Run Tests
         run: npm test
 
