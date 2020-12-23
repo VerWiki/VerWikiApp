@@ -79,4 +79,4 @@ The backend in this app runs with Python Flask, and connects to a mongoDB. The f
 3. Navigate to the `backend` folder in your terminal, and install the required dependencies by doing `pip install -r requirements.txt`, or if there are errors, try `python -m pip install -r requirements.txt`
 4. Make sure that the MongoDB is running in port 27017 (should be already running from the installation instructions)
 5. Populate the MongoDB with some initial data by running `python populate_db.py`.
-6. You can also run the server locally by running 'python server.py'
+6. You can also run the server locally by running `python server.py`.
