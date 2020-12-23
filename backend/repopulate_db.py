@@ -1,9 +1,14 @@
-import db_connection
+# This file is a convenient way for us to populate and repopulate our DB, at least in phase 1 where we won't have professors creating
+# trees for us. Feel free to add more trees here.
+
+from pymongo import MongoClient
+from db_interface import VERWIKI_DB_NAME, TREES_TABLE_NAME
 
 if __name__ == "__main__":
 
+    client = MongoClient('localhost', port=27017, serverSelectionTimeoutMS=1000)
     # Select the radialTrees collection (Similar to a table in SQL)
-    radialTrees = db_connection.verwikiDB["radialTrees"] 
+    radialTrees = client[VERWIKI_DB_NAME][TREES_TABLE_NAME] 
     # Clear out all the old data
     deleted_data = radialTrees.delete_many({})
 
