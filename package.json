@@ -32,9 +32,9 @@
     ]
   },
   "jest": {
-    "verbose": true,
-    "coverageDirectory": "./coverage_reports",
-    "coverageReporters": "json"
+    "coverageReporters": [
+      "json"
+    ]
   },
   "browserslist": {
     "production": [
