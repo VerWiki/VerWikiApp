@@ -68,3 +68,15 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+# Getting started with the backend
+
+The backend in this app runs with Python Flask, and connects to a mongoDB. The following steps should be helpful in the initial set up of the backend on your local machines:
+
+1. Download and install MongoDB from [this link with instructions](https://docs.mongodb.com/manual/administration/install-community/)
+2. After installing, you may want to follow [this tutorial](https://docs.mongodb.com/manual/tutorial/getting-started/#getting-started) to familiarize yourself with MongoDB. Some more detailed tutorials are [here](https://docs.mongodb.com/manual/core/databases-and-collections/)
+   - This tutorial just uses the `mongo` shell; you can also optionally download a GUI for MongoDB [here](https://studio3t.com/download/)
+3. Navigate to the `backend` folder in your terminal, and install the required dependencies by doing `pip install -r requirements.txt`, or if there are errors, try `python -m pip install -r requirements.txt`
+4. Make sure that the MongoDB is running in port 27017 (should be already running from the installation instructions)
+5. Populate the MongoDB with some initial data by running `python populate_db.py`.
+6. You can also run the server locally by running 'python server.py'
