@@ -60,4 +60,4 @@ def validate_and_retrieve_client() -> MongoClient:
 
 
 if __name__ == "__main__":
-    get_tree_by_id(1)
+    pass

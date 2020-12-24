@@ -1,8 +1,9 @@
 import pytest
 from unittest.mock import Mock, MagicMock
 import sys
+from pymongo import errors
 
-sys.modules["pymongo"] = MagicMock()  # Mock out the pymongo dependency in db_interface
+sys.modules["pymongo.MongoClient"] = MagicMock()  # Mock out the pymongo dependency in db_interface
 import db_interface
 from db_interface import (
     VERWIKI_DB_NAME,
@@ -35,6 +36,15 @@ class TestValidateAndRetrieveClient:
         with pytest.raises(SystemError):  # Check that a SystemError is raised
             validate_and_retrieve_client()
 
+    def test_validate_and_retrieve_client_db_conn_err(self):
+        db_interface.MongoClient = MagicMock()
+        client = MagicMock()
+
+        db_interface.MongoClient.return_value = client
+        client.list_database_names.side_effect = errors.ServerSelectionTimeoutError()
+        with pytest.raises(SystemError):  # Check that a SystemError is raised
+            validate_and_retrieve_client()
+
     def test_validate_and_retrieve_client_db_exist_collection_not(self):
         db_interface.MongoClient = MagicMock()
         client = MagicMock()
@@ -62,6 +72,16 @@ class TestGetTreeByID:
         }
 
         assert get_tree_by_id(1) == mock_tree
+
+    def test_get_tree_by_id_validate_returns_err(self):
+        db_interface.validate_and_retrieve_client = Mock()
+        client = MagicMock()
+        client.close.return_value = None
+        db_interface.validate_and_retrieve_client.side_effect = SystemError(
+            Mock(status=500), "System Error"
+        )
+        with pytest.raises(SystemError):
+            get_tree_by_id(1)
 
     def test_get_tree_by_id_not_in_db(self):
         db_interface.validate_and_retrieve_client = Mock()
