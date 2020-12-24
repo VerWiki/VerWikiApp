@@ -1,9 +1,9 @@
+import db_interface
 from flask import Flask, jsonify, request, Response, json
 from werkzeug.exceptions import InternalServerError, BadRequest, HTTPException, NotFound
 
 app = Flask(__name__)
 PORT = 3003
-import db_interface
 
 
 def configure_routes(app):

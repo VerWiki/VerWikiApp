@@ -1,0 +1,14 @@
+name: my-app
+channels:
+  - defaults
+dependencies:
+  - python=3.8
+  - pip
+  - flask
+  - pymongo
+  - werkzeug
+  - pytest
+  - pytest-cov
+  - black
+  - pip:
+      - pre-commit
