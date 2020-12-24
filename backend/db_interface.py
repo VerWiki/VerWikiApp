@@ -8,7 +8,11 @@ def get_tree_by_id(id: int) -> object:
     Returns the tree with the specified ID from the database, or 
     an error, which is to be handled by the caller.
     """
-    client = validate_and_retrieve_client() # Don't handle error here; allow it to bubble up
+    try:
+        client = validate_and_retrieve_client()
+    except Exception as e:
+        raise e # Don't handle error here; allow it to bubble up
+
     output = client[VERWIKI_DB_NAME][TREES_TABLE_NAME].find_one({"id": id})
     client.close()
     if output == None:
@@ -25,27 +29,28 @@ def validate_and_retrieve_client() -> MongoClient:
     Returns a MongoClient or error if an error occurred.
     NOTE: Caller is expected to close the MongoClient when done with it.
     """
+    db_names = []
     try:
         client = MongoClient('localhost', port=27017, serverSelectionTimeoutMS=1000)
-
-        if VERWIKI_DB_NAME not in client.list_database_names():
-            raise SystemError(VERWIKI_DB_NAME + " DB not found; if you are developing locally, \
-            init db and data by running repopulate_db.py")
-        
-        verwikiDB = client[VERWIKI_DB_NAME]
-        if TREES_TABLE_NAME not in verwikiDB.collection_names():
-            raise SystemError(TREES_TABLE_NAME + " collection not found; if you are developing locally, \
-                init collections and data by running repopulate_db.py")
-        return client
-    
+        db_names = client.list_database_names()
     except errors.ServerSelectionTimeoutError:
         print ("CONNECTION TIMEOUT TO DB")
         client.close()
         raise SystemError("Could not connect to DB in time")
 
-
-
+    if VERWIKI_DB_NAME not in db_names:
+        client.close()
+        raise SystemError(VERWIKI_DB_NAME + " DB not found; if you are developing locally, \
+        init db and data by running repopulate_db.py")
     
+    verwikiDB = client[VERWIKI_DB_NAME]
+    if TREES_TABLE_NAME not in verwikiDB.collection_names():
+        client.close()
+        raise SystemError(TREES_TABLE_NAME + " collection not found; if you are developing locally, \
+            init collections and data by running repopulate_db.py")
+    return client
+
+
 
 
 if __name__ == "__main__":
