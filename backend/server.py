@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, request, Response, json
-from werkzeug.exceptions import InternalServerError
+from werkzeug.exceptions import InternalServerError, BadRequest, HTTPException, NotFound
 app = Flask(__name__)
 PORT = 3003
 import db_interface
@@ -20,16 +20,29 @@ def get_tree_by_id():
     the tree corresponding to an ID else {} if there is no such
     tree.
     """
-    body = request.json
+    body = request.json #If no body given, 400 is returned
+    if 'id' not in body:
+        br = BadRequest()
+        br.description = "ID key not found in body; cannot get tree by ID"
+        raise br 
+    
     id = body['id']
-    print(id)
+    try:
+        tree = db_interface.get_tree_by_id(id)
+        return jsonify(tree)
+    except KeyError as e:
+        nf = NotFound()
+        nf.description = str(e)
+        raise nf
+    except Exception as e:
+        internalSrvErr = InternalServerError()
+        internalSrvErr.description = str(e)
+        raise internalSrvErr 
 
-    return jsonify(db_interface.get_tree_by_id(id))
 
-
-@app.errorhandler(InternalServerError)
-def handle_500(e):
-    """Returns JSON instead of HTML for 500 errors."""
+@app.errorhandler(HTTPException)
+def handle_exception(e):
+    """Returns JSON instead of HTML for errors."""
 
     response = e.get_response()
     # replace the body with JSON
