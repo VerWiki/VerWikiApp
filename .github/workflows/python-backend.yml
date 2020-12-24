@@ -33,7 +33,7 @@ jobs:
       - name: Test with pytest
         run: |
           echo Testing Backend Scripts...
-          pytest --cov=./
+          pytest --cov=./backend backend
 
         # Needed
         # - Figure out how to fail on insufficient coverage
