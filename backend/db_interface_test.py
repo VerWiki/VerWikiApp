@@ -3,7 +3,9 @@ from unittest.mock import Mock, MagicMock
 import sys
 from pymongo import errors
 
-sys.modules["pymongo.MongoClient"] = MagicMock()  # Mock out the pymongo dependency in db_interface
+sys.modules[
+    "pymongo.MongoClient"
+] = MagicMock()  # Mock out the pymongo dependency in db_interface
 import db_interface
 from db_interface import (
     VERWIKI_DB_NAME,
