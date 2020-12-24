@@ -5,37 +5,38 @@ name: Backend CI
 
 on:
   push:
-    branches: [ develop ]
+    branches: [develop, initial-backend-work]
   pull_request:
-    branches: [ develop ]
+    branches: [develop]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python 3.8
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.8
-        
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        if [ -f backend/requirements.txt ]; then pip install -r backend/requirements.txt; fi
-        
-    - name: Lint with Black
-      uses: jpetrucciani/black-check@20.8b1
-      with:
-        path: backend
-        
-    - name: Test with pytest
-      run: |
-        echo Testing Backend Scripts...
-      
-      # Needed 
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f backend/requirements.txt ]; then pip install -r backend/requirements.txt; fi
+
+      - name: Lint with Black
+        uses: jpetrucciani/black-check@20.8b1
+        with:
+          path: backend
+
+      - name: Test with pytest
+        run: |
+          echo Testing Backend Scripts...
+          pytest --cov=./
+
+        # Needed
+        # - Figure out how to fail on insufficient coverage
         # - Testing scripts for tests
-        # - Code coverage 
+        # - Code coverage
         # - Checking for code duplication
