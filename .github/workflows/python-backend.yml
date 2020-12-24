@@ -27,10 +27,9 @@ jobs:
         if [ -f backend/requirements.txt ]; then pip install -r backend/requirements.txt; fi
         
     - name: Lint with Black
-      run: |
-        pip install black
-        black --line-length 88 backend
-        black --check backend
+      uses: jpetrucciani/black-check@20.8b1
+      with:
+        path: backend
         
     - name: Test with pytest
       run: |
