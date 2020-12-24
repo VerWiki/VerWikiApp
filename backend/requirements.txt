@@ -3,4 +3,5 @@ flask
 werkzeug
 pre-commit
 pytest
+pytest-cov
 black
