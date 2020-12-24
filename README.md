@@ -76,7 +76,12 @@ The backend in this app runs with Python Flask, and connects to a mongoDB. The f
 1. Download and install MongoDB from [this link with instructions](https://docs.mongodb.com/manual/administration/install-community/)
 2. After installing, you may want to follow [this tutorial](https://docs.mongodb.com/manual/tutorial/getting-started/#getting-started) to familiarize yourself with MongoDB. Some more detailed tutorials are [here](https://docs.mongodb.com/manual/core/databases-and-collections/)
    - This tutorial just uses the `mongo` shell; you can also optionally download a GUI for MongoDB [here](https://studio3t.com/download/)
-3. Navigate to the `backend` folder in your terminal, and install the required dependencies by doing `pip install -r requirements.txt`, or if there are errors, try `python -m pip install -r requirements.txt`
-4. Make sure that the MongoDB is running in port 27017 (should be already running from the installation instructions)
-5. Populate the MongoDB with some initial data by running `python repopulate_db.py`.
-6. You can also run the server locally by running `python server.py`.
+3. Initialize a Conda environment. Use the following commands:
+    ```
+    conda create --name <env name>
+    conda activate <env name>
+    ```
+4. Navigate to the `backend` folder in your terminal, and install the required dependencies by doing `pip install -r requirements.txt`, or if there are errors, try `python -m pip install -r requirements.txt`. After that, please run `pre-commit install`.
+5. Make sure that the MongoDB is running in port 27017 (should be already running from the installation instructions)
+6. Populate the MongoDB with some initial data by running `python populate_db.py`.
+7. You can also run the server locally by running `python server.py`.
