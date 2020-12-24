@@ -5,7 +5,7 @@ name: Backend CI
 
 on:
   push:
-    branches: [develop, initial-backend-work]
+    branches: [develop]
   pull_request:
     branches: [develop]
 
@@ -33,10 +33,7 @@ jobs:
       - name: Test with pytest
         run: |
           echo Testing Backend Scripts...
-          pytest --cov=./backend backend
+          pytest --cov=./backend backend --cov-fail-under=80
 
         # Needed
-        # - Figure out how to fail on insufficient coverage
-        # - Testing scripts for tests
-        # - Code coverage
         # - Checking for code duplication
