@@ -34,9 +34,14 @@ jobs:
           path: backend
 
       - name: Test with pytest
-        run: |
-          pip install pytest pytest-cov
-          pytest --cov-fail-under=90 --cov-report term-missing --cov=./backend backend
+        uses: fylein/python-pytest-github-action@v1
+        with:
+          args: pytest --cov-fail-under=90 --cov-report term-missing --cov=./backend backend > backend-coverage.txt
+      
+      - name: Test Coverage
+        uses: coroo/pytest-coverage-commentator@v1.0.2
+        with:
+          pytest-coverage: backend-coverage.txt
 
         # Needed
         # - Checking for code duplication
