@@ -1,8 +1,10 @@
 import db_interface
 from flask import Flask, jsonify, request, Response, json
+from flask_cors import CORS
 from werkzeug.exceptions import InternalServerError, BadRequest, HTTPException, NotFound
 
 app = Flask(__name__)
+CORS(app, origins=["http://localhost:3000"])
 PORT = 3003
 
 
@@ -47,11 +49,7 @@ def configure_routes(app):
         response = e.get_response()
         # replace the body with JSON
         response.data = json.dumps(
-            {
-                "code": e.code,
-                "name": e.name,
-                "description": e.description,
-            }
+            {"code": e.code, "name": e.name, "description": e.description,}
         )
         response.content_type = "application/json"
         return response

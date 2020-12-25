@@ -5,6 +5,7 @@ dependencies:
   - python=3.8
   - pip
   - flask
+  - flask-cors
   - pymongo
   - werkzeug
   - pytest
