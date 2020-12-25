@@ -33,7 +33,8 @@ jobs:
       - name: Test with pytest
         run: |
           echo Testing Backend Scripts...
-          pytest --cov-fail-under=80 --cov-report term-missing --cov=./backend backend
+          pytest --cov-fail-under=90 --cov-report term-missing --cov=./backend backend
 
         # Needed
         # - Checking for code duplication
+        # - Figure out a way to exclude repopulate_db.py from the coverage, since that is a testing file anyway

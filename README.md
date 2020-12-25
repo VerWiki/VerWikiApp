@@ -87,3 +87,4 @@ The backend in this app runs with Python Flask, and connects to a mongoDB. The f
 7. Initialize the DB and tables and populate the MongoDB with some initial data by running `python populate_db.py`.
 8. You can also run the server locally by running `python server.py`.
 9. The `black` python linter will be installed with the Conda environment. You can lint your code by running `black ./backend`. The linter will also be run automatically when you commit any Python files.
+10. You can run all tests in the backend, with line coverage `pytest --cov-report term-missing --cov=path/to/backend/folder path/to/backend/folder`.
