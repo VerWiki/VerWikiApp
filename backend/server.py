@@ -60,4 +60,4 @@ def configure_routes(app):
 if __name__ == "__main__":
     print("Starting server on port ", PORT)
     configure_routes(app)
-    app.run(port=PORT)
+    app.run(port=PORT, debug=True)
