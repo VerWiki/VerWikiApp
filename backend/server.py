@@ -49,7 +49,7 @@ def configure_routes(app):
         response = e.get_response()
         # replace the body with JSON
         response.data = json.dumps(
-            {"code": e.code, "name": e.name, "description": e.description,}
+            {"code": e.code, "name": e.name, "description": e.description}
         )
         response.content_type = "application/json"
         return response
