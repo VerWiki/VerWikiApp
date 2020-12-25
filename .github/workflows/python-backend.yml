@@ -31,7 +31,7 @@ jobs:
       - name: Activate Virtual Environment
         run: |
           echo $SHELL
-          conda init $SHELL
+          conda init bash
           conda env create -f backend/environment.yaml
           conda activate backend-env
 
