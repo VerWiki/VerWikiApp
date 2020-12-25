@@ -35,7 +35,7 @@ jobs:
 
       - name: Test with pytest
         run: |
-          conda activate backend-env
+          pip install pytest pytest-cov
           pytest --cov-fail-under=90 --cov-report term-missing --cov=./backend backend
 
         # Needed
