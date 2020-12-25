@@ -26,7 +26,7 @@ jobs:
         with:
           activate-environment: backend-env
           environment-file: backend/environment.yaml
-          python-version: ${{ matrix.os }}
+          python-version: ${{ matrix.python-version }}
 
       - name: Lint with Black
         uses: jpetrucciani/black-check@20.8b1
