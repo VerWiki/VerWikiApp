@@ -22,18 +22,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Set up Anaconda Env
-        uses: s-weigand/setup-conda@v1
+        uses: conda-incubator/setup-miniconda@v2
         with:
-          update-conda: true
-          python-version: ${{ matrix.python-version }}
-          conda-channels: anaconda, conda-forge
-
-      - name: Activate Virtual Environment
-        run: |
-          echo $SHELL
-          conda init bash
-          conda env create -f backend/environment.yaml
-          conda activate backend-env
+          activate-environment: backend-env
+          environment-file: backend/environment.yaml
+          python-version: ${{ matrix.os }}
 
       - name: Lint with Black
         uses: jpetrucciani/black-check@20.8b1
