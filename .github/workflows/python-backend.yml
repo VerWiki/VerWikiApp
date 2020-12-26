@@ -28,12 +28,12 @@ jobs:
 
       - name: Install dependencies
         run: |
-          ls
+          echo $(ls)
           conda env create --file backend/environment.yaml
           conda activate backend-env
-          which python
-          which pip
-          conda list
+          echo $(which python)
+          echo $(which pip)
+          echo $(conda list)
 
       - name: Lint with Black
         uses: jpetrucciani/black-check@20.8b1
