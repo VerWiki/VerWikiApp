@@ -80,7 +80,7 @@ The backend in this app runs with Python Flask, and connects to a mongoDB. The f
 4. Initialize a Conda environment. Use the following commands:
    ```
    conda env create --file environment.yaml
-   conda activate my-app
+   conda activate backend-env
    ```
 5. Run `pre-commit install`.
 6. Make sure that the MongoDB is running in port 27017 (should be already running from the installation instructions)
