@@ -47,7 +47,7 @@ jobs:
           git clone https://github.com/VerWiki/duplicate-code-detection-tool.git
           pip install nltk gensim
           python -m nltk.downloader punkt 
-          python3 -W ignore duplicate-code-detection-tool/duplicate_code_detection.py -d backend -t 25
+          python3 -W ignore duplicate-code-detection-tool/duplicate_code_detection.py -d backend -t 20 -i tests
           
       - name: Testing Backend
         run: |
@@ -59,5 +59,4 @@ jobs:
           pytest-coverage: backend-coverage.txt
 
         # Needed
-        # - Checking for code duplication
         # - Figure out a way to exclude repopulate_db.py from the coverage, since that is a testing file anyway
