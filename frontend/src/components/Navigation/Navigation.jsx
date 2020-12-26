@@ -7,7 +7,9 @@ export const Navigation = () => {
     <div className={styles.nav}>
       <ul>
         <li>
-          <Link to={"/"}>Explore</Link>
+          <Link className={styles.link} to={"/"}>
+            Explore
+          </Link>
         </li>
       </ul>
     </div>
