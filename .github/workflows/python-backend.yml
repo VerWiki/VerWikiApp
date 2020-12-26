@@ -32,13 +32,10 @@ jobs:
           add-pip-as-python-dependency: true
           activate-environment: backend-env
 
-      - name: Install dependencies
+      - name: Activate Virtual Env
         run: |
           conda activate backend-env
           echo $CONDA_DEFAULT_ENV
-          which conda
-          which pip
-          conda list
 
       - name: Lint with Black
         uses: jpetrucciani/black-check@20.8b1
