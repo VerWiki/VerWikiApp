@@ -1,6 +1,6 @@
 .nav {
   background-color: rgb(196, 196, 196);
-  padding: 10px;
+  padding: 20px;
 }
 
 .nav ul {
@@ -11,5 +11,31 @@
 
 .nav ul li {
   display: inline;
-  padding: 0 20px;
+  padding: 0 10px;
+}
+
+.link {
+  color: black;
+  transition: 0.2s;
+  padding: 10px;
+  border-radius: 5px;
+  text-decoration: none;
+}
+.link:visited {
+  text-decoration: none;
+  color: black;
+}
+.link:hover {
+  text-decoration: none;
+  color: black;
+}
+.link:focus {
+  text-decoration: none;
+  color: black;
+}
+.link:hover,
+.link:active {
+  text-decoration: none;
+  color: white;
+  background-color: rgb(116, 116, 116);
 }
