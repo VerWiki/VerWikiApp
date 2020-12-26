@@ -30,7 +30,7 @@ jobs:
         run: |
           ls
           conda env create --file backend/environment.yaml
-          which conda
+          which anaconda
           source ~/anaconda3/etc/profile.d/conda.sh
           conda activate backend-env
           which pip
