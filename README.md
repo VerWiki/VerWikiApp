@@ -68,3 +68,23 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+# Getting started with the backend
+
+The backend in this app runs with Python Flask, and connects to a mongoDB. The following steps should be helpful in the initial set up of the backend on your local machines:
+
+1. Download and install MongoDB from [this link with instructions](https://docs.mongodb.com/manual/administration/install-community/)
+2. _Optional_ After installing, you may want to follow [this tutorial](https://docs.mongodb.com/manual/tutorial/getting-started/#getting-started) to familiarize yourself with MongoDB. Some more detailed tutorials are [here](https://docs.mongodb.com/manual/core/databases-and-collections/)
+   - This tutorial just uses the `mongo` shell; you can also optionally download a GUI for MongoDB [here](https://studio3t.com/download/)
+3. Navigate to the `backend` folder in your terminal.
+4. Initialize a Conda environment. Use the following commands:
+   ```
+   conda env create --file environment.yaml
+   conda activate backend-env
+   ```
+5. Run `pre-commit install`.
+6. Make sure that the MongoDB is running in port 27017 (should be already running from the installation instructions)
+7. Initialize the DB and tables and populate the MongoDB with some initial data by running `python populate_db.py`.
+8. You can also run the server locally by running `python server.py`.
+9. The `black` python linter will be installed with the Conda environment. You can lint your code by running `black ./backend`. The linter will also be run automatically when you commit any Python files.
+10. You can run all tests in the backend, with line coverage `pytest --cov-report term-missing --cov=path/to/backend/folder path/to/backend/folder`.

@@ -7,6 +7,7 @@
 
 # testing
 /coverage
+.coverage
 
 # production
 /build
@@ -17,8 +18,13 @@
 .env.development.local
 .env.test.local
 .env.production.local
+.vscode
 
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .eslintcache
+
+# python
+*/__pycache__
+backend-coverage.txt
