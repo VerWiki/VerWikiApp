@@ -21,73 +21,50 @@ class TestGetTreeByIDRoute:
         app = Flask(__name__)
         client = app.test_client()
         server.configure_routes(app)
-        url = "/get-tree-by-id"
+        url = "/get-tree-by-id/1"
 
-        mock_request_body = {"id": 1}
         fake_tree = {"children": []}
         server.db_interface.get_tree_by_id = Mock()
         server.db_interface.get_tree_by_id.return_value = fake_tree
-        response = client.get(url, json=mock_request_body)
+        response = client.get(url)
         assert response.status_code == 200
         assert response.json == fake_tree
-
-    def test_get_tree_by_id_no_body(self):
-        app = Flask(__name__)
-        client = app.test_client()
-        server.configure_routes(app)
-        url = "/get-tree-by-id"
-
-        response = client.get(url)
-        assert response.status_code == 400
-
-    def test_get_tree_by_id_no_id_key(self):
-        app = Flask(__name__)
-        client = app.test_client()
-        server.configure_routes(app)
-        url = "/get-tree-by-id"
-
-        mock_request_body = {"ide": 1}
-        response = client.get(url, json=mock_request_body)
-        assert response.status_code == 400
 
     def test_get_tree_by_id_db_returns_key_error(self):
         app = Flask(__name__)
         client = app.test_client()
         server.configure_routes(app)
-        url = "/get-tree-by-id"
+        url = "/get-tree-by-id/1"
 
-        mock_request_body = {"id": 1}
         server.db_interface.get_tree_by_id = Mock()
         server.db_interface.get_tree_by_id.side_effect = KeyError(
             Mock(status=404), "not found"
         )
-        response = client.get(url, json=mock_request_body)
+        response = client.get(url)
         assert response.status_code == 404
 
     def test_get_tree_by_id_db_returns_type_error(self):
         app = Flask(__name__)
         client = app.test_client()
         server.configure_routes(app)
-        url = "/get-tree-by-id"
+        url = "/get-tree-by-id/1"
 
-        mock_request_body = {"id": 1}
         server.db_interface.get_tree_by_id = Mock()
         server.db_interface.get_tree_by_id.side_effect = TypeError(
             Mock(status=500), "Type Error"
         )
-        response = client.get(url, json=mock_request_body)
+        response = client.get(url)
         assert response.status_code == 500
 
     def test_get_tree_by_id_db_returns_system_error(self):
         app = Flask(__name__)
         client = app.test_client()
         server.configure_routes(app)
-        url = "/get-tree-by-id"
+        url = "/get-tree-by-id/1"
 
-        mock_request_body = {"id": 1}
         server.db_interface.get_tree_by_id = Mock()
         server.db_interface.get_tree_by_id.side_effect = SystemError(
             Mock(status=500), "System Error"
         )
-        response = client.get(url, json=mock_request_body)
+        response = client.get(url)
         assert response.status_code == 500

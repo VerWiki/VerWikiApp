@@ -16,22 +16,14 @@ def configure_routes(app):
         """
         return "Hello World!"
 
-    @app.route("/get-tree-by-id", methods=["GET"])
-    def get_tree_by_id():
+    @app.route("/get-tree-by-id/<id>", methods=["GET"])
+    def get_tree_by_id(id):
         """
-        Expects the body of the request to have an id key; returns
-        the tree corresponding to an ID else {} if there is no such
-        tree.
+        Returns the tree corresponding to the ID else an error status that
+        the client must handle.
         """
-        body = request.json
-        if body is None or "id" not in body:
-            br = BadRequest()
-            br.description = "ID key not found in body; cannot get tree by ID"
-            raise br
-
-        id = body["id"]
         try:
-            tree = db_interface.get_tree_by_id(id)
+            tree = db_interface.get_tree_by_id(int(id))
             return jsonify(tree)
         except KeyError as e:
             nf = NotFound()
