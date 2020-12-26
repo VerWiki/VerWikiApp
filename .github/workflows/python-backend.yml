@@ -33,10 +33,11 @@ jobs:
           activate-environment: backend-env
           environment-file: backend/environment.yaml
           python-version: ${{ matrix.python-version }}
+          auto-activate-base: true
           
       - name: Test Backend
         run: |
-          conda info
+          conda install pytest pytest
           pytest --cov-fail-under=90 --cov-report term-missing --cov=./backend backend > backend-coverage.txt
       
       - name: Test Coverage
