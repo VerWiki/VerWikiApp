@@ -41,7 +41,14 @@ jobs:
         uses: jpetrucciani/black-check@20.8b1
         with:
           path: backend
-
+      
+      - name: Duplicate Code Detection
+        run: |
+          git clone https://github.com/platisd/duplicate-code-detection-tool.git
+          pip install nltk gensim
+          python -m nltk.downloader punkt 
+          python3 -W ignore duplicate-code-detection-tool/duplicate_code_detection.py -d backend
+          
       - name: Testing Backend
         run: |
           pytest --cov-fail-under=90 --cov-report term-missing --cov=./backend backend > backend-coverage.txt
