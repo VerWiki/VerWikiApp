@@ -1,0 +1,8 @@
+flask
+flask-cors
+pymongo
+werkzeug
+pytest
+pytest-cov
+black
+pre-commit
