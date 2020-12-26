@@ -15,32 +15,34 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
+        architecture: ['x64', 'x86']
         python-version: [3.6, 3.7, 3.8]
     
     name: Python ${{ matrix.python-version }}
 
     steps:
       - uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+          architecture: ${{ matrix.architecture }}
         
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f backend/requirements.txt ]; then pip install -r backend/requirements.txt; fi
+
       - name: Lint with Black
         uses: jpetrucciani/black-check@20.8b1
         with:
           path: backend
-    
-      - name: Set up Anaconda Env
-        uses: conda-incubator/setup-miniconda@v2
-        with:
-          activate-environment: backend-env
-          environment-file: backend/environment.yaml
-          python-version: ${{ matrix.python-version }}
-          auto-activate-base: true
-          
-      - name: Test Backend
+
+      - name: Test with pytest
         run: |
-          conda install pytest pytest
           pytest --cov-fail-under=90 --cov-report term-missing --cov=./backend backend > backend-coverage.txt
-      
-      - name: Test Coverage
+        
+      - name: Coverage
         uses: coroo/pytest-coverage-commentator@v1.0.2
         with:
           pytest-coverage: backend-coverage.txt
