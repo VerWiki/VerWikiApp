@@ -12,6 +12,9 @@ on:
 jobs:
   build:
     runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash -l {0}
     strategy:
       matrix:
         os: [ubuntu-latest]
@@ -28,8 +31,6 @@ jobs:
           environment-file: backend/environment.yaml
           add-pip-as-python-dependency: true
           activate-environment: backend-env
-        
-      - run: conda init
 
       - name: Install dependencies
         run: |
