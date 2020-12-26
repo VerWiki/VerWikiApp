@@ -28,6 +28,7 @@ jobs:
 
       - name: Install dependencies
         run: |
+          ls
           conda env create --file backend/environment.yaml
           conda activate backend-env
           which python
