@@ -1,5 +1,5 @@
 from flask import Flask
-import server
+from backend import server
 import json
 from unittest.mock import Mock
 

@@ -6,8 +6,8 @@ from pymongo import errors
 sys.modules[
     "pymongo.MongoClient"
 ] = MagicMock()  # Mock out the pymongo dependency in db_interface
-import db_interface
-from db_interface import (
+from backend import db_interface
+from backend.db_interface import (
     VERWIKI_DB_NAME,
     TREES_TABLE_NAME,
     get_tree_by_id,
