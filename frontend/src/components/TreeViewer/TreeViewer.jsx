@@ -2,10 +2,12 @@ import React from "react";
 import styles from "./TreeViewer.module.css";
 import { useParams } from "react-router-dom";
 import ReactJson from "react-json-view";
+import { Tree } from "../Tree/Tree";
 
 export const TreeViewer = ({ data }) => {
   const { courseId } = useParams();
 
+  let tree = null;
   let element = null;
   if (!data || Object.keys(data).length === 0) {
     element = <h2>"Loading..."</h2>;
@@ -30,6 +32,7 @@ export const TreeViewer = ({ data }) => {
       <br />
       <br />
       <br />
+      <Tree></Tree>
       {element}
     </div>
   );
