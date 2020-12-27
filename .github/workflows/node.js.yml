@@ -25,9 +25,9 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - name: Run npm install
+        working-directory: frontend
         run: |
           cd frontend
-          npm ci
 
       - name: Run ESLint
         run: npm run lint
