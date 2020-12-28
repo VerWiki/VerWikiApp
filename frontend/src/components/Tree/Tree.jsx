@@ -119,7 +119,7 @@ export default function Tree({ jsonData }) {
   return (
     <React.Fragment>
       <div ref={wrapperRef} style={{ marginBottom: "2rem" }}>
-        <svg ref={svgRef}></svg>
+        <svg ref={svgRef} height="1540" width="500"></svg>
       </div>
     </React.Fragment>
   );
