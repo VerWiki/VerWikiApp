@@ -1,59 +1,126 @@
-import React, { useRef, useEffect } from "react";
-import { select } from "d3";
+import React, { useState, useRef, useEffect } from "react";
+import { select, hierarchy, tree, linkHorizontal } from "d3";
+import ResizeObserver from "resize-observer-polyfill";
+import "./Tree.module.css";
 
+const useResizeObserver = (ref) => {
+  const [dimensions, setDimensions] = useState(null);
+  useEffect(() => {
+    const observeTarget = ref.current;
+    const resizeObserver = new ResizeObserver((entries) => {
+      entries.forEach((entry) => {
+        setDimensions(entry.contentRect);
+      });
+    });
+    resizeObserver.observe(observeTarget);
+    return () => {
+      resizeObserver.unobserve(observeTarget);
+    };
+  }, [ref]);
+  return dimensions;
+};
 
-export const Tree = (jsonData) => {
-    const svgRef = useRef();
-    useEffect(() => { 
-        const svg = select(svgRef.current);
-        width =+ svg.attr("width");
-        height =+ svg.attr("height");
-        g = svg.append("g").attr("transform", "translate(" + (width / 2 + 40) + "," + (height / 2 + 90) + ")")
-        var stratify = d3.stratify().parentId(function(d) { return d.id.substring(0, d.id.lastIndexOf(".")); });
-        var tree = d3.tree().size([360, 500]).separation(function(a, b) { return (a.parent == b.parent ? 1 : 2) / a.depth; });
-        const project = (x, y) => {
-            var angle = (x - 90) / 180 * Math.PI, radius = y;
-            return [radius * Math.cos(angle), radius * Math.sin(angle)];
-        }
-        d3.csv(jsonData, function(error, data) {
-            if (error) throw error;
-          
-            var root = tree(stratify(data));
-          
-            var link = g.selectAll(".link")
-              .data(root.descendants().slice(1))
-              .enter().append("path")
-                .attr("class", "link")
-                .attr("d", function(d) {
-                  return "M" + project(d.x, d.y)
-                      + "C" + project(d.x, (d.y + d.parent.y) / 2)
-                      + " " + project(d.parent.x, (d.y + d.parent.y) / 2)
-                      + " " + project(d.parent.x, d.parent.y);
-                });
-          
-            var node = g.selectAll(".node")
-              .data(root.descendants())
-              .enter().append("g")
-                .attr("class", function(d) { return "node" + (d.children ? " node--internal" : " node--leaf"); })
-                .attr("transform", function(d) { return "translate(" + project(d.x, d.y) + ")"; });
-          
-            node.append("circle")
-                .attr("r", 2.5);
-          
-            node.append("text")
-                .attr("dy", ".31em")
-                .attr("x", function(d) { return d.x < 180 === !d.children ? 6 : -6; })
-                .style("text-anchor", function(d) { return d.x < 180 === !d.children ? "start" : "end"; })
-                .attr("transform", function(d) { return "rotate(" + (d.x < 180 ? d.x - 90 : d.x + 90) + ")"; })
-                .text(function(d) { return d.id.substring(d.id.lastIndexOf(".") + 1); });
-          });
-    }, [jsonData])
-    return (
-        <React.Fragment>
-            <svg ref={svgRef} width="960" height="1060">
-            </svg>
-        </React.Fragment>
-    )
+function usePrevious(value) {
+  const ref = useRef();
+  useEffect(() => {
+    ref.current = value;
+  });
+  return ref.current;
 }
 
+export default function Tree({ jsonData }) {
+  const svgRef = useRef();
+  const wrapperRef = useRef();
+  const dimensions = useResizeObserver(wrapperRef);
 
+  // we save data to see if it changed
+  const previouslyRenderedData = usePrevious(jsonData);
+
+  // will be called initially and on every data change
+  useEffect(() => {
+    const svg = select(svgRef.current);
+
+    // use dimensions from useResizeObserver,
+    // but use getBoundingClientRect on initial render
+    // (dimensions are null for the first render)
+    const { width, height } =
+      dimensions || wrapperRef.current.getBoundingClientRect();
+
+    // transform hierarchical data
+    const root = hierarchy(jsonData);
+    const treeLayout = tree().size([height, width]);
+
+    const linkGenerator = linkHorizontal()
+      .x((link) => link.y)
+      .y((link) => link.x);
+
+    // enrich hierarchical data with coordinates
+    treeLayout(root);
+
+    console.warn("descendants", root.descendants());
+    console.warn("links", root.links());
+
+    // nodes
+    svg
+      .selectAll(".node")
+      .data(root.descendants())
+      .join((enter) => enter.append("circle").attr("opacity", 0))
+      .attr("class", "node")
+      .attr("cx", (node) => node.y)
+      .attr("cy", (node) => node.x)
+      .attr("r", 4)
+      .transition()
+      .duration(500)
+      .delay((node) => node.depth * 300)
+      .attr("opacity", 1);
+
+    // links
+    const enteringAndUpdatingLinks = svg
+      .selectAll(".link")
+      .data(root.links())
+      .join("path")
+      .attr("class", "link")
+      .attr("d", linkGenerator)
+      .attr("stroke-dasharray", function () {
+        const length = this.getTotalLength();
+        return `${length} ${length}`;
+      })
+      .attr("stroke", "black")
+      .attr("fill", "none")
+      .attr("opacity", 1);
+
+    if (jsonData !== previouslyRenderedData) {
+      enteringAndUpdatingLinks
+        .attr("stroke-dashoffset", function () {
+          return this.getTotalLength();
+        })
+        .transition()
+        .duration(500)
+        .delay((link) => link.source.depth * 500)
+        .attr("stroke-dashoffset", 0);
+    }
+
+    // labels
+    svg
+      .selectAll(".label")
+      .data(root.descendants())
+      .join((enter) => enter.append("text").attr("opacity", 0))
+      .attr("class", "label")
+      .attr("x", (node) => node.y)
+      .attr("y", (node) => node.x - 12)
+      .attr("text-anchor", "middle")
+      .attr("font-size", 24)
+      .text((node) => node.data.name)
+      .transition()
+      .duration(500)
+      .delay((node) => node.depth * 300)
+      .attr("opacity", 1);
+  }, [jsonData, dimensions, previouslyRenderedData]);
+  return (
+    <React.Fragment>
+      <div ref={wrapperRef} style={{ marginBottom: "2rem" }}>
+        <svg ref={svgRef}></svg>
+      </div>
+    </React.Fragment>
+  );
+}
