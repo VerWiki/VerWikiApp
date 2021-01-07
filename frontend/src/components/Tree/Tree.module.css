@@ -1,15 +1,6 @@
-svg {
+.treeContainer {
   overflow: visible;
   display: block;
-}
-
-#root {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  justify-content: center;
-  height: 100vh;
-  padding: 0 50px 150px;
-  text-align: center;
-  box-sizing: border-box;
+  width: 90%;
+  padding-left: 50px;
 }

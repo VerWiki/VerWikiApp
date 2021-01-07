@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import styles from "./Tree.module.css";
 import { select, hierarchy, tree, linkHorizontal } from "d3";
 import ResizeObserver from "resize-observer-polyfill";
 import "./Tree.module.css";
@@ -28,40 +29,42 @@ function usePrevious(value) {
   return ref.current;
 }
 
-export default function Tree({ jsonData }) {
+export function Tree({ jsonData, onNodeClick }) {
   const [currentView, setCurrentView] = useState({});
   const svgRef = useRef();
   const wrapperRef = useRef();
   const dimensions = useResizeObserver(wrapperRef);
 
-  // we save data to see if it changed
+  // We save data to see if it changed
   const previouslyRenderedData = usePrevious(currentView);
 
   useEffect(() => {
     setCurrentView(jsonData);
   }, [jsonData]);
 
-  // will be called initially and on every data change
+  // Will be called initially and on every data change
   useEffect(() => {
     const svg = select(svgRef.current);
 
-    // use dimensions from useResizeObserver,
+    // Use dimensions from useResizeObserver,
     // but use getBoundingClientRect on initial render
     // (dimensions are null for the first render)
     const { width, height } =
       dimensions || wrapperRef.current.getBoundingClientRect();
 
-    // transform hierarchical data
+    // Transform hierarchical data
     const root = hierarchy(currentView);
     const treeLayout = tree().size([height, width - 200]);
 
+    // Creates the links between nodes
     const linkGenerator = linkHorizontal()
       .x((link) => link.y)
       .y((link) => link.x);
 
-    // enrich hierarchical data with coordinates
+    // Enrich hierarchical data with coordinates
     treeLayout(root);
 
+    // Create the node group, which will hold the nodes and labels
     const nodeGroup = svg.selectAll(".node-group").data(root.descendants());
     const nodeGroupEnter = nodeGroup.enter().append("g");
 
@@ -70,19 +73,17 @@ export default function Tree({ jsonData }) {
       .attr("class", "node-group")
       .attr("transform", (node) => `translate(${node.y},${node.x})`)
       .style("cursor", "pointer")
-      .on("click", function (event, obj) {
-        setCurrentView(obj.data);
-      });
+      .on("click", onNodeClick);
 
     nodeGroup.exit().remove();
 
-    // nodes
+    // Add nodes to the node group
     nodeGroupEnter
       .append("circle")
       .merge(nodeGroup.select("circle"))
       .attr("r", 4);
 
-    // labels
+    // Add labels to the node group
     nodeGroupEnter
       .append("text")
       .merge(nodeGroup.select("text"))
@@ -91,7 +92,7 @@ export default function Tree({ jsonData }) {
       .attr("y", -15)
       .text((node) => node.data.name);
 
-    // links
+    // Add links between nodes and animate them in
     const enteringAndUpdatingLinks = svg
       .selectAll(".link")
       .data(root.links())
@@ -106,6 +107,8 @@ export default function Tree({ jsonData }) {
       .attr("fill", "none")
       .attr("opacity", 1);
 
+    // This is needed so the animations don't happen again every
+    // time we resize the window
     if (currentView !== previouslyRenderedData) {
       nodeGroupEnter
         .attr("opacity", 0)
@@ -123,16 +126,12 @@ export default function Tree({ jsonData }) {
         .delay((link) => link.source.depth * 500)
         .attr("stroke-dashoffset", 0);
     }
-  }, [currentView, dimensions, previouslyRenderedData]);
+  }, [currentView, dimensions, previouslyRenderedData, onNodeClick]);
+
   return (
     <React.Fragment>
       <div ref={wrapperRef} style={{ marginBottom: "2rem" }}>
-        <svg
-          style={{ marginLeft: 40 }}
-          ref={svgRef}
-          height="1540"
-          width="500"
-        ></svg>
+        <svg className={styles.treeContainer} ref={svgRef} height="1000"></svg>
       </div>
     </React.Fragment>
   );
