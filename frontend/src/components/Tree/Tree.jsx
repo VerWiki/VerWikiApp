@@ -70,7 +70,7 @@ const renderTree = (wrapperRef, svgRef, currentView, onNodeClick) => {
     .attr("y", -15)
     .text((node) => node.data.name);
 
-  // Add links between nodes and animate them in
+  // Add links between nodes
   const enteringAndUpdatingLinks = svg
     .selectAll(".link")
     .data(root.links())
@@ -114,6 +114,8 @@ export function Tree({ jsonData, onNodeClick }) {
     };
   }, [wrapperRef]);
 
+  //TODO: Except for the animateTreeLinks, this should all come out
+  //of the useEffect function somehow
   useEffect(() => {
     const [nodeGroupEnter, enteringAndUpdatingLinks] = renderTree(
       wrapperRef,
@@ -134,3 +136,6 @@ export function Tree({ jsonData, onNodeClick }) {
     </React.Fragment>
   );
 }
+
+//TODO: Add comments and documentation to each function
+//TODO: Consider removing the dimensions and set dimensions variables entirely
