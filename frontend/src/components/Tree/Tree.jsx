@@ -4,6 +4,96 @@ import { select, hierarchy, tree, linkHorizontal } from "d3";
 import ResizeObserver from "resize-observer-polyfill";
 import "./Tree.module.css";
 
+const animateTreeLinks = (nodeGroupEnter, enteringAndUpdatingLinks) => {
+  nodeGroupEnter
+    .attr("opacity", 0)
+    .transition()
+    .duration(500)
+    .delay((node) => node.depth * 300)
+    .attr("opacity", 1);
+
+  enteringAndUpdatingLinks
+    .attr("stroke-dashoffset", function () {
+      return this.getTotalLength();
+    })
+    .transition()
+    .duration(500)
+    .delay((link) => link.source.depth * 500)
+    .attr("stroke-dashoffset", 0);
+};
+
+const renderTree = (
+  wrapperRef,
+  svgRef,
+  dimensions,
+  currentView,
+  onNodeClick
+) => {
+  const svg = select(svgRef.current);
+
+  // Use dimensions from useResizeObserver,
+  // but use getBoundingClientRect on initial render
+  // (dimensions are null for the first render)
+  const { width, height } =
+    dimensions || wrapperRef.current.getBoundingClientRect();
+
+  // Transform hierarchical data
+  const root = hierarchy(currentView);
+  const treeLayout = tree().size([height, width - 200]);
+
+  // Creates the links between nodes
+  const linkGenerator = linkHorizontal()
+    .x((link) => link.y)
+    .y((link) => link.x);
+
+  // Enrich hierarchical data with coordinates
+  treeLayout(root);
+
+  // Create the node group, which will hold the nodes and labels
+  const nodeGroup = svg.selectAll(".node-group").data(root.descendants());
+  const nodeGroupEnter = nodeGroup.enter().append("g");
+
+  nodeGroupEnter
+    .merge(nodeGroup)
+    .attr("class", "node-group")
+    .attr("transform", (node) => `translate(${node.y},${node.x})`)
+    .style("cursor", "pointer")
+    .on("click", onNodeClick);
+
+  nodeGroup.exit().remove();
+
+  // Add nodes to the node group
+  nodeGroupEnter
+    .append("circle")
+    .merge(nodeGroup.select("circle"))
+    .attr("r", 4);
+
+  // Add labels to the node group
+  nodeGroupEnter
+    .append("text")
+    .merge(nodeGroup.select("text"))
+    .attr("text-anchor", "middle")
+    .attr("font-size", 18)
+    .attr("y", -15)
+    .text((node) => node.data.name);
+
+  // Add links between nodes and animate them in
+  const enteringAndUpdatingLinks = svg
+    .selectAll(".link")
+    .data(root.links())
+    .join("path")
+    .attr("class", "link")
+    .attr("d", linkGenerator)
+    .attr("stroke-dasharray", function () {
+      const length = this.getTotalLength();
+      return `${length} ${length}`;
+    })
+    .attr("stroke", "black")
+    .attr("fill", "none")
+    .attr("opacity", 1);
+  return [nodeGroupEnter, enteringAndUpdatingLinks];
+};
+
 const useResizeObserver = (ref) => {
   const [dimensions, setDimensions] = useState(null);
   useEffect(() => {
@@ -30,103 +120,47 @@ function usePrevious(value) {
 }
 
 export function Tree({ jsonData, onNodeClick }) {
-  const [currentView, setCurrentView] = useState({});
+  //const [currentView, setCurrentView] = useState({});
+  //console.log("The current view is ", currentView);
+  console.log("Top of tree fn");
   const svgRef = useRef();
   const wrapperRef = useRef();
   const dimensions = useResizeObserver(wrapperRef);
-
+  //setCurrentView(jsonData);
   // We save data to see if it changed
-  const previouslyRenderedData = usePrevious(currentView);
+  const previouslyRenderedData = usePrevious(jsonData);
+
+  // useEffect(() => {
+  //   console.log("On JSON Data change");
+  //   setCurrentView(jsonData);
+  // }, [jsonData]);
 
   useEffect(() => {
-    setCurrentView(jsonData);
-  }, [jsonData]);
+    const [nodeGroupEnter, enteringAndUpdatingLinks] = renderTree(
+      wrapperRef,
+      svgRef,
+      dimensions,
+      jsonData, //currentView,
+      onNodeClick
+    );
+    animateTreeLinks(nodeGroupEnter, enteringAndUpdatingLinks);
+  }, [jsonData /*dimensions, onNodeClick*/]);
 
   // Will be called initially and on every data change
   useEffect(() => {
-    const svg = select(svgRef.current);
-
-    // Use dimensions from useResizeObserver,
-    // but use getBoundingClientRect on initial render
-    // (dimensions are null for the first render)
-    const { width, height } =
-      dimensions || wrapperRef.current.getBoundingClientRect();
-
-    // Transform hierarchical data
-    const root = hierarchy(currentView);
-    const treeLayout = tree().size([height, width - 200]);
-
-    // Creates the links between nodes
-    const linkGenerator = linkHorizontal()
-      .x((link) => link.y)
-      .y((link) => link.x);
-
-    // Enrich hierarchical data with coordinates
-    treeLayout(root);
-
-    // Create the node group, which will hold the nodes and labels
-    const nodeGroup = svg.selectAll(".node-group").data(root.descendants());
-    const nodeGroupEnter = nodeGroup.enter().append("g");
-
-    nodeGroupEnter
-      .merge(nodeGroup)
-      .attr("class", "node-group")
-      .attr("transform", (node) => `translate(${node.y},${node.x})`)
-      .style("cursor", "pointer")
-      .on("click", onNodeClick);
-
-    nodeGroup.exit().remove();
-
-    // Add nodes to the node group
-    nodeGroupEnter
-      .append("circle")
-      .merge(nodeGroup.select("circle"))
-      .attr("r", 4);
-
-    // Add labels to the node group
-    nodeGroupEnter
-      .append("text")
-      .merge(nodeGroup.select("text"))
-      .attr("text-anchor", "middle")
-      .attr("font-size", 18)
-      .attr("y", -15)
-      .text((node) => node.data.name);
-
-    // Add links between nodes and animate them in
-    const enteringAndUpdatingLinks = svg
-      .selectAll(".link")
-      .data(root.links())
-      .join("path")
-      .attr("class", "link")
-      .attr("d", linkGenerator)
-      .attr("stroke-dasharray", function () {
-        const length = this.getTotalLength();
-        return `${length} ${length}`;
-      })
-      .attr("stroke", "black")
-      .attr("fill", "none")
-      .attr("opacity", 1);
-
+    renderTree(
+      wrapperRef,
+      svgRef,
+      dimensions,
+      jsonData, //currentView,
+      onNodeClick
+    );
     // This is needed so the animations don't happen again every
     // time we resize the window
-    if (currentView !== previouslyRenderedData) {
-      nodeGroupEnter
-        .attr("opacity", 0)
-        .transition()
-        .duration(500)
-        .delay((node) => node.depth * 300)
-        .attr("opacity", 1);
-
-      enteringAndUpdatingLinks
-        .attr("stroke-dashoffset", function () {
-          return this.getTotalLength();
-        })
-        .transition()
-        .duration(500)
-        .delay((link) => link.source.depth * 500)
-        .attr("stroke-dashoffset", 0);
-    }
-  }, [currentView, dimensions, previouslyRenderedData, onNodeClick]);
+    // if (jsonData !== previouslyRenderedData) {
+    //   animateTreeLinks(nodeGroupEnter, enteringAndUpdatingLinks);
+    // }
+  }, [jsonData, dimensions, /*previouslyRenderedData,*/ onNodeClick]);
 
   return (
     <React.Fragment>
