@@ -94,47 +94,24 @@ const renderTree = (
   return [nodeGroupEnter, enteringAndUpdatingLinks];
 };
 
-const useResizeObserver = (ref) => {
-  const [dimensions, setDimensions] = useState(null);
-  useEffect(() => {
-    const observeTarget = ref.current;
-    const resizeObserver = new ResizeObserver((entries) => {
-      entries.forEach((entry) => {
-        setDimensions(entry.contentRect);
-      });
-    });
-    resizeObserver.observe(observeTarget);
-    return () => {
-      resizeObserver.unobserve(observeTarget);
-    };
-  }, [ref]);
-  return dimensions;
-};
-
 function usePrevious(value) {
   const ref = useRef();
   useEffect(() => {
     ref.current = value;
-  });
+  }, [value]);
   return ref.current;
 }
 
 export function Tree({ jsonData, onNodeClick }) {
-  //const [currentView, setCurrentView] = useState({});
-  //console.log("The current view is ", currentView);
   console.log("Top of tree fn");
   const svgRef = useRef();
   const wrapperRef = useRef();
-  //const dimensions = useResizeObserver(wrapperRef);
   const [dimensions, setDimensions] = useState(null);
-  const prevDimensions = useRef(null);
-  //setCurrentView(jsonData);
-  // We save data to see if it changed
-  //const previouslyRenderedData = usePrevious(jsonData);
+  const prevDimensions = usePrevious(dimensions);
 
-  useEffect(() => {
-    prevDimensions.current = dimensions;
-  }, [dimensions]);
+  // useEffect(() => {
+  //   prevDimensions.current = dimensions;
+  // }, [dimensions]);
 
   useEffect(() => {
     const observeTarget = wrapperRef.current;
@@ -149,11 +126,6 @@ export function Tree({ jsonData, onNodeClick }) {
     };
   }, [wrapperRef]);
 
-  // useEffect(() => {
-  //   console.log("On JSON Data change");
-  //   setCurrentView(jsonData);
-  // }, [jsonData]);
-
   useEffect(() => {
     const [nodeGroupEnter, enteringAndUpdatingLinks] = renderTree(
       wrapperRef,
@@ -162,8 +134,10 @@ export function Tree({ jsonData, onNodeClick }) {
       jsonData, //currentView,
       onNodeClick
     );
-    animateTreeLinks(nodeGroupEnter, enteringAndUpdatingLinks);
-  }, [jsonData, onNodeClick /*dimensions*/]);
+    if (dimensions === prevDimensions) {
+      animateTreeLinks(nodeGroupEnter, enteringAndUpdatingLinks);
+    }
+  }, [jsonData, onNodeClick, dimensions]);
 
   // Will be called initially and on every data change
   useEffect(() => {
@@ -174,11 +148,6 @@ export function Tree({ jsonData, onNodeClick }) {
       jsonData, //currentView,
       onNodeClick
     );
-    // This is needed so the animations don't happen again every
-    // time we resize the window
-    // if (jsonData !== previouslyRenderedData) {
-    //   animateTreeLinks(nodeGroupEnter, enteringAndUpdatingLinks);
-    // }
   }, [jsonData, dimensions, /*previouslyRenderedData,*/ onNodeClick]);
 
   return (
