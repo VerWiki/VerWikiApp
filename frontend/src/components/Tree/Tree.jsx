@@ -22,20 +22,13 @@ const animateTreeLinks = (nodeGroupEnter, enteringAndUpdatingLinks) => {
     .attr("stroke-dashoffset", 0);
 };
 
-const renderTree = (
-  wrapperRef,
-  svgRef,
-  dimensions,
-  currentView,
-  onNodeClick
-) => {
+const renderTree = (wrapperRef, svgRef, currentView, onNodeClick) => {
   const svg = select(svgRef.current);
 
   // Use dimensions from useResizeObserver,
   // but use getBoundingClientRect on initial render
   // (dimensions are null for the first render)
-  const { width, height } =
-    dimensions || wrapperRef.current.getBoundingClientRect();
+  const { width, height } = wrapperRef.current.getBoundingClientRect();
 
   // Transform hierarchical data
   const root = hierarchy(currentView);
@@ -103,15 +96,10 @@ function usePrevious(value) {
 }
 
 export function Tree({ jsonData, onNodeClick }) {
-  console.log("Top of tree fn");
   const svgRef = useRef();
   const wrapperRef = useRef();
   const [dimensions, setDimensions] = useState(null);
-  const prevDimensions = usePrevious(dimensions);
-
-  // useEffect(() => {
-  //   prevDimensions.current = dimensions;
-  // }, [dimensions]);
+  const prevJSONData = usePrevious(jsonData);
 
   useEffect(() => {
     const observeTarget = wrapperRef.current;
@@ -130,25 +118,13 @@ export function Tree({ jsonData, onNodeClick }) {
     const [nodeGroupEnter, enteringAndUpdatingLinks] = renderTree(
       wrapperRef,
       svgRef,
-      dimensions,
-      jsonData, //currentView,
+      jsonData,
       onNodeClick
     );
-    if (dimensions === prevDimensions) {
+    if (jsonData !== prevJSONData) {
       animateTreeLinks(nodeGroupEnter, enteringAndUpdatingLinks);
     }
-  }, [jsonData, onNodeClick, dimensions]);
-
-  // Will be called initially and on every data change
-  useEffect(() => {
-    renderTree(
-      wrapperRef,
-      svgRef,
-      dimensions,
-      jsonData, //currentView,
-      onNodeClick
-    );
-  }, [jsonData, dimensions, /*previouslyRenderedData,*/ onNodeClick]);
+  }, [jsonData, onNodeClick, prevJSONData, dimensions]);
 
   return (
     <React.Fragment>
