@@ -125,10 +125,29 @@ export function Tree({ jsonData, onNodeClick }) {
   console.log("Top of tree fn");
   const svgRef = useRef();
   const wrapperRef = useRef();
-  const dimensions = useResizeObserver(wrapperRef);
+  //const dimensions = useResizeObserver(wrapperRef);
+  const [dimensions, setDimensions] = useState(null);
+  const prevDimensions = useRef(null);
   //setCurrentView(jsonData);
   // We save data to see if it changed
-  const previouslyRenderedData = usePrevious(jsonData);
+  //const previouslyRenderedData = usePrevious(jsonData);
+
+  useEffect(() => {
+    prevDimensions.current = dimensions;
+  }, [dimensions]);
+
+  useEffect(() => {
+    const observeTarget = wrapperRef.current;
+    const resizeObserver = new ResizeObserver((entries) => {
+      entries.forEach((entry) => {
+        setDimensions(entry.contentRect);
+      });
+    });
+    resizeObserver.observe(observeTarget);
+    return () => {
+      resizeObserver.unobserve(observeTarget);
+    };
+  }, [wrapperRef]);
 
   // useEffect(() => {
   //   console.log("On JSON Data change");
@@ -144,7 +163,7 @@ export function Tree({ jsonData, onNodeClick }) {
       onNodeClick
     );
     animateTreeLinks(nodeGroupEnter, enteringAndUpdatingLinks);
-  }, [jsonData /*dimensions, onNodeClick*/]);
+  }, [jsonData, onNodeClick /*dimensions*/]);
 
   // Will be called initially and on every data change
   useEffect(() => {
