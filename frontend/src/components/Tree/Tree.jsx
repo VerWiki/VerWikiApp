@@ -30,17 +30,12 @@ function usePrevious(value) {
 }
 
 export function Tree({ jsonData, onNodeClick }) {
-  const [currentView, setCurrentView] = useState({});
   const svgRef = useRef();
   const wrapperRef = useRef();
   const dimensions = useResizeObserver(wrapperRef);
 
   // We save data to see if it changed
-  const previouslyRenderedData = usePrevious(currentView);
-
-  useEffect(() => {
-    setCurrentView(jsonData);
-  }, [jsonData]);
+  const previouslyRenderedData = usePrevious(jsonData);
 
   // Will be called initially and on every data change
   useEffect(() => {
@@ -53,7 +48,7 @@ export function Tree({ jsonData, onNodeClick }) {
       dimensions || wrapperRef.current.getBoundingClientRect();
 
     // Transform hierarchical data
-    const root = hierarchy(currentView);
+    const root = hierarchy(jsonData);
     const treeLayout = tree().size([height, width - 200]);
 
     // Creates the links between nodes
@@ -109,7 +104,7 @@ export function Tree({ jsonData, onNodeClick }) {
 
     // This is needed so the animations don't happen again every
     // time we resize the window
-    if (currentView !== previouslyRenderedData) {
+    if (jsonData !== previouslyRenderedData) {
       nodeGroupEnter
         .attr("opacity", 0)
         .transition()
@@ -126,7 +121,7 @@ export function Tree({ jsonData, onNodeClick }) {
         .delay((link) => link.source.depth * 500)
         .attr("stroke-dashoffset", 0);
     }
-  }, [currentView, dimensions, previouslyRenderedData, onNodeClick]);
+  }, [jsonData, dimensions, previouslyRenderedData, onNodeClick]);
 
   return (
     <React.Fragment>
