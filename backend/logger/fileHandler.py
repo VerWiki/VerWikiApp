@@ -1,6 +1,7 @@
 import os
 import uuid
 import datetime
+import atexit
 
 class FileHandler():
 	'''
@@ -13,6 +14,8 @@ class FileHandler():
 		self.file_name = file_name
 		self.full_name = file_name
 		self.file_handle = None
+
+		atexit.register(self.closeFile)
 
 	def createName(self):
 		''' Create and return the name of the file.

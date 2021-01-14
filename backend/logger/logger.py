@@ -1,6 +1,7 @@
 from fileHandler import FileHandler
 
 import os
+
 ''' 
 Main class for logging functionalities.
 '''
@@ -36,4 +37,3 @@ if __name__ == "__main__":
 	logger.debug("This is my first debug message")
 	logger.warning("This is my first warning message")
 	logger.error("This is my first error message")
-	logger.fileHandler.closeFile()
