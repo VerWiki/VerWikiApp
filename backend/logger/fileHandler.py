@@ -52,10 +52,10 @@ class FileHandler():
 		'''
 
 		if os.path.exists(self.getFileLocation()):
-			self.file_handle = open(self.getFullPath(), "w")
+			self.file_handle = open(self.getFullPath(), "a")
 		else:
 			os.mkdir(self.getFileLocation())
-			self.file_handle = open(self.getFullPath(), "w")
+			self.file_handle = open(self.getFullPath(), "a")
 
 	def getWriteHandle(self):
 		''' Get the handle of the class for writing to the file

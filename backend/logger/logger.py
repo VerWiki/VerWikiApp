@@ -1,6 +1,7 @@
 from fileHandler import FileHandler
 
 import os
+from inspect import stack, getframeinfo
 
 ''' 
 Main class for logging functionalities.
@@ -12,13 +13,15 @@ class Logger:
 		self.file_name = file_name
 		self.fileHandler = FileHandler(self.file_name)
 		self.writer = self.fileHandler.getWriteHandle()
-
+		self.frameinfo = getframeinfo(stack()[1][0])
+	
 	def debug(self, message):
 		''' Write a debug message to the file using the writer
 		'''
 		if self.level > 0:
 			return
-		self.writer.write("DEBUG: " + message + "\n")
+		self.writer.write("DEBUG: " + self.frameinfo.filename +\
+						":" + str(self.frameinfo.lineno + 1) + " : " + message + "\n")
 
 	def warning(self, message):
 		'''Write a warning message to the file using the writer
@@ -31,9 +34,3 @@ class Logger:
 		'''Write an error message to the file using the writer
 		'''
 		self.writer.write("ERROR: " + message + "\n")
-
-if __name__ == "__main__":
-	logger = Logger(level=2)
-	logger.debug("This is my first debug message")
-	logger.warning("This is my first warning message")
-	logger.error("This is my first error message")
