@@ -4,23 +4,6 @@ import { select, hierarchy, tree, linkHorizontal } from "d3";
 import ResizeObserver from "resize-observer-polyfill";
 import "./Tree.module.css";
 
-const useResizeObserver = (ref) => {
-  const [dimensions, setDimensions] = useState(null);
-  useEffect(() => {
-    const observeTarget = ref.current;
-    const resizeObserver = new ResizeObserver((entries) => {
-      entries.forEach((entry) => {
-        setDimensions(entry.contentRect);
-      });
-    });
-    resizeObserver.observe(observeTarget);
-    return () => {
-      resizeObserver.unobserve(observeTarget);
-    };
-  }, [ref]);
-  return dimensions;
-};
-
 function usePrevious(value) {
   const ref = useRef();
   useEffect(() => {
@@ -32,29 +15,45 @@ function usePrevious(value) {
 export function Tree({ jsonData, onNodeClick }) {
   const svgRef = useRef();
   const wrapperRef = useRef();
-  const dimensions = useResizeObserver(wrapperRef);
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
   // We save data to see if it changed
   const previouslyRenderedData = usePrevious(jsonData);
 
+  // This effect updates the dimensions state every time the user
+  // resizes their window
+  useEffect(() => {
+    const observeTarget = wrapperRef.current;
+    const resizeObserver = new ResizeObserver((entries) => {
+      entries.forEach((entry) => {
+        setDimensions({
+          // add margins to prevent chopped off content
+          width: entry.contentRect.width - 200,
+          height: entry.contentRect.height - 50,
+        });
+      });
+    });
+    resizeObserver.observe(observeTarget);
+    return () => {
+      resizeObserver.unobserve(observeTarget);
+    };
+  }, [wrapperRef]);
+
   // Will be called initially and on every data change
   useEffect(() => {
     const svg = select(svgRef.current);
-
-    // Use dimensions from useResizeObserver,
-    // but use getBoundingClientRect on initial render
-    // (dimensions are null for the first render)
-    const { width, height } =
-      dimensions || wrapperRef.current.getBoundingClientRect();
+    const { width, height } = dimensions;
+    const marginLeft = 70;
+    const marginTop = 30;
 
     // Transform hierarchical data
     const root = hierarchy(jsonData);
-    const treeLayout = tree().size([height, width - 200]);
+    const treeLayout = tree().size([height, width]);
 
     // Creates the links between nodes
     const linkGenerator = linkHorizontal()
-      .x((link) => link.y)
-      .y((link) => link.x);
+      .x((link) => link.y + marginLeft)
+      .y((link) => link.x + marginTop);
 
     // Enrich hierarchical data with coordinates
     treeLayout(root);
@@ -66,7 +65,10 @@ export function Tree({ jsonData, onNodeClick }) {
     nodeGroupEnter
       .merge(nodeGroup)
       .attr("class", "node-group")
-      .attr("transform", (node) => `translate(${node.y},${node.x})`)
+      .attr(
+        "transform",
+        (node) => `translate(${node.y + marginLeft},${node.x + marginTop})`
+      )
       .style("cursor", "pointer")
       .on("click", onNodeClick);
 
@@ -126,7 +128,7 @@ export function Tree({ jsonData, onNodeClick }) {
   return (
     <React.Fragment>
       <div ref={wrapperRef} style={{ marginBottom: "2rem" }}>
-        <svg className={styles.treeContainer} ref={svgRef} height="1000"></svg>
+        <svg className={styles.treeContainer} ref={svgRef}></svg>
       </div>
     </React.Fragment>
   );
