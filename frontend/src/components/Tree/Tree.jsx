@@ -131,7 +131,7 @@ export function Tree({ jsonData, onNodeClick }) {
   const previouslyRenderedData = usePrevious(jsonData);
 
   /**
-   * This effect updates the dimension's state every time the user
+   * This effect updates the dimensions' state every time the user
    * resizes their window
    */
   useEffect(() => {
@@ -151,7 +151,7 @@ export function Tree({ jsonData, onNodeClick }) {
     };
   }, [wrapperRef]);
 
-  /***
+  /**
    * Re-renders whenever the list of dependencies updates;
    * animates the tree links only when the data changes.
    */
