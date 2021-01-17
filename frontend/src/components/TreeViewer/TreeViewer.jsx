@@ -29,22 +29,18 @@ function extractObjectWithMaxDepth(obj, depth = MAX_DEPTH) {
 
 /**
  * Creates an index so that we can get the reference to
- * a particular node, given its name, in constant time.
+ * a particular node given its name, in constant time.
  *
- * TODO: Confirm if duplicate names are possible or not
+ * Note: The name of the node is a key within the particular tree
+ *
  */
-function createNameToNodeMapping(obj) {
-  const mapping = {};
-
-  const helper = (currNode) => {
-    mapping[currNode.name] = currNode;
-
-    if (currNode.children) {
-      currNode.children.forEach((child) => helper(child));
-    }
-  };
-
-  helper(obj);
+function createNameToNodeMapping(currNode, mapping = {}) {
+  mapping[currNode.name] = currNode;
+  if (currNode.children) {
+    currNode.children.forEach((child) =>
+      createNameToNodeMapping(child, mapping)
+    );
+  }
   return mapping;
 }
 
