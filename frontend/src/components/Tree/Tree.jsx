@@ -4,6 +4,13 @@ import { select, hierarchy, tree, linkHorizontal } from "d3";
 import ResizeObserver from "resize-observer-polyfill";
 import "./Tree.module.css";
 
+/**
+ * This function takes two parameters and performs the animation
+ * of the links between them.
+ * @param nodeGroupEnter : TODO sultan help pls
+ * @param enteringAndUpdatingLinks : TODO sultan help pls
+ */
+
 function animateTree(nodeGroupEnter, enteringAndUpdatingLinks) {
   nodeGroupEnter
     .attr("opacity", 0)
@@ -21,6 +28,19 @@ function animateTree(nodeGroupEnter, enteringAndUpdatingLinks) {
     .delay((link) => link.source.depth * 500)
     .attr("stroke-dashoffset", 0);
 }
+
+/**
+ * A function to render the tree.
+ * @param dimensions : A struct with fields width and height
+ * specifying the desired size of the passed-in tree
+ * @param jsonData : A JSON object representing the structure
+ * of the tree
+ * @param svgRef : A wrapper HTML element within which the tree
+ * will be displayed
+ * @param onNodeClick : Function pointer specifying the action
+ * to take when a node in the tree is clicked
+ * @returns TODO sultan help pls
+ */
 
 function renderTree(dimensions, jsonData, svgRef, onNodeClick) {
   const svg = select(svgRef.current);
@@ -71,7 +91,7 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick) {
     .attr("y", -15)
     .text((node) => node.data.name);
 
-  // Add links between nodes and animate them in
+  // Add links between nodes
   const enteringAndUpdatingLinks = svg
     .selectAll(".link")
     .data(root.links())
@@ -87,6 +107,12 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick) {
     .attr("opacity", 1);
   return [nodeGroupEnter, enteringAndUpdatingLinks];
 }
+
+/**
+ * Tracks the previous value of the given item. Returns
+ * the previous value
+ * @param value : The object to be tracked
+ */
 
 function usePrevious(value) {
   const ref = useRef();
@@ -104,8 +130,10 @@ export function Tree({ jsonData, onNodeClick }) {
   // We save data to see if it changed
   const previouslyRenderedData = usePrevious(jsonData);
 
-  // This effect updates the dimensions state every time the user
-  // resizes their window
+  /**
+   * This effect updates the dimension's state every time the user
+   * resizes their window
+   */
   useEffect(() => {
     const observeTarget = wrapperRef.current;
     const resizeObserver = new ResizeObserver((entries) => {
@@ -123,7 +151,10 @@ export function Tree({ jsonData, onNodeClick }) {
     };
   }, [wrapperRef]);
 
-  // Will be called initially and on every data change
+  /***
+   * Re-renders whenever the list of dependencies updates;
+   * animates the tree links only when the data changes.
+   */
   useEffect(() => {
     const [nodeGroupEnter, enteringAndUpdatingLinks] = renderTree(
       dimensions,
@@ -131,8 +162,6 @@ export function Tree({ jsonData, onNodeClick }) {
       svgRef,
       onNodeClick
     );
-    // This is needed so the animations don't happen again every
-    // time we resize the window
     if (jsonData !== previouslyRenderedData) {
       animateTree(nodeGroupEnter, enteringAndUpdatingLinks);
     }
