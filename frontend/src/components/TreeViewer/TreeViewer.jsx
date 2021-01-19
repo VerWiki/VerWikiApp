@@ -44,7 +44,7 @@ function createNameToNodeMapping(currNode, mapping = {}) {
   return mapping;
 }
 
-export const TreeViewer = ({ data }) => {
+export const TreeViewer = ({ data, treeID }) => {
   const [trimmedData, setTrimmedData] = useState({});
   const [nameToNodeMapping, setNameToNodeMapping] = useState({});
 
@@ -57,6 +57,25 @@ export const TreeViewer = ({ data }) => {
 
     // Trim the subtree to MAX_DEPTH and set it as the new tree
     setTrimmedData(extractObjectWithMaxDepth(subTree));
+  };
+
+  /**
+   * The function to handle right clicks - opens up a window to show
+   * summarized information for a given wiki link.
+   */
+  const rightClickHandler = (event, clickedNode) => {
+    event.preventDefault();
+    const nodeInfoUrl = `${clickedNode.data.name}/${treeID}`;
+    console.log(nodeInfoUrl);
+    console.log(event);
+    console.log(clickedNode);
+    /**
+     * TODO: STRATEGY FOR THE NEXT STEPS
+     * 1. create URL of the form {tree_id/node_name} [DONE]
+     * 2. Pass URL through a function to replace all spaces with underscores/hyphens
+     * 2. send request to the server, to get a summary of the node's link
+     * 3. display that summary in the information window
+     */
   };
 
   /**
@@ -90,7 +109,11 @@ export const TreeViewer = ({ data }) => {
 
   return (
     <div className={styles.nav}>
-      <Tree jsonData={trimmedData} onNodeClick={nodeClickHandler}></Tree>
+      <Tree
+        jsonData={trimmedData}
+        onNodeClick={nodeClickHandler}
+        onRightClick={rightClickHandler}
+      ></Tree>
       {element}
     </div>
   );

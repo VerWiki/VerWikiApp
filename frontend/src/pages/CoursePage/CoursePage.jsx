@@ -29,7 +29,7 @@ export const CoursePage = () => {
   if (error) {
     Viewer = <h2>{`Error: ${error.message}`}</h2>;
   } else {
-    Viewer = <TreeViewer data={treeObj} />;
+    Viewer = <TreeViewer data={treeObj} treeID={courseId} />;
   }
 
   return (

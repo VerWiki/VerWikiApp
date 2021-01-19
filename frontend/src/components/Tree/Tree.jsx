@@ -8,7 +8,7 @@ import "./Tree.module.css";
  * This function takes node-text grouping, and inter-node link grouping and performs the animation
  * of the links between them.
  * @param nodeGroupEnter : A grouping of nodes and text boxes grouped together under the SVG tag
- * @param enteringAndUpdatingLinks : The inter-node links, represented as lines joining 
+ * @param enteringAndUpdatingLinks : The inter-node links, represented as lines joining
  * nodes together on the tree.
  */
 
@@ -40,10 +40,12 @@ function animateTree(nodeGroupEnter, enteringAndUpdatingLinks) {
  * will be displayed
  * @param onNodeClick : Function pointer specifying the action
  * to take when a node in the tree is clicked
+ * @param onRightClick: Function pointer specifying the action
+ * to take when a node in the tree is right-clicked
  * @returns SVG groupings of nodes-and-text, and inter-node links
  */
 
-function renderTree(dimensions, jsonData, svgRef, onNodeClick) {
+function renderTree(dimensions, jsonData, svgRef, onNodeClick, onRightClick) {
   const svg = select(svgRef.current);
   const { width, height } = dimensions;
   const marginLeft = 70;
@@ -63,9 +65,9 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick) {
 
   // Create the node group, which will hold the nodes and labels
   const nodeGroup = svg.selectAll(".node-group").data(root.descendants());
-  // Append a `g` element, to group SVG shapes together. 
+  // Append a `g` element, to group SVG shapes together.
   // More info at https://stackoverflow.com/questions/17057809/d3-js-what-is-g-in-appendg-d3-js-code
-  const nodeGroupEnter = nodeGroup.enter().append("g"); 
+  const nodeGroupEnter = nodeGroup.enter().append("g");
 
   nodeGroupEnter
     .merge(nodeGroup)
@@ -75,7 +77,8 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick) {
       (node) => `translate(${node.y + marginLeft},${node.x + marginTop})`
     )
     .style("cursor", "pointer")
-    .on("click", onNodeClick);
+    .on("click", onNodeClick)
+    .on("contextmenu", onRightClick);
 
   nodeGroup.exit().remove();
 
@@ -125,7 +128,7 @@ function usePrevious(value) {
   return ref.current;
 }
 
-export function Tree({ jsonData, onNodeClick }) {
+export function Tree({ jsonData, onNodeClick, onRightClick }) {
   const svgRef = useRef();
   const wrapperRef = useRef();
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
@@ -163,12 +166,13 @@ export function Tree({ jsonData, onNodeClick }) {
       dimensions,
       jsonData,
       svgRef,
-      onNodeClick
+      onNodeClick,
+      onRightClick
     );
     if (jsonData !== previouslyRenderedData) {
       animateTree(nodeGroupEnter, enteringAndUpdatingLinks);
     }
-  }, [jsonData, dimensions, previouslyRenderedData, onNodeClick]);
+  }, [jsonData, dimensions, previouslyRenderedData, onNodeClick, onRightClick]);
 
   return (
     <React.Fragment>
