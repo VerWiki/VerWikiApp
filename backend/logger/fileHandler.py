@@ -3,6 +3,7 @@ import uuid
 import datetime
 import atexit
 
+
 class FileHandler():
 	'''
 	In charge of handling files for the logger. This class will open, close, 
@@ -14,7 +15,7 @@ class FileHandler():
 		self.file_name = file_name
 		self.full_name = file_name
 		self.file_handle = None
-
+		
 		atexit.register(self.closeFile)
 
 	def createName(self):
