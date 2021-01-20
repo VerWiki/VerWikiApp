@@ -5,6 +5,7 @@ from werkzeug.exceptions import InternalServerError, BadRequest, HTTPException, 
 from keybert import KeyBERT
 from time import time
 from bs4 import BeautifulSoup
+from summarize.summarize import SimpleSummarizer
 import requests
 
 
@@ -46,15 +47,20 @@ def configure_routes(app):
         with it, and summarizes it.
         """
 
-        def getContentFromSite(url):
+        def _get_content_from_site(url):
             page = requests.get(url)
             soup = BeautifulSoup(page.content, "html.parser")
             content = soup.find_all(["h1", "h2", "p"])
             return "\n".join([c.text for c in content])
 
+        def _summarize_content(content):
+            summarizer = SimpleSummarizer()
+            return summarizer.summarize(content, 100)
+
         link = db_interface.get_link_by_node_id(node_id)
-        content = getContentFromSite(link)
-        return jsonify({"content": content})
+        content = _get_content_from_site(link)
+        summarized = _summarize_content(content)
+        return jsonify({"content": summarized})
 
     @app.errorhandler(HTTPException)
     def handle_exception(e):

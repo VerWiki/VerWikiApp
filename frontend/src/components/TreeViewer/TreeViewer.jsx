@@ -74,6 +74,7 @@ export const TreeViewer = ({ data, treeID }) => {
       .then((res) => {
         let content = res["content"];
         console.log(content);
+        return content;
       });
     /**
      * TODO: STRATEGY FOR THE NEXT STEPS
@@ -81,7 +82,7 @@ export const TreeViewer = ({ data, treeID }) => {
      * 2. Pass URL through a function to replace all spaces with underscores/hyphens [DONE]
      * 3. Create a route in the backend - gets the link stored in the db [DONE]
      * 4. Create a method that parses the link's text [DONE]
-     * 5. Use a NN to summarize it.
+     * 5. Use a NN to summarize it. [DONE]
      * 6. display that summary in the information window
      */
   };
