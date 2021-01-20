@@ -41,6 +41,7 @@ def configure_routes(app):
         with it, and summarizes it.
         """
         print(f"Node information - {node_id}")
+        return jsonify({"nodeid": node_id})
 
     @app.errorhandler(HTTPException)
     def handle_exception(e):

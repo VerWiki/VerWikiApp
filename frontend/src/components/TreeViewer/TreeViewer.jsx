@@ -70,9 +70,7 @@ export const TreeViewer = ({ data, treeID }) => {
     );
     console.log(nodeInfoUrl);
     fetch(nodeInfoUrl)
-      .then((res) => {
-        res.json();
-      })
+      .then((res) => res.json())
       .then((res) => {
         console.log(res);
       });
