@@ -34,10 +34,19 @@ def configure_routes(app):
             internalSrvErr.description = str(e)
             raise internalSrvErr
 
+    @app.route("/get-node-info/<node_id>", methods=["GET"])
+    def get_node_info(node_id):
+        """
+        Gets the associated link from the database, gets the text associated
+        with it, and summarizes it.
+        """
+        print(f"Node information - {node_id}")
+
     @app.errorhandler(HTTPException)
     def handle_exception(e):
-        """Returns JSON instead of HTML for errors."""
-
+        """
+        Returns JSON instead of HTML for errors.
+        """
         response = e.get_response()
         # replace the body with JSON
         response.data = json.dumps(

@@ -65,17 +65,42 @@ export const TreeViewer = ({ data, treeID }) => {
    */
   const rightClickHandler = (event, clickedNode) => {
     event.preventDefault();
-    const nodeInfoUrl = `${clickedNode.data.name}/${treeID}`;
+    const nodeInfoUrl = replaceSpaceCharacters(
+      `http://localhost:3003/get-node-info/${clickedNode.data.name}-${treeID}`
+    );
     console.log(nodeInfoUrl);
-    console.log(event);
-    console.log(clickedNode);
+    fetch(nodeInfoUrl)
+      .then((res) => {
+        res.json();
+      })
+      .then((res) => {
+        console.log(res);
+      });
     /**
      * TODO: STRATEGY FOR THE NEXT STEPS
      * 1. create URL of the form {tree_id/node_name} [DONE]
-     * 2. Pass URL through a function to replace all spaces with underscores/hyphens
-     * 2. send request to the server, to get a summary of the node's link
-     * 3. display that summary in the information window
+     * 2. Pass URL through a function to replace all spaces with underscores/hyphens [DONE]
+     * 3. Create a route in the backend - gets the link stored in the db
+     * 4. Create a method that parses the link's text, and uses a NN to summarize it.
+     * 5. send request to the server, to get a summary of the node's link
+     * 6. display that summary in the information window
      */
+  };
+
+  /**
+   * Replaces the spaces in a given string with hyphens.
+   * @param {string} urlString The string to be converted from spaces to hyphens.
+   */
+  const replaceSpaceCharacters = (urlString) => {
+    let url = "";
+    for (let i = 0; i < urlString.length; i++) {
+      if (urlString[i] !== " ") {
+        url = url.concat(urlString[i]);
+      } else {
+        url = url.concat("-");
+      }
+    }
+    return url;
   };
 
   /**
