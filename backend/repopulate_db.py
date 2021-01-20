@@ -2,15 +2,20 @@
 # trees for us. Feel free to add more trees here.
 
 from pymongo import MongoClient
-from db_interface import VERWIKI_DB_NAME, TREES_TABLE_NAME
+from db_interface import VERWIKI_DB_NAME, TREES_TABLE_NAME, LINKS_TABLE_NAME
 
 if __name__ == "__main__":
 
     client = MongoClient("localhost", port=27017, serverSelectionTimeoutMS=1000)
     # Select the radialTrees collection (Similar to a table in SQL)
     radialTrees = client[VERWIKI_DB_NAME][TREES_TABLE_NAME]
+
+    # select the nodeLinks collection
+    nodeLinks = client[VERWIKI_DB_NAME][LINKS_TABLE_NAME]
+
     # Clear out all the old data
     deleted_data = radialTrees.delete_many({})
+    deleted_links = nodeLinks.delete_many({})
 
     # Tree for testing purposes
     tree1 = {
@@ -18,8 +23,16 @@ if __name__ == "__main__":
         "data": {"name": "Root", "children": [{"name": "Front", "children": []}]},
     }
 
+    # Links for testing purposes
+    link1 = {
+        "id": "Root-1",
+        "link": "https://cwsl.ca/wiki/doku.php?id=philosophy_of_wisdom_socrates_and_plato#psychotechnologies_metacognition_and_second_order_thinkingimplications_for_the_machinery_of_meaning-making",
+    }
+
     # Insert a tree
     result = radialTrees.insert_one(tree1)
+    print(result.inserted_id)
+    result = nodeLinks.insert_one(link1)
     print(result.inserted_id)
 
     # The JSON for the tree found here: https://marmelab.com/ArchitectureTree/

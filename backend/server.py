@@ -2,6 +2,11 @@ import db_interface
 from flask import Flask, jsonify, request, Response, json
 from flask_cors import CORS
 from werkzeug.exceptions import InternalServerError, BadRequest, HTTPException, NotFound
+from keybert import KeyBERT
+from time import time
+from bs4 import BeautifulSoup
+import requests
+
 
 app = Flask(__name__)
 CORS(app, origins=["http://localhost:3000"])
@@ -40,8 +45,16 @@ def configure_routes(app):
         Gets the associated link from the database, gets the text associated
         with it, and summarizes it.
         """
-        print(f"Node information - {node_id}")
-        return jsonify({"nodeid": node_id})
+
+        def getContentFromSite(url):
+            page = requests.get(url)
+            soup = BeautifulSoup(page.content, "html.parser")
+            content = soup.find_all(["h1", "h2", "p"])
+            return "\n".join([c.text for c in content])
+
+        link = db_interface.get_link_by_node_id(node_id)
+        content = getContentFromSite(link)
+        return jsonify({"content": content})
 
     @app.errorhandler(HTTPException)
     def handle_exception(e):
