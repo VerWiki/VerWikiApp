@@ -10,26 +10,10 @@ class Logger(metaclass=Singleton):
     Main class for logging functionalities.
     """
 
-    def __call__(self, file_name="session", level=0):
-        if (
-            not os.getpid() in self.file_handles.keys()
-            and not os.getppid() in self.file_handles.keys()
-        ):
-            fileHandler = FileHandler(file_name)
-            writer = fileHandler.getWriteHandle()
-            self.file_handles[os.getpid()] = writer
-        elif os.getpid() in self.file_handles.keys():
-            return
-        else:
-            self.file_handles[os.getpid()] = self.file_handles[os.getppid()]
-
     def __init__(self, file_name="session", level=0):
         self.level = level
         fileHandler = FileHandler(file_name)
-        writer = fileHandler.getWriteHandle()
-
-        self.file_handles = {}
-        self.file_handles[os.getpid()] = writer
+        self.writer = fileHandler.getWriteHandle()
 
     def debug(self, message):
         """Write a debug message to the file using the writer
@@ -40,7 +24,7 @@ class Logger(metaclass=Singleton):
         if self.level > 0:
             return
         frameinfo = getframeinfo(stack()[1][0])
-        self.file_handles[os.getpid()].write(
+        self.writer.write(
             "DEBUG:   "
             + frameinfo.filename
             + ":"
@@ -59,7 +43,7 @@ class Logger(metaclass=Singleton):
         if self.level > 1:
             return
         frameinfo = getframeinfo(stack()[1][0])
-        self.file_handles[os.getpid()].write(
+        self.writer.write(
             "WARNING: "
             + frameinfo.filename
             + ":"
@@ -76,7 +60,7 @@ class Logger(metaclass=Singleton):
         message (str) : The message you want to output.
         """
         frameinfo = getframeinfo(stack()[1][0])
-        self.file_handles[os.getpid()].write(
+        self.writer.write(
             "ERROR:   "
             + frameinfo.filename
             + ":"
