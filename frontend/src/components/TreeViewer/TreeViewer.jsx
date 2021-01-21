@@ -1,11 +1,75 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./TreeViewer.module.css";
-import { useParams } from "react-router-dom";
 import ReactJson from "react-json-view";
+import { Tree } from "../Tree/Tree";
+
+const MAX_DEPTH = 2;
+
+/**
+ * Given the original data which has an unbounded number
+ * of levels, this function trims the total depth of the tree
+ * to the given depth.
+ */
+function extractObjectWithMaxDepth(obj, depth = MAX_DEPTH) {
+  if (depth < 0) {
+    return null;
+  }
+
+  // Recursively add children of the object if they do not
+  // exceed the max depth
+  return {
+    name: obj.name,
+    children: obj.children
+      ? obj.children
+          .map((node) => extractObjectWithMaxDepth(node, depth - 1))
+          .filter((node) => node !== null)
+      : [],
+  };
+}
+
+/**
+ * Creates an index so that we can get the reference to
+ * a particular node given its name, in constant time.
+ *
+ * Note: The name of the node is a key within the particular tree
+ *
+ */
+function createNameToNodeMapping(currNode, mapping = {}) {
+  mapping[currNode.name] = currNode;
+  if (currNode.children) {
+    currNode.children.forEach((child) =>
+      createNameToNodeMapping(child, mapping)
+    );
+  }
+  return mapping;
+}
 
 export const TreeViewer = ({ data }) => {
-  const { courseId } = useParams();
+  const [trimmedData, setTrimmedData] = useState({});
+  const [nameToNodeMapping, setNameToNodeMapping] = useState({});
 
+  /**
+   * This function handles the event where a user clicks a node on the tree
+   * and displays the subtree from that point onwards up to MAX_DEPTH.
+   */
+  const nodeClickHandler = (event, clickedNode) => {
+    const subTree = nameToNodeMapping[clickedNode.data.name];
+
+    // Trim the subtree to MAX_DEPTH and set it as the new tree
+    setTrimmedData(extractObjectWithMaxDepth(subTree));
+  };
+
+  /**
+   * When this component mounts, create the node name -> node pointer mapping
+   * from the data and also trim the data so we only render a limited number
+   * of levels of the tree.
+   */
+  useEffect(() => {
+    setNameToNodeMapping(createNameToNodeMapping(data));
+    setTrimmedData(extractObjectWithMaxDepth(data));
+  }, [data]);
+
+  // While the data is still not loaded, render a loading message
   let element = null;
   if (!data || Object.keys(data).length === 0) {
     element = <h2>"Loading..."</h2>;
@@ -26,10 +90,7 @@ export const TreeViewer = ({ data }) => {
 
   return (
     <div className={styles.nav}>
-      Display the tree for course id: {courseId} here:
-      <br />
-      <br />
-      <br />
+      <Tree jsonData={trimmedData} onNodeClick={nodeClickHandler}></Tree>
       {element}
     </div>
   );
