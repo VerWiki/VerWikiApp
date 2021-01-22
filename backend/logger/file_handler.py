@@ -16,9 +16,9 @@ class FileHandler:
         self.full_name = file_name
         self.file_handle = None
 
-        atexit.register(self.closeFile)
+        atexit.register(self.close_file)
 
-    def createName(self):
+    def create_name(self):
         """Create and return the name of the file.
         The format is filename-uid-date
 
@@ -30,7 +30,7 @@ class FileHandler:
         self.full_name = self.file_name + "-" + uid + "-" + date + ".log"
         return self.full_name
 
-    def getFileLocation(self):
+    def get_file_location(self):
         """Return the location in which the file should be
         stored. Print this to stdout as well. Return value
         is platform-dependent
@@ -45,36 +45,45 @@ class FileHandler:
         else:
             return curr_dir + "/../logs/"
 
-    def openNewFileWrite(self):
+    def open_new_file_write(self):
         """Open a new file to write to. Write the file to the
-        location from getFileLocation and use the name created
-        by createName. Set the class's file_handle as the new
+        location from get_file_location and use the name created
+        by create_name. Set the class's file_handle as the new
         handle opened to write
         """
 
-        if os.path.exists(self.getFileLocation()):
-            self.file_handle = open(self.getFullPath(), "a")
+        if os.path.exists(self.get_file_location()):
+            try:
+                self.file_handle = open(self.get_full_path(), "a")
+            except IOError as e:
+                print(e)
         else:
-            os.mkdir(self.getFileLocation())
-            self.file_handle = open(self.getFullPath(), "a")
+            os.mkdir(self.get_file_location())
+            try:
+                self.file_handle = open(self.get_full_path(), "a")
+            except IOError as e:
+                print(e)
 
-    def getWriteHandle(self):
+    def get_write_handle(self):
         """Get the handle of the class for writing to the file
 
         Returns:
         File Handle (object) : File write handler
         """
         if self.file_handle == None:
-            self.openNewFileWrite()
+            self.open_new_file_write()
         return self.file_handle
 
-    def getFullPath(self):
+    def get_full_path(self):
         """Get the full path of where the log is stored"""
         if self.full_name != self.file_name:  # File name has already been created
-            return self.getFileLocation() + self.full_name
-        self.full_name = self.createName()  # Name hasn't been created. Do it now.
-        return self.getFileLocation() + self.full_name
+            return self.get_file_location() + self.full_name
+        self.full_name = self.create_name()  # Name hasn't been created. Do it now.
+        return self.get_file_location() + self.full_name
 
-    def closeFile(self):
+    def close_file(self):
         """Close the file handle"""
-        self.file_handle.close()
+        try:
+            self.file_handle.close()
+        except IOError as e:
+            print(e)

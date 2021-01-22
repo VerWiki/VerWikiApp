@@ -1,9 +1,16 @@
-from fileHandler import FileHandler
+from file_handler import FileHandler
 from singleton import Singleton
 
 from datetime import datetime
+import enum
 import os
 from inspect import stack, getframeinfo
+
+
+class Level(enum.Enum):
+    debug = 0
+    warning = 1
+    error = 2
 
 
 class Logger(metaclass=Singleton):
@@ -13,8 +20,8 @@ class Logger(metaclass=Singleton):
 
     def __init__(self, file_name="session", level=0):
         self.level = level
-        fileHandler = FileHandler(file_name)
-        self.writer = fileHandler.getWriteHandle()
+        file_handler = FileHandler(file_name)
+        self.writer = file_handler.get_write_handle()
 
     def debug(self, message):
         """Write a debug message to the file using the writer
@@ -26,16 +33,7 @@ class Logger(metaclass=Singleton):
             return
         frameinfo = getframeinfo(stack()[1][0])
         self.writer.write(
-            "("
-            + str(datetime.now().time())
-            + ") "
-            + "DEBUG:   "
-            + frameinfo.filename
-            + ":"
-            + str(frameinfo.lineno)
-            + " : "
-            + message
-            + "\n"
+            f"({str(datetime.now().time())}) DEBUG:   {frameinfo.filename}:{str(frameinfo.lineno)} : {message}\n"
         )
 
     def warn(self, message):
@@ -48,16 +46,7 @@ class Logger(metaclass=Singleton):
             return
         frameinfo = getframeinfo(stack()[1][0])
         self.writer.write(
-            "("
-            + str(datetime.now().time())
-            + ") "
-            + "WARNING: "
-            + frameinfo.filename
-            + ":"
-            + str(frameinfo.lineno)
-            + " : "
-            + message
-            + "\n"
+            f"({str(datetime.now().time())}) WARNING: {frameinfo.filename}:{str(frameinfo.lineno)} : {message}\n"
         )
 
     def error(self, message):
@@ -68,19 +57,10 @@ class Logger(metaclass=Singleton):
         """
         frameinfo = getframeinfo(stack()[1][0])
         self.writer.write(
-            "("
-            + str(datetime.now().time())
-            + ") "
-            + "ERROR:   "
-            + frameinfo.filename
-            + ":"
-            + str(frameinfo.lineno)
-            + " : "
-            + message
-            + "\n"
+            f"({str(datetime.now().time())}) ERROR:   {frameinfo.filename}:{str(frameinfo.lineno)} : {message}\n"
         )
 
-    def setLevel(self, level):
+    def set_level(self, level):
         """Set the level of the logger
 
         Parameters:
