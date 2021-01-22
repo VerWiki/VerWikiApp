@@ -1,6 +1,7 @@
 from fileHandler import FileHandler
 from singleton import Singleton
 
+from datetime import datetime
 import os
 from inspect import stack, getframeinfo
 
@@ -25,7 +26,10 @@ class Logger(metaclass=Singleton):
             return
         frameinfo = getframeinfo(stack()[1][0])
         self.writer.write(
-            "DEBUG:   "
+            "("
+            + str(datetime.now().time())
+            + ") "
+            + "DEBUG:   "
             + frameinfo.filename
             + ":"
             + str(frameinfo.lineno)
@@ -44,7 +48,10 @@ class Logger(metaclass=Singleton):
             return
         frameinfo = getframeinfo(stack()[1][0])
         self.writer.write(
-            "WARNING: "
+            "("
+            + str(datetime.now().time())
+            + ") "
+            + "WARNING: "
             + frameinfo.filename
             + ":"
             + str(frameinfo.lineno)
@@ -61,7 +68,10 @@ class Logger(metaclass=Singleton):
         """
         frameinfo = getframeinfo(stack()[1][0])
         self.writer.write(
-            "ERROR:   "
+            "("
+            + str(datetime.now().time())
+            + ") "
+            + "ERROR:   "
             + frameinfo.filename
             + ":"
             + str(frameinfo.lineno)
