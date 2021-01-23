@@ -4,6 +4,11 @@ VERWIKI_DB_NAME = "verwiki"
 TREES_TABLE_NAME = "radialTrees"
 LINKS_TABLE_NAME = "nodeLinks"
 
+"""
+Frontend <-> localhost:3003 (Backend) <-> localhost:27017 (MongoDB)
+(Fetch) (Value comes back as a promise) <----> [Executes logic] (returns value) <---(MongoClient (in db_interface.py))---> MongoDB(localhost:27017)
+"""
+
 
 def get_tree_by_id(id: int) -> object:
     """
