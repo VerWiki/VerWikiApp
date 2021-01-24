@@ -3,6 +3,7 @@ import styles from "./Tree.module.css";
 import { select, hierarchy, tree, linkHorizontal } from "d3";
 import ResizeObserver from "resize-observer-polyfill";
 import "./Tree.module.css";
+import { usePrevious } from "../../utils/utils";
 
 /**
  * This function takes node-text grouping, and inter-node link grouping and performs the animation
@@ -114,19 +115,19 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick, onRightClick) {
   return [nodeGroupEnter, enteringAndUpdatingLinks];
 }
 
-/**
- * Tracks the previous value of the given item. Returns
- * the previous value
- * @param value : The object to be tracked
- */
+// /**
+//  * Tracks the previous value of the given item. Returns
+//  * the previous value
+//  * @param value : The object to be tracked
+//  */
 
-function usePrevious(value) {
-  const ref = useRef();
-  useEffect(() => {
-    ref.current = value;
-  });
-  return ref.current;
-}
+// function usePrevious(value) {
+//   const ref = useRef();
+//   useEffect(() => {
+//     ref.current = value;
+//   });
+//   return ref.current;
+// }
 
 export function Tree({ jsonData, onNodeClick, onRightClick }) {
   const svgRef = useRef();
