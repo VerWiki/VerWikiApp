@@ -62,21 +62,32 @@ export const TreeViewer = ({ data, treeID }) => {
     setTrimmedData(extractObjectWithMaxDepth(subTree));
   };
 
+  const toggleInfoBoxVisibiliy = () => {
+    const articleDiv = document.getElementsByClassName("article")[0];
+    const treeDiv = document.getElementById("course-tree");
+
+    if (articleDiv.classList.contains("span-1-of-4")) {
+      // Already displaying
+      articleDiv.classList.remove("col");
+      articleDiv.classList.remove("span-1-of-4");
+      treeDiv.classList.remove("col");
+      treeDiv.classList.remove("span-3-of-4");
+    } else {
+      //Not yet displaying
+      articleDiv.classList.add("col");
+      articleDiv.classList.add("span-1-of-4");
+      treeDiv.classList.add("col");
+      treeDiv.classList.add("span-3-of-4");
+    }
+  };
+
   /**
    * The function to handle right clicks - opens up a window to show
    * summarized information for a given wiki link.
    */
   const rightClickHandler = (event, clickedNode) => {
     event.preventDefault();
-    const articleDiv = document.getElementsByClassName("article")[0];
-    //articleDiv.style.removeProperty("display");
-    articleDiv.classList.add("col");
-    articleDiv.classList.add("span-1-of-4");
-    const treeDiv = document.getElementById("course-tree");
-    console.log("The treeDiv is: ", treeDiv);
-    treeDiv.classList.add("col");
-    treeDiv.classList.add("span-3-of-4");
-    // treeDiv.style.width = "60%";
+    toggleInfoBoxVisibiliy();
     const nodeInfoUrl = replaceSpaceCharacters(
       `http://localhost:3003/get-node-info/${clickedNode.data.name}-${treeID}`
     );
@@ -89,11 +100,14 @@ export const TreeViewer = ({ data, treeID }) => {
         return res.json();
       })
       .then((res) => {
-        console.log(res);
         setNodeInfoContent(res);
       })
       .catch((err) => {
-        console.log("An error occurred; no link found for this node");
+        console.log("An error occurred: ", err);
+        const defaultInfo = {
+          content: "No additional information available for this topic",
+        };
+        setNodeInfoContent(defaultInfo);
       });
   };
 
