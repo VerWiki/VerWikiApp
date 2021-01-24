@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import styles from "./TreeViewer.module.css";
 import ReactJson from "react-json-view";
 import { Tree } from "../Tree/Tree";
+import { InfoWindow } from "../../components/InfoWindow/InfoWindow";
 
 const MAX_DEPTH = 2;
 
@@ -47,6 +48,7 @@ function createNameToNodeMapping(currNode, mapping = {}) {
 export const TreeViewer = ({ data, treeID }) => {
   const [trimmedData, setTrimmedData] = useState({});
   const [nameToNodeMapping, setNameToNodeMapping] = useState({});
+  const [nodeInfoContent, setNodeInfoContent] = useState("");
 
   /**
    * This function handles the event where a user clicks a node on the tree
@@ -65,6 +67,10 @@ export const TreeViewer = ({ data, treeID }) => {
    */
   const rightClickHandler = (event, clickedNode) => {
     event.preventDefault();
+    const articleDiv = document.getElementsByClassName("article")[0];
+    articleDiv.style.removeProperty("display");
+    const treeDiv = document.getElementsByClassName("tree")[0];
+    treeDiv.style.width = "60%";
     const nodeInfoUrl = replaceSpaceCharacters(
       `http://localhost:3003/get-node-info/${clickedNode.data.name}-${treeID}`
     );
@@ -72,19 +78,8 @@ export const TreeViewer = ({ data, treeID }) => {
     fetch(nodeInfoUrl)
       .then((res) => res.json())
       .then((res) => {
-        let content = res["content"];
-        console.log(content);
-        return content;
+        setNodeInfoContent(res);
       });
-    /**
-     * TODO: STRATEGY FOR THE NEXT STEPS
-     * 1. create URL of the form {tree_id/node_name} [DONE]
-     * 2. Pass URL through a function to replace all spaces with underscores/hyphens [DONE]
-     * 3. Create a route in the backend - gets the link stored in the db [DONE]
-     * 4. Create a method that parses the link's text [DONE]
-     * 5. Use a NN to summarize it. [DONE]
-     * 6. display that summary in the information window
-     */
   };
 
   /**
@@ -134,11 +129,20 @@ export const TreeViewer = ({ data, treeID }) => {
 
   return (
     <div className={styles.nav}>
-      <Tree
-        jsonData={trimmedData}
-        onNodeClick={nodeClickHandler}
-        onRightClick={rightClickHandler}
-      ></Tree>
+      <div className="rowC">
+        <div className="tree">
+          <Tree
+            jsonData={trimmedData}
+            onNodeClick={nodeClickHandler}
+            onRightClick={rightClickHandler}
+          ></Tree>
+        </div>
+        <div className="article">
+          <p>
+            <InfoWindow info={nodeInfoContent.content} />
+          </p>
+        </div>
+      </div>
     </div>
   );
 };

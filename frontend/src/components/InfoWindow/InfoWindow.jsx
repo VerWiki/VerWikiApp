@@ -8,12 +8,11 @@
 
 import React from "react";
 
-export default class InfoWindow extends React.Component {
-  render() {
-    return (
-      <div id="info-container">
-        <h3>Information Here!</h3>
-      </div>
-    );
-  }
-}
+export const InfoWindow = ({ info }) => {
+  return (
+    <div>
+      <h2>Wiki Information</h2>
+      <p>{info}</p>
+    </div>
+  );
+};

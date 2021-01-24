@@ -7,14 +7,15 @@
   background-color: blueviolet;
 }
 .tree {
-  width: 70%;
+  width: 96%;
   background-color: cadetblue;
   margin: 2%;
 }
 .article {
+  display: none;
   margin: 2%;
   background-color: bisque;
-  width: 30%;
+  width: 20%;
   height: 80%;
   overflow-y: scroll;
 }
