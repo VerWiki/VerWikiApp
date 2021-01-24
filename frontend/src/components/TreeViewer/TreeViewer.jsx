@@ -62,12 +62,25 @@ export const TreeViewer = ({ data, treeID }) => {
     setTrimmedData(extractObjectWithMaxDepth(subTree));
   };
 
-  const toggleInfoBoxVisibility = () => {
+  /**
+   * toggleInfoBoxVisibility determines whether to hide or show the text
+   * box to the right of the screen.
+   * @param clickedNodeName: The name of the node that was just clicked
+   * TODO: Change the param to an ID when we integrate that feature
+   */
+  const toggleInfoBoxVisibility = (clickedNodeName) => {
+    console.log(
+      "The previously clicked node is",
+      previouslyClickedNode.current
+    );
     const articleDiv = document.getElementsByClassName("article")[0];
     const treeDiv = document.getElementById("course-tree");
 
-    if (articleDiv.classList.contains("span-1-of-4")) {
-      // Already displaying
+    if (
+      articleDiv.classList.contains("span-1-of-4") &&
+      previouslyClickedNode.current === clickedNodeName
+    ) {
+      // Already displaying and the user clicked on the same node again
       articleDiv.classList.remove("col");
       articleDiv.classList.remove("span-1-of-4");
       treeDiv.classList.remove("col");
@@ -87,10 +100,8 @@ export const TreeViewer = ({ data, treeID }) => {
    */
   const rightClickHandler = (event, clickedNode) => {
     event.preventDefault();
-    //console.log("The previously clicked node is", previouslyClickedNode.current);
-    toggleInfoBoxVisibility();
+    toggleInfoBoxVisibility(clickedNode.data.name);
     previouslyClickedNode.current = clickedNode.data.name;
-    //console.log("Now, the previously clicked node is", previouslyClickedNode.current);
     const nodeInfoUrl = replaceSpaceCharacters(
       `http://localhost:3003/get-node-info/${clickedNode.data.name}-${treeID}`
     );
@@ -108,7 +119,9 @@ export const TreeViewer = ({ data, treeID }) => {
       .catch((err) => {
         console.log("An error occurred: ", err);
         const defaultInfo = {
-          content: "No additional information available for this topic",
+          content: "No additional information available for the topic ".concat(
+            clickedNode.data.name
+          ),
         };
         setNodeInfoContent(defaultInfo);
       });
