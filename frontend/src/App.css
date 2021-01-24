@@ -1,3 +1,20 @@
 .App {
   text-align: center;
 }
+.rowC {
+  display:flex;
+  flex-direction:row;
+  background-color: blueviolet;
+}
+.tree {
+  width: 70%;
+  background-color: cadetblue;
+  margin: 2%;
+}
+.article {
+  margin: 2%;
+  background-color: bisque;
+  width: 30%;
+  height: 80%;
+  overflow-y: scroll;
+}

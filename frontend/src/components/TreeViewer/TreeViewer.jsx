@@ -139,7 +139,6 @@ export const TreeViewer = ({ data, treeID }) => {
         onNodeClick={nodeClickHandler}
         onRightClick={rightClickHandler}
       ></Tree>
-      {element}
     </div>
   );
 };

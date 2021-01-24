@@ -42,7 +42,12 @@ export const CoursePage = () => {
     <>
       <Navigation />
       <h1 className={styles.heading}>{courseData[courseId].name}</h1>
-      {Viewer}
+      <div className="rowC">
+        <div className="tree">{Viewer}</div>
+        <div className="article">
+          <p>Article here</p>
+        </div>
+      </div>
     </>
   );
 };
