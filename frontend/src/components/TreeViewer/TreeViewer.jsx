@@ -145,7 +145,7 @@ export const TreeViewer = ({ data, treeID }) => {
   return (
     <div className={styles.nav}>
       <div className="row treeViewerContainer">
-        <div className="col span-3-of-4 tree" id="course-tree">
+        <div className="tree" id="course-tree">
           <Tree
             jsonData={trimmedData}
             onNodeClick={nodeClickHandler}
