@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import styles from "./TreeViewer.module.css";
-//import ReactJson from "react-json-view";
 import { Tree } from "../Tree/Tree";
 import { InfoWindow } from "../../components/InfoWindow/InfoWindow";
 
@@ -69,10 +68,6 @@ export const TreeViewer = ({ data, treeID }) => {
    * TODO: Change the param to an ID when we integrate that feature
    */
   const toggleInfoBoxVisibility = (clickedNodeName) => {
-    console.log(
-      "The previously clicked node is",
-      previouslyClickedNode.current
-    );
     const articleDiv = document.getElementsByClassName("article")[0];
     const treeDiv = document.getElementById("course-tree");
 
@@ -91,6 +86,11 @@ export const TreeViewer = ({ data, treeID }) => {
       articleDiv.classList.add("span-1-of-4");
       treeDiv.classList.add("col");
       treeDiv.classList.add("span-3-of-4");
+
+      //Set the height of the textbox equal to the height of the
+      //treeDiv
+      const new_str = treeDiv.offsetHeight.toString().concat("px");
+      articleDiv.style.height = new_str;
     }
   };
 
