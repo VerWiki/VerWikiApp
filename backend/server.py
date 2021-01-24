@@ -52,7 +52,12 @@ def configure_routes(app):
             content = soup.find_all(["h1", "h2", "p"])
             return "\n".join([c.text for c in content])
 
-        link = db_interface.get_link_by_node_id(node_id)
+        try:
+            link = db_interface.get_link_by_node_id(node_id)
+        except KeyError as e:
+            nf = NotFound()
+            nf.description = str(e)
+            raise nf
         content = _get_content_from_site(link)
         return jsonify({"content": content})
 

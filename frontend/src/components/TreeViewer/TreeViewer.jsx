@@ -3,6 +3,7 @@ import styles from "./TreeViewer.module.css";
 import ReactJson from "react-json-view";
 import { Tree } from "../Tree/Tree";
 import { InfoWindow } from "../../components/InfoWindow/InfoWindow";
+import { tree } from "d3";
 
 const MAX_DEPTH = 2;
 
@@ -68,17 +69,31 @@ export const TreeViewer = ({ data, treeID }) => {
   const rightClickHandler = (event, clickedNode) => {
     event.preventDefault();
     const articleDiv = document.getElementsByClassName("article")[0];
-    articleDiv.style.removeProperty("display");
-    const treeDiv = document.getElementsByClassName("tree")[0];
-    treeDiv.style.width = "60%";
+    //articleDiv.style.removeProperty("display");
+    articleDiv.classList.add("col");
+    articleDiv.classList.add("span-1-of-4");
+    const treeDiv = document.getElementById("course-tree");
+    console.log("The treeDiv is: ", treeDiv);
+    treeDiv.classList.add("col");
+    treeDiv.classList.add("span-3-of-4");
+    // treeDiv.style.width = "60%";
     const nodeInfoUrl = replaceSpaceCharacters(
       `http://localhost:3003/get-node-info/${clickedNode.data.name}-${treeID}`
     );
     console.log(nodeInfoUrl);
     fetch(nodeInfoUrl)
-      .then((res) => res.json())
       .then((res) => {
+        if (res.status !== 200) {
+          throw { "Error occurred": res.status };
+        }
+        return res.json();
+      })
+      .then((res) => {
+        console.log(res);
         setNodeInfoContent(res);
+      })
+      .catch((err) => {
+        console.log("An error occurred; no link found for this node");
       });
   };
 
@@ -129,8 +144,8 @@ export const TreeViewer = ({ data, treeID }) => {
 
   return (
     <div className={styles.nav}>
-      <div className="rowC">
-        <div className="tree">
+      <div className="row treeViewerContainer">
+        <div className="col span-3-of-4 tree" id="course-tree">
           <Tree
             jsonData={trimmedData}
             onNodeClick={nodeClickHandler}

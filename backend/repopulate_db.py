@@ -387,3 +387,10 @@ if __name__ == "__main__":
     # Insert another tree
     result = radialTrees.insert_one(tree2)
     print(result.inserted_id)
+    # Links for testing purposes
+    link2 = {
+        "id": "Root-2",
+        "link": "https://cwsl.ca/wiki/doku.php?id=philosophy_of_wisdom_socrates_and_plato#psychotechnologies_metacognition_and_second_order_thinkingimplications_for_the_machinery_of_meaning-making",
+    }
+    result = nodeLinks.insert_one(link2)
+    print(result.inserted_id)

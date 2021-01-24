@@ -1,5 +1,6 @@
 import React from "react";
 import "./App.css";
+import "./grid.css";
 import { Switch, Route, BrowserRouter as Router } from "react-router-dom";
 import { ExplorePage } from "./pages/ExplorePage/ExplorePage";
 import { CoursePage } from "./pages/CoursePage/CoursePage";
