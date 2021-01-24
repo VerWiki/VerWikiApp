@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import styles from "./TreeViewer.module.css";
-import ReactJson from "react-json-view";
+//import ReactJson from "react-json-view";
 import { Tree } from "../Tree/Tree";
 import { InfoWindow } from "../../components/InfoWindow/InfoWindow";
-import { tree } from "d3";
 
 const MAX_DEPTH = 2;
 
@@ -50,6 +49,7 @@ export const TreeViewer = ({ data, treeID }) => {
   const [trimmedData, setTrimmedData] = useState({});
   const [nameToNodeMapping, setNameToNodeMapping] = useState({});
   const [nodeInfoContent, setNodeInfoContent] = useState("");
+  const previouslyClickedNode = useRef("");
 
   /**
    * This function handles the event where a user clicks a node on the tree
@@ -62,7 +62,7 @@ export const TreeViewer = ({ data, treeID }) => {
     setTrimmedData(extractObjectWithMaxDepth(subTree));
   };
 
-  const toggleInfoBoxVisibiliy = () => {
+  const toggleInfoBoxVisibility = () => {
     const articleDiv = document.getElementsByClassName("article")[0];
     const treeDiv = document.getElementById("course-tree");
 
@@ -87,7 +87,10 @@ export const TreeViewer = ({ data, treeID }) => {
    */
   const rightClickHandler = (event, clickedNode) => {
     event.preventDefault();
-    toggleInfoBoxVisibiliy();
+    //console.log("The previously clicked node is", previouslyClickedNode.current);
+    toggleInfoBoxVisibility();
+    previouslyClickedNode.current = clickedNode.data.name;
+    //console.log("Now, the previously clicked node is", previouslyClickedNode.current);
     const nodeInfoUrl = replaceSpaceCharacters(
       `http://localhost:3003/get-node-info/${clickedNode.data.name}-${treeID}`
     );
@@ -95,7 +98,7 @@ export const TreeViewer = ({ data, treeID }) => {
     fetch(nodeInfoUrl)
       .then((res) => {
         if (res.status !== 200) {
-          throw { "Error occurred": res.status };
+          throw Error(res.status);
         }
         return res.json();
       })
@@ -138,23 +141,23 @@ export const TreeViewer = ({ data, treeID }) => {
   }, [data]);
 
   // While the data is still not loaded, render a loading message
-  let element = null;
-  if (!data || Object.keys(data).length === 0) {
-    element = <h2>"Loading..."</h2>;
-  } else {
-    element = (
-      <ReactJson
-        name={null}
-        src={data}
-        theme="ocean"
-        style={{ padding: 10, textAlign: "left" }}
-        collapsed={2}
-        displayObjectSize={false}
-        displayDataTypes={false}
-        enableClipboard={false}
-      />
-    );
-  }
+  // let element = null;
+  // if (!data || Object.keys(data).length === 0) {
+  //   element = <h2>"Loading..."</h2>;
+  // } else {
+  //   element = (
+  //     <ReactJson
+  //       name={null}
+  //       src={data}
+  //       theme="ocean"
+  //       style={{ padding: 10, textAlign: "left" }}
+  //       collapsed={2}
+  //       displayObjectSize={false}
+  //       displayDataTypes={false}
+  //       enableClipboard={false}
+  //     />
+  //   );
+  // }
 
   return (
     <div className={styles.nav}>

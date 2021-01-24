@@ -115,20 +115,6 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick, onRightClick) {
   return [nodeGroupEnter, enteringAndUpdatingLinks];
 }
 
-// /**
-//  * Tracks the previous value of the given item. Returns
-//  * the previous value
-//  * @param value : The object to be tracked
-//  */
-
-// function usePrevious(value) {
-//   const ref = useRef();
-//   useEffect(() => {
-//     ref.current = value;
-//   });
-//   return ref.current;
-// }
-
 export function Tree({ jsonData, onNodeClick, onRightClick }) {
   const svgRef = useRef();
   const wrapperRef = useRef();
