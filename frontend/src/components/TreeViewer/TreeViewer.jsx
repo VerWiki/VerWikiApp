@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import styles from "./TreeViewer.module.css";
 import { Tree } from "../Tree/Tree";
 import { InfoWindow } from "../../components/InfoWindow/InfoWindow";
+import { replaceSpaceCharacters } from "../../utils/utils";
 
 const MAX_DEPTH = 2;
 
@@ -44,6 +45,39 @@ function createNameToNodeMapping(currNode, mapping = {}) {
   return mapping;
 }
 
+/**
+ * toggleInfoBoxVisibility determines whether to hide or show the text
+ * box to the right of the screen.
+ * @param clickedNodeName: The name of the node that was just clicked
+ * TODO: Change the param to an ID when we integrate that feature
+ */
+function toggleInfoBoxVisibility(clickedNodeName, previouslyClickedNodeName) {
+  const articleDiv = document.getElementsByClassName("article")[0];
+  const treeDiv = document.getElementById("course-tree");
+
+  if (
+    articleDiv.classList.contains("span-1-of-4") &&
+    previouslyClickedNodeName === clickedNodeName
+  ) {
+    // Already displaying and the user clicked on the same node again
+    articleDiv.classList.remove("col");
+    articleDiv.classList.remove("span-1-of-4");
+    treeDiv.classList.remove("col");
+    treeDiv.classList.remove("span-3-of-4");
+  } else {
+    //Not yet displaying
+    articleDiv.classList.add("col");
+    articleDiv.classList.add("span-1-of-4");
+    treeDiv.classList.add("col");
+    treeDiv.classList.add("span-3-of-4");
+
+    //Set the height of the textbox equal to the height of the
+    //treeDiv
+    const new_str = treeDiv.offsetHeight.toString().concat("px");
+    articleDiv.style.height = new_str;
+  }
+}
+
 export const TreeViewer = ({ data, treeID }) => {
   const [trimmedData, setTrimmedData] = useState({});
   const [nameToNodeMapping, setNameToNodeMapping] = useState({});
@@ -62,45 +96,15 @@ export const TreeViewer = ({ data, treeID }) => {
   };
 
   /**
-   * toggleInfoBoxVisibility determines whether to hide or show the text
-   * box to the right of the screen.
-   * @param clickedNodeName: The name of the node that was just clicked
-   * TODO: Change the param to an ID when we integrate that feature
-   */
-  const toggleInfoBoxVisibility = (clickedNodeName) => {
-    const articleDiv = document.getElementsByClassName("article")[0];
-    const treeDiv = document.getElementById("course-tree");
-
-    if (
-      articleDiv.classList.contains("span-1-of-4") &&
-      previouslyClickedNode.current === clickedNodeName
-    ) {
-      // Already displaying and the user clicked on the same node again
-      articleDiv.classList.remove("col");
-      articleDiv.classList.remove("span-1-of-4");
-      treeDiv.classList.remove("col");
-      treeDiv.classList.remove("span-3-of-4");
-    } else {
-      //Not yet displaying
-      articleDiv.classList.add("col");
-      articleDiv.classList.add("span-1-of-4");
-      treeDiv.classList.add("col");
-      treeDiv.classList.add("span-3-of-4");
-
-      //Set the height of the textbox equal to the height of the
-      //treeDiv
-      const new_str = treeDiv.offsetHeight.toString().concat("px");
-      articleDiv.style.height = new_str;
-    }
-  };
-
-  /**
    * The function to handle right clicks - opens up a window to show
    * summarized information for a given wiki link.
    */
   const rightClickHandler = (event, clickedNode) => {
     event.preventDefault();
-    toggleInfoBoxVisibility(clickedNode.data.name);
+    toggleInfoBoxVisibility(
+      clickedNode.data.name,
+      previouslyClickedNode.current
+    );
     previouslyClickedNode.current = clickedNode.data.name;
     const nodeInfoUrl = replaceSpaceCharacters(
       `http://localhost:3003/get-node-info/${clickedNode.data.name}-${treeID}`
@@ -128,22 +132,6 @@ export const TreeViewer = ({ data, treeID }) => {
   };
 
   /**
-   * Replaces the spaces in a given string with hyphens.
-   * @param {string} urlString The string to be converted from spaces to hyphens.
-   */
-  const replaceSpaceCharacters = (urlString) => {
-    let url = "";
-    for (let i = 0; i < urlString.length; i++) {
-      if (urlString[i] !== " ") {
-        url = url.concat(urlString[i]);
-      } else {
-        url = url.concat("-");
-      }
-    }
-    return url;
-  };
-
-  /**
    * When this component mounts, create the node name -> node pointer mapping
    * from the data and also trim the data so we only render a limited number
    * of levels of the tree.
@@ -152,25 +140,6 @@ export const TreeViewer = ({ data, treeID }) => {
     setNameToNodeMapping(createNameToNodeMapping(data));
     setTrimmedData(extractObjectWithMaxDepth(data));
   }, [data]);
-
-  // While the data is still not loaded, render a loading message
-  // let element = null;
-  // if (!data || Object.keys(data).length === 0) {
-  //   element = <h2>"Loading..."</h2>;
-  // } else {
-  //   element = (
-  //     <ReactJson
-  //       name={null}
-  //       src={data}
-  //       theme="ocean"
-  //       style={{ padding: 10, textAlign: "left" }}
-  //       collapsed={2}
-  //       displayObjectSize={false}
-  //       displayDataTypes={false}
-  //       enableClipboard={false}
-  //     />
-  //   );
-  // }
 
   return (
     <div className={styles.nav}>

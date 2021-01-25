@@ -26,7 +26,7 @@ def get_tree_by_id(id: int) -> object:
     return output["data"]
 
 
-def get_node_id_by_link(link: str):
+def get_node_id_by_link(link: str) -> str:
     """
     Gets the associated node ID when searching by link.
     """
@@ -39,13 +39,14 @@ def get_node_id_by_link(link: str):
     if not output:
         raise KeyError(f"No node found with link {link}")
     if "id" not in output:
+        # We should never get this; data should be validated before entering DB!
         raise TypeError(f"Malformed data in the database for link: {link}")
     return output["id"]
 
 
-def get_link_by_node_id(node_id: str):
+def get_link_by_node_id(node_id: str) -> str:
     """
-    Gets the associated wiki link, and returns it.
+    Gets the associated wiki link for the given node ID, and returns it.
     """
     try:
         client = validate_and_retrieve_client()

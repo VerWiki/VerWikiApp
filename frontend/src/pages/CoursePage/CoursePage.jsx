@@ -5,12 +5,6 @@ import { TreeViewer } from "../../components/TreeViewer/TreeViewer";
 import { useParams } from "react-router-dom";
 import { courseData } from "../../model/courseData";
 
-/**
- * 1. How to put links in each of the nodes
- * 2. How to display information on the screen
- * 3. Backend connectivity to facilitate this
- */
-
 export const CoursePage = () => {
   const { courseId } = useParams();
 

@@ -58,6 +58,10 @@ def configure_routes(app):
             nf = NotFound()
             nf.description = str(e)
             raise nf
+        except Exception as e:
+            internalSrvErr = InternalServerError()
+            internalSrvErr.description = str(e)
+            raise internalSrvErr
         content = _get_content_from_site(link)
         return jsonify({"content": content})
 

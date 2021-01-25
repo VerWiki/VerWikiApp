@@ -1,11 +1,6 @@
 .App {
   text-align: center;
 }
-/* .rowC {
-  display:flex;
-  flex-direction:row;
-  background-color: blueviolet;
-} */
 .tree {
   width: 96%;
   margin: 2%;
@@ -15,6 +10,4 @@
   margin: 2%;
   width: 96%;
   overflow-y: scroll;
-}
-.treeViewerContainer {
 }
