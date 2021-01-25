@@ -73,8 +73,8 @@ function toggleInfoBoxVisibility(clickedNodeName, previouslyClickedNodeName) {
 
     //Set the height of the textbox equal to the height of the
     //treeDiv
-    const new_str = treeDiv.offsetHeight.toString().concat("px");
-    articleDiv.style.height = new_str;
+    const treeHeightpx = treeDiv.offsetHeight.toString().concat("px");
+    articleDiv.style.height = treeHeightpx;
   }
 }
 
