@@ -1,5 +1,5 @@
 [run]
 omit =
-    ./repopulate_db.py
+    ./backend/repopulate_db.py
 [report]
     exclude_lines = if __name__ == "__main__"

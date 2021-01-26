@@ -45,13 +45,6 @@ def configure_routes(app):
         Gets the associated link from the database, gets the text associated
         with it, and summarizes it.
         """
-
-        def _get_content_from_site(url):
-            page = requests.get(url)
-            soup = BeautifulSoup(page.content, "html.parser")
-            content = soup.find_all(["h1", "h2", "p"])
-            return "\n".join([c.text for c in content])
-
         try:
             link = db_interface.get_link_by_node_id(node_id)
         except KeyError as e:
@@ -77,6 +70,13 @@ def configure_routes(app):
         )
         response.content_type = "application/json"
         return response
+
+
+def _get_content_from_site(url):
+    page = requests.get(url)
+    soup = BeautifulSoup(page.content, "html.parser")
+    content = soup.find_all(["h1", "h2", "p"])
+    return "\n".join([c.text for c in content])
 
 
 if __name__ == "__main__":

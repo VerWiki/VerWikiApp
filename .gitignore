@@ -29,3 +29,4 @@ yarn-error.log*
 */__pycache__
 backend-coverage.txt
 node_modules
+backend/tests/__pycache__
