@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import styles from "./Tree.module.css";
-import { select, hierarchy, tree, linkHorizontal } from "d3";
+import { select, hierarchy, tree, linkHorizontal, linkRadial } from "d3";
 import ResizeObserver from "resize-observer-polyfill";
 import "./Tree.module.css";
 
@@ -13,21 +13,21 @@ import "./Tree.module.css";
  */
 
 function animateTree(nodeGroupEnter, enteringAndUpdatingLinks) {
-  nodeGroupEnter
-    .attr("opacity", 0)
-    .transition()
-    .duration(500)
-    .delay((node) => node.depth * 300)
-    .attr("opacity", 1);
+  // nodeGroupEnter
+  //   .attr("opacity", 0)
+  //   .transition()
+  //   .duration(500)
+  //   .delay((node) => node.depth * 300)
+  //   .attr("opacity", 1);
 
-  enteringAndUpdatingLinks
-    .attr("stroke-dashoffset", function () {
-      return this.getTotalLength();
-    })
-    .transition()
-    .duration(500)
-    .delay((link) => link.source.depth * 500)
-    .attr("stroke-dashoffset", 0);
+  // enteringAndUpdatingLinks
+  //   .attr("stroke-dashoffset", function () {
+  //     return this.getTotalLength();
+  //   })
+  //   .transition()
+  //   .duration(500)
+  //   .delay((link) => link.source.depth * 500)
+  //   .attr("stroke-dashoffset", 0);
 }
 
 /**
@@ -51,12 +51,12 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick) {
 
   // Transform hierarchical data
   const root = hierarchy(jsonData);
-  const treeLayout = tree().size([height, width]);
+  const treeLayout = tree().size([500, 500]).separation((a, b) => (a.parent === b.parent ? 1 : 2) / a.depth);
 
   // Creates the links between nodes
-  const linkGenerator = linkHorizontal()
-    .x((link) => link.y + marginLeft)
-    .y((link) => link.x + marginTop);
+  const linkGenerator = linkRadial()
+    .angle(d => d.x)
+    .radius(d => d.y);
 
   // Enrich hierarchical data with coordinates
   treeLayout(root);
@@ -83,7 +83,13 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick) {
   nodeGroupEnter
     .append("circle")
     .merge(nodeGroup.select("circle"))
-    .attr("r", 4);
+    .attr("r", 4)
+    .attr("transform", d => `
+        rotate(${d.x * 180 / Math.PI - 90})
+        translate(${d.y},0)
+      `)
+      .attr("fill", d => d.children ? "#555" : "#999")
+      .attr("r", 2.5);
 
   // Add labels to the node group
   nodeGroupEnter
@@ -101,14 +107,21 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick) {
     .join("path")
     .attr("class", "link")
     .attr("d", linkGenerator)
-    .attr("stroke-dasharray", function () {
-      const length = this.getTotalLength();
-      return `${length} ${length}`;
-    })
+    // .attr("stroke-dasharray", function () {
+    //   const length = this.getTotalLength();
+    //   return `${length} ${length}`;
+    // })
     .attr("stroke", "black")
     .attr("fill", "none")
     .attr("opacity", 1);
   return [nodeGroupEnter, enteringAndUpdatingLinks];
+}
+
+function autoBox() {
+  document.body.appendChild(this);
+  const {x, y, width, height} = this.getBBox();
+  document.body.removeChild(this);
+  return [x, y, width, height];
 }
 
 /**
