@@ -8,12 +8,12 @@ import "./Tree.module.css";
  * This function takes node-text grouping, and inter-node link grouping and performs the animation
  * of the links between them.
  * @param nodeGroupEnter : A grouping of nodes and text boxes grouped together under the SVG tag
- * @param enteringAndUpdatingLinks : The inter-node links, represented as lines joining 
+ * @param enteringAndUpdatingLinks : The inter-node links, represented as lines joining
  * nodes together on the tree.
  */
 
-function animateTree(nodeGroupEnter, enteringAndUpdatingLinks) {
-  nodeGroupEnter
+function animateTree(nodeGroupEnterAndUpdate, enteringAndUpdatingLinks) {
+  nodeGroupEnterAndUpdate
     .attr("opacity", 0)
     .transition()
     .duration(500)
@@ -63,12 +63,12 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick) {
 
   // Create the node group, which will hold the nodes and labels
   const nodeGroup = svg.selectAll(".node-group").data(root.descendants());
-  // Append a `g` element, to group SVG shapes together. 
+  // Append a `g` element, to group SVG shapes together.
   // More info at https://stackoverflow.com/questions/17057809/d3-js-what-is-g-in-appendg-d3-js-code
-  const nodeGroupEnter = nodeGroup.enter().append("g"); 
+  const nodeGroupEnter = nodeGroup.enter().append("g");
+  const nodeGroupEnterAndUpdate = nodeGroupEnter.merge(nodeGroup);
 
-  nodeGroupEnter
-    .merge(nodeGroup)
+  nodeGroupEnterAndUpdate
     .attr("class", "node-group")
     .attr(
       "transform",
@@ -108,7 +108,7 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick) {
     .attr("stroke", "black")
     .attr("fill", "none")
     .attr("opacity", 1);
-  return [nodeGroupEnter, enteringAndUpdatingLinks];
+  return [nodeGroupEnterAndUpdate, enteringAndUpdatingLinks];
 }
 
 /**
@@ -159,14 +159,14 @@ export function Tree({ jsonData, onNodeClick }) {
    * animates the tree links only when the data changes.
    */
   useEffect(() => {
-    const [nodeGroupEnter, enteringAndUpdatingLinks] = renderTree(
+    const [nodeGroupEnterAndUpdate, enteringAndUpdatingLinks] = renderTree(
       dimensions,
       jsonData,
       svgRef,
       onNodeClick
     );
     if (jsonData !== previouslyRenderedData) {
-      animateTree(nodeGroupEnter, enteringAndUpdatingLinks);
+      animateTree(nodeGroupEnterAndUpdate, enteringAndUpdatingLinks);
     }
   }, [jsonData, dimensions, previouslyRenderedData, onNodeClick]);
 
