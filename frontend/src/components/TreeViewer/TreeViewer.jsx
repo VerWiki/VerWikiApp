@@ -90,6 +90,25 @@ export const TreeViewer = ({ data }) => {
   };
 
   /**
+   * This function handles the event where a user clicks a name in the
+   * NodePathHistory component.
+   */
+  const nodeNameClickHandler = (event, nodeName) => {
+    event.preventDefault();
+    const subTree = nameToNodeMapping[nodeName];
+
+    // Trim the subtree to MAX_DEPTH and set it as the new tree
+    setTrimmedData(extractObjectWithMaxDepth(subTree));
+
+    // Keep popping from currentPath until we find nodeName
+    const currentPathCopy = [...currentPath];
+    while (currentPathCopy[currentPathCopy.length - 1] !== nodeName) {
+      currentPathCopy.pop();
+    }
+    setCurrentPath(currentPathCopy);
+  };
+
+  /**
    * When this component mounts, create the node name -> node pointer mapping
    * from the data, trim the data so we only render a limited number
    * of levels of the tree, and set current path to the root.
@@ -121,7 +140,10 @@ export const TreeViewer = ({ data }) => {
 
   return (
     <div className={styles.nav}>
-      <NodePathHistory path={currentPath} />
+      <NodePathHistory
+        path={currentPath}
+        onNodeNameClick={nodeNameClickHandler}
+      />
       <Tree jsonData={trimmedData} onNodeClick={nodeClickHandler}></Tree>
       {element}
     </div>
