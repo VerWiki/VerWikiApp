@@ -36,9 +36,6 @@ export const CoursePage = () => {
     <>
       <Navigation />
       <h1 className={styles.heading}>{courseData[courseId].name}</h1>
-      <button onClick={() => setTreeObj(treeObj.children[1])}>
-        Update data
-      </button>
       {Viewer}
     </>
   );
