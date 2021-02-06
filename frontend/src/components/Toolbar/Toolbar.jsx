@@ -9,7 +9,9 @@ export const Toolbar = ({ children }) => {
       borderLeft={0}
       borderRight={0}
       display="flex"
+      alignItems="center"
       p={1.5}
+      minHeight={40}
     >
       {children.map((child, index) => (
         <Box px={1} key={index}>

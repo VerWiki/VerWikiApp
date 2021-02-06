@@ -65,6 +65,20 @@ function pathToAncestor(currNode, ancestorNodeName, history = []) {
   return history;
 }
 
+/**
+ * Recursive helper for isValidPath() that traverses the
+ * path given by path
+ */
+function isValidPathHelper(path, index, json) {
+  if (index >= path.length) return true;
+
+  const itemIndex = json.children.findIndex((obj) => obj.name === path[index]);
+  if (itemIndex !== -1) {
+    return isValidPathHelper(path, index + 1, json.children[itemIndex]);
+  }
+  return false;
+}
+
 export const TreeViewer = ({ data }) => {
   const [trimmedData, setTrimmedData] = useState({});
   const [nameToNodeMapping, setNameToNodeMapping] = useState({});
@@ -160,6 +174,23 @@ export const TreeViewer = ({ data }) => {
   };
 
   /**
+   * This function is triggered when an edit is made
+   * to the current path.
+   */
+  const pathChangeHandler = (newPath) => {
+    setCurrentPath(newPath);
+    setForwardHistory([]);
+  };
+
+  /**
+   * Return true iif the path exists in the tree.
+   */
+  const isValidPath = (path) => {
+    if (path[0] !== data.name) return false;
+    return isValidPathHelper(path, 1, data);
+  };
+
+  /**
    * When this component mounts, create the node name -> node pointer mapping
    * from the data and set current path to the root.
    */
@@ -185,13 +216,6 @@ export const TreeViewer = ({ data }) => {
   return (
     <div className={styles.nav}>
       <Toolbar>
-        <Button variant="outlined" onClick={homeClickHandler}>
-          <HomeRounded
-            classes={{
-              root: styles.button,
-            }}
-          />
-        </Button>
         <ButtonGroup>
           <Button disabled={currentPath.length < 2} onClick={backClickHandler}>
             <NavigateBeforeRounded
@@ -211,9 +235,18 @@ export const TreeViewer = ({ data }) => {
             />
           </Button>
         </ButtonGroup>
+        <Button variant="outlined" onClick={homeClickHandler}>
+          <HomeRounded
+            classes={{
+              root: styles.button,
+            }}
+          />
+        </Button>
         <NodePathHistory
           path={currentPath}
           onNodeNameClick={nodeNameClickHandler}
+          onPathChange={pathChangeHandler}
+          isValidPath={isValidPath}
         />
       </Toolbar>
       <Tree jsonData={trimmedData} onNodeClick={nodeClickHandler}></Tree>
