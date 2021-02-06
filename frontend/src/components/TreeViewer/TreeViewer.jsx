@@ -1,8 +1,14 @@
 import React, { useState, useEffect } from "react";
 import styles from "./TreeViewer.module.css";
-import ReactJson from "react-json-view";
 import { Tree } from "../Tree/Tree";
 import { NodePathHistory } from "../NodePathHistory/NodePathHistory";
+import { Toolbar } from "../Toolbar/Toolbar";
+import { Button, ButtonGroup } from "@material-ui/core";
+import {
+  NavigateBeforeRounded,
+  NavigateNextRounded,
+  HomeRounded,
+} from "@material-ui/icons";
 import "fontsource-roboto";
 
 const MAX_DEPTH = 2;
@@ -63,18 +69,13 @@ export const TreeViewer = ({ data }) => {
   const [trimmedData, setTrimmedData] = useState({});
   const [nameToNodeMapping, setNameToNodeMapping] = useState({});
   const [currentPath, setCurrentPath] = useState([]);
+  const [forwardHistory, setForwardHistory] = useState([]);
 
   /**
    * This function handles the event where a user clicks a node on the tree
    * and displays the subtree from that point onwards up to MAX_DEPTH.
    */
   const nodeClickHandler = (event, clickedNode) => {
-    const nodeName = clickedNode.data.name;
-    const subTree = nameToNodeMapping[nodeName];
-
-    // Trim the subtree to MAX_DEPTH and set it as the new tree
-    setTrimmedData(extractObjectWithMaxDepth(subTree));
-
     /**
      * Traverse from the clicked node to the last node in the current path
      * to determine all the nodes in between, and append those to the
@@ -87,6 +88,7 @@ export const TreeViewer = ({ data }) => {
     path.reverse(); // We want ancestor -> clicked node
 
     setCurrentPath([...currentPath, ...path]);
+    setForwardHistory([]); // Reset forward history
   };
 
   /**
@@ -94,58 +96,127 @@ export const TreeViewer = ({ data }) => {
    * NodePathHistory component.
    */
   const nodeNameClickHandler = (event, nodeName) => {
-    event.preventDefault();
-    const subTree = nameToNodeMapping[nodeName];
-
-    // Trim the subtree to MAX_DEPTH and set it as the new tree
-    setTrimmedData(extractObjectWithMaxDepth(subTree));
-
     // Keep popping from currentPath until we find nodeName
     const currentPathCopy = [...currentPath];
+    const forwardHistoryCopy = [...forwardHistory];
     while (currentPathCopy[currentPathCopy.length - 1] !== nodeName) {
-      currentPathCopy.pop();
+      forwardHistoryCopy.push(currentPathCopy.pop());
     }
+
     setCurrentPath(currentPathCopy);
+    setForwardHistory(forwardHistoryCopy);
+  };
+
+  /**
+   * This function is triggered when the home button is clicked.
+   */
+  const homeClickHandler = () => {
+    if (currentPath.length < 2) return;
+
+    // Keep popping from currentPath up to the beginning
+    const currentPathCopy = [...currentPath];
+    const forwardHistoryCopy = [...forwardHistory];
+    while (currentPathCopy.length > 1) {
+      forwardHistoryCopy.push(currentPathCopy.pop());
+    }
+
+    setCurrentPath(currentPathCopy);
+    setForwardHistory(forwardHistoryCopy);
+  };
+
+  /**
+   * This function is triggered when the back button is clicked.
+   * It goes back one level in the tree.
+   */
+  const backClickHandler = () => {
+    /**
+     * We need at least 2 nodes in the path to go back
+     * If there is only 1, it would be the root, and
+     * we can't go back any further.
+     */
+    if (currentPath.length < 2) return;
+
+    // Pop the last node from the current path
+    const currentPathCopy = [...currentPath];
+    const poppedNodeName = currentPathCopy.pop();
+
+    setCurrentPath(currentPathCopy);
+    setForwardHistory([...forwardHistory, poppedNodeName]);
+  };
+
+  /**
+   * This function is triggered when the forward button is clicked.
+   * It goes forward one level in the tree, if that exists.
+   */
+  const forwardClickHandler = () => {
+    if (!forwardHistory.length) return;
+
+    // Pop the last node from forward history
+    const forwardHistoryCopy = [...forwardHistory];
+    const poppedNodeName = forwardHistoryCopy.pop();
+
+    setForwardHistory(forwardHistoryCopy);
+    setCurrentPath([...currentPath, poppedNodeName]);
   };
 
   /**
    * When this component mounts, create the node name -> node pointer mapping
-   * from the data, trim the data so we only render a limited number
-   * of levels of the tree, and set current path to the root.
+   * from the data and set current path to the root.
    */
   useEffect(() => {
     setNameToNodeMapping(createNameToNodeMapping(data));
-    setTrimmedData(extractObjectWithMaxDepth(data));
     setCurrentPath([data.name]);
   }, [data]);
 
-  // While the data is still not loaded, render a loading message
-  let element = null;
-  if (!data || Object.keys(data).length === 0) {
-    element = <h2>"Loading..."</h2>;
-  } else {
-    element = (
-      <ReactJson
-        name={null}
-        src={data}
-        theme="ocean"
-        style={{ padding: 10, textAlign: "left" }}
-        collapsed={2}
-        displayObjectSize={false}
-        displayDataTypes={false}
-        enableClipboard={false}
-      />
-    );
-  }
+  /**
+   * This is called every time the current path changes, which can happen
+   * if the user interacts with the BreadCrumb, or clicks the back/forward
+   * buttons and updates the tree.
+   */
+  useEffect(() => {
+    // The last name in the currentPath should be the new root node
+    const nodeName = currentPath[currentPath.length - 1];
+    const subTree = nameToNodeMapping[nodeName] || {};
+
+    // Trim the subtree to MAX_DEPTH and set it as the new tree
+    setTrimmedData(extractObjectWithMaxDepth(subTree));
+  }, [currentPath, nameToNodeMapping]);
 
   return (
     <div className={styles.nav}>
-      <NodePathHistory
-        path={currentPath}
-        onNodeNameClick={nodeNameClickHandler}
-      />
+      <Toolbar>
+        <Button variant="outlined" onClick={homeClickHandler}>
+          <HomeRounded
+            classes={{
+              root: styles.button,
+            }}
+          />
+        </Button>
+        <ButtonGroup>
+          <Button disabled={currentPath.length < 2} onClick={backClickHandler}>
+            <NavigateBeforeRounded
+              classes={{
+                root: styles.button,
+              }}
+            />
+          </Button>
+          <Button
+            disabled={!forwardHistory.length}
+            onClick={forwardClickHandler}
+          >
+            <NavigateNextRounded
+              classes={{
+                root: styles.button,
+              }}
+            />
+          </Button>
+        </ButtonGroup>
+        <NodePathHistory
+          path={currentPath}
+          onNodeNameClick={nodeNameClickHandler}
+        />
+      </Toolbar>
       <Tree jsonData={trimmedData} onNodeClick={nodeClickHandler}></Tree>
-      {element}
     </div>
   );
 };
