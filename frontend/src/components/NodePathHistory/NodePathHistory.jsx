@@ -89,7 +89,7 @@ export const NodePathHistory = ({
   };
 
   const Links = path.slice(0, -1).map((name, index) => (
-    <Button key={index} onClick={(e) => onNodeNameClick(e, name)}>
+    <Button key={index} onClick={() => onNodeNameClick(name)}>
       <Box>{name}</Box>
     </Button>
   ));

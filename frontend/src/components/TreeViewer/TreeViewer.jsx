@@ -9,6 +9,7 @@ import {
   NavigateNextRounded,
   HomeRounded,
 } from "@material-ui/icons";
+import { HistoryRecorder } from "../../utils/HistoryRecorder";
 import "fontsource-roboto";
 
 const MAX_DEPTH = 2;
@@ -67,11 +68,18 @@ function pathToAncestor(currNode, ancestorNodeName, history = []) {
 
 /**
  * Recursive helper for isValidPath() that traverses the
- * path given by path
+ * path given by 'path' and verifies that all the nodes
+ * in the path do exist in the right place.
  */
 function isValidPathHelper(path, index, json) {
   if (index >= path.length) return true;
 
+  /**
+   * Check if node exists in the json's children array.
+   * If it does, then recursively call this function with
+   * the next element in 'path' and considering the child node
+   * found as the new 'json'.
+   */
   const itemIndex = json.children.findIndex((obj) => obj.name === path[index]);
   if (itemIndex !== -1) {
     return isValidPathHelper(path, index + 1, json.children[itemIndex]);
@@ -83,7 +91,7 @@ export const TreeViewer = ({ data }) => {
   const [trimmedData, setTrimmedData] = useState({});
   const [nameToNodeMapping, setNameToNodeMapping] = useState({});
   const [currentPath, setCurrentPath] = useState([]);
-  const [forwardHistory, setForwardHistory] = useState([]);
+  const [historyRecorder, setHistoryRecorder] = useState();
 
   /**
    * This function handles the event where a user clicks a node on the tree
@@ -101,86 +109,44 @@ export const TreeViewer = ({ data }) => {
     );
     path.reverse(); // We want ancestor -> clicked node
 
-    setCurrentPath([...currentPath, ...path]);
-    setForwardHistory([]); // Reset forward history
+    historyRecorder.resetPath([...currentPath, ...path]);
   };
 
   /**
    * This function handles the event where a user clicks a name in the
    * NodePathHistory component.
    */
-  const nodeNameClickHandler = (event, nodeName) => {
-    // Keep popping from currentPath until we find nodeName
-    const currentPathCopy = [...currentPath];
-    const forwardHistoryCopy = [...forwardHistory];
-    while (currentPathCopy[currentPathCopy.length - 1] !== nodeName) {
-      forwardHistoryCopy.push(currentPathCopy.pop());
-    }
-
-    setCurrentPath(currentPathCopy);
-    setForwardHistory(forwardHistoryCopy);
-  };
+  const nodeNameClickHandler = (nodeName) =>
+    historyRecorder.goBackward(nodeName);
 
   /**
    * This function is triggered when the home button is clicked.
    */
-  const homeClickHandler = () => {
-    if (currentPath.length < 2) return;
-
-    // Keep popping from currentPath up to the beginning
-    const currentPathCopy = [...currentPath];
-    const forwardHistoryCopy = [...forwardHistory];
-    while (currentPathCopy.length > 1) {
-      forwardHistoryCopy.push(currentPathCopy.pop());
-    }
-
-    setCurrentPath(currentPathCopy);
-    setForwardHistory(forwardHistoryCopy);
-  };
+  const homeClickHandler = () => historyRecorder.goBackward("");
 
   /**
    * This function is triggered when the back button is clicked.
    * It goes back one level in the tree.
    */
-  const backClickHandler = () => {
-    /**
-     * We need at least 2 nodes in the path to go back
-     * If there is only 1, it would be the root, and
-     * we can't go back any further.
-     */
-    if (currentPath.length < 2) return;
-
-    // Pop the last node from the current path
-    const currentPathCopy = [...currentPath];
-    const poppedNodeName = currentPathCopy.pop();
-
-    setCurrentPath(currentPathCopy);
-    setForwardHistory([...forwardHistory, poppedNodeName]);
-  };
+  const backClickHandler = () => historyRecorder.goBackward();
 
   /**
    * This function is triggered when the forward button is clicked.
    * It goes forward one level in the tree, if that exists.
    */
-  const forwardClickHandler = () => {
-    if (!forwardHistory.length) return;
-
-    // Pop the last node from forward history
-    const forwardHistoryCopy = [...forwardHistory];
-    const poppedNodeName = forwardHistoryCopy.pop();
-
-    setForwardHistory(forwardHistoryCopy);
-    setCurrentPath([...currentPath, poppedNodeName]);
-  };
+  const forwardClickHandler = () => historyRecorder.goForward();
 
   /**
    * This function is triggered when an edit is made
    * to the current path.
    */
-  const pathChangeHandler = (newPath) => {
-    setCurrentPath(newPath);
-    setForwardHistory([]);
-  };
+  const pathChangeHandler = (newPath) => historyRecorder.resetPath(newPath);
+
+  /**
+   * This function is triggered whenever a change is made
+   * to historyRecorder.
+   */
+  const historyChangeHandler = (path) => setCurrentPath(path);
 
   /**
    * Return true iif the path exists in the tree.
@@ -191,12 +157,14 @@ export const TreeViewer = ({ data }) => {
   };
 
   /**
-   * When this component mounts, create the node name -> node pointer mapping
-   * from the data and set current path to the root.
+   * When this component mounts, create the node name -> node pointer
+   * mapping from the data and set current path to the root. Also,
+   * instantiate the history recorder for tracking path history.
    */
   useEffect(() => {
     setNameToNodeMapping(createNameToNodeMapping(data));
     setCurrentPath([data.name]);
+    setHistoryRecorder(new HistoryRecorder(historyChangeHandler));
   }, [data]);
 
   /**
@@ -217,7 +185,10 @@ export const TreeViewer = ({ data }) => {
     <div className={styles.nav}>
       <Toolbar>
         <ButtonGroup>
-          <Button disabled={currentPath.length < 2} onClick={backClickHandler}>
+          <Button
+            disabled={historyRecorder && !historyRecorder.canGoBackward()}
+            onClick={backClickHandler}
+          >
             <NavigateBeforeRounded
               classes={{
                 root: styles.button,
@@ -225,7 +196,7 @@ export const TreeViewer = ({ data }) => {
             />
           </Button>
           <Button
-            disabled={!forwardHistory.length}
+            disabled={historyRecorder && !historyRecorder.canGoForward()}
             onClick={forwardClickHandler}
           >
             <NavigateNextRounded
