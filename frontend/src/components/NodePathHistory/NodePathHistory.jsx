@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from "react";
 // import styles from "./NodePathHistory.module.css";
-import {
-  Box,
-  Button,
-  IconButton,
-  Breadcrumbs,
-  TextField,
-  ClickAwayListener,
-  Snackbar,
-} from "@material-ui/core";
-import { Alert } from "@material-ui/lab";
-import { NavigateNext, EditRounded, DoneRounded } from "@material-ui/icons";
+import Box from "@material-ui/core/Box";
+import Button from "@material-ui/core/Button";
+import IconButton from "@material-ui/core/IconButton";
+import Breadcrumbs from "@material-ui/core/Breadcrumbs";
+import TextField from "@material-ui/core/TextField";
+import ClickAwayListener from "@material-ui/core/ClickAwayListener";
+import Snackbar from "@material-ui/core/Snackbar";
+import Alert from "@material-ui/lab/Alert";
+import NavigateNext from "@material-ui/icons/NavigateNext";
+import EditRounded from "@material-ui/icons/EditRounded";
+import DoneRounded from "@material-ui/icons/DoneRounded";
 
 const MODES = { VIEW: 0, EDIT: 1 };
 

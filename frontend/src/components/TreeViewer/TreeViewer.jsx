@@ -3,12 +3,11 @@ import styles from "./TreeViewer.module.css";
 import { Tree } from "../Tree/Tree";
 import { NodePathHistory } from "../NodePathHistory/NodePathHistory";
 import { Toolbar } from "../Toolbar/Toolbar";
-import { Button, ButtonGroup } from "@material-ui/core";
-import {
-  NavigateBeforeRounded,
-  NavigateNextRounded,
-  HomeRounded,
-} from "@material-ui/icons";
+import Button from "@material-ui/core/Button";
+import ButtonGroup from "@material-ui/core/ButtonGroup";
+import NavigateBeforeRounded from "@material-ui/icons/NavigateBeforeRounded";
+import NavigateNextRounded from "@material-ui/icons/NavigateNextRounded";
+import HomeRounded from "@material-ui/icons/HomeRounded";
 import { HistoryRecorder } from "../../utils/HistoryRecorder";
 import "fontsource-roboto";
 
