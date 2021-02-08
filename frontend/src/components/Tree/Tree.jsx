@@ -74,16 +74,18 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick) {
 
   // Transform hierarchical data
   const root = hierarchy(jsonData).sort((a, b) => ascending(a.data.name, b.data.name));
-  const treeLayout = tree().size([2 * Math.PI, 200]).separation((a, b) => (a.parent === b.parent ? 1 : 2) / a.depth);
+  const treeLayout = tree().size([2 * Math.PI, 300]).separation((a, b) => (a.parent === b.parent ? 1 : 2) / a.depth);
   //const treeLayout = tree().size([500, 500])
 
   // Creates the links between nodes
-  const linkGenerator = linkRadial()
+  const linkGenerator = linkRadial().source(link => link.source).target(link => link.target)
     .angle(d => d.x)
     .radius(d => d.y);
 
   // Enrich hierarchical data with coordinates
   treeLayout(root);
+  console.log("The root.descendants are");
+  console.log(root.descendants())
 
   // Create the node group, which will hold the nodes and labels
   const nodeGroup = svg.selectAll(".node-group").data(root.descendants());
@@ -94,10 +96,10 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick) {
   nodeGroupEnter
     .merge(nodeGroup)
     .attr("class", "node-group")
-    .attr(
-      "transform",
-      (node) => `translate(${node.y + marginLeft},${node.x + marginTop})`
-    )
+    // .attr(
+    //   "transform",
+    //   (node) => `translate(${node.y + marginLeft},${node.x + marginTop})`
+    // )
     .style("cursor", "pointer")
     .on("click", onNodeClick);
 
@@ -122,20 +124,24 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick) {
     .attr("text-anchor", "middle")
     .attr("font-size", 18)
     .attr("y", -15)
+    .attr("transform", d => `
+    rotate(${d.x * 180 / Math.PI - 90})
+    translate(${d.y},0)
+    `)
     .text((node) => node.data.name);
 
   // Add links between nodes
   const enteringAndUpdatingLinks = svg
-    //.append("g")
+    .append("g")
     .selectAll(".link")
     .data(root.links())
     .join("path")
     .attr("class", "link")
     .attr("d", linkGenerator)
-    // .attr("stroke-dasharray", function () {
-    //   const length = this.getTotalLength();
-    //   return `${length} ${length}`;
-    // })
+    .attr("stroke-dasharray", function () {
+      const length = this.getTotalLength();
+      return `${length} ${length}`;
+    })
     .attr("stroke", "black")
     .attr("fill", "none")
     .attr("opacity", 1);
