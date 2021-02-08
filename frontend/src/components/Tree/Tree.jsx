@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import styles from "./Tree.module.css";
-import { select, hierarchy, tree, linkHorizontal, linkRadial } from "d3";
+import { select, hierarchy, tree, linkHorizontal, linkRadial, ascending, create } from "d3";
 import ResizeObserver from "resize-observer-polyfill";
 import "./Tree.module.css";
 
@@ -44,14 +44,38 @@ function animateTree(nodeGroupEnter, enteringAndUpdatingLinks) {
  */
 
 function renderTree(dimensions, jsonData, svgRef, onNodeClick) {
+
+  // const root = hierarchy(jsonData).sort((a, b) => ascending(a.data.name, b.data.name));
+  // const treeLayout = tree().size([2 * Math.PI, 500]).separation((a, b) => (a.parent === b.parent ? 1 : 2) / a.depth);
+
+  // const svg = create("svg");
+
+  // treeLayout(root);
+
+  // svg.append("g")
+  //     .attr("fill", "none")
+  //     .attr("stroke", "#555")
+  //     .attr("stroke-opacity", 0.4)
+  //     .attr("stroke-width", 1.5)
+  //   .selectAll("path")
+  //   .data(root.links())
+  //   .join("path")
+  //     .attr("d", linkRadial()
+  //         .angle(d => d.x)
+  //         .radius(d => d.y));
+  // return svg.attr("viewBox", autoBox).node();
+
+
+
   const svg = select(svgRef.current);
   const { width, height } = dimensions;
   const marginLeft = 70;
   const marginTop = 30;
 
   // Transform hierarchical data
-  const root = hierarchy(jsonData);
-  const treeLayout = tree().size([500, 500]).separation((a, b) => (a.parent === b.parent ? 1 : 2) / a.depth);
+  const root = hierarchy(jsonData).sort((a, b) => ascending(a.data.name, b.data.name));
+  const treeLayout = tree().size([2 * Math.PI, 200]).separation((a, b) => (a.parent === b.parent ? 1 : 2) / a.depth);
+  //const treeLayout = tree().size([500, 500])
 
   // Creates the links between nodes
   const linkGenerator = linkRadial()
@@ -102,6 +126,7 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick) {
 
   // Add links between nodes
   const enteringAndUpdatingLinks = svg
+    //.append("g")
     .selectAll(".link")
     .data(root.links())
     .join("path")
@@ -172,14 +197,20 @@ export function Tree({ jsonData, onNodeClick }) {
    * animates the tree links only when the data changes.
    */
   useEffect(() => {
-    const [nodeGroupEnter, enteringAndUpdatingLinks] = renderTree(
-      dimensions,
-      jsonData,
-      svgRef,
-      onNodeClick
-    );
+    // const [nodeGroupEnter, enteringAndUpdatingLinks] = renderTree(
+    //   dimensions,
+    //   jsonData,
+    //   svgRef,
+    //   onNodeClick
+    // );
+    renderTree(
+        dimensions,
+        jsonData,
+        svgRef,
+        onNodeClick
+      );
     if (jsonData !== previouslyRenderedData) {
-      animateTree(nodeGroupEnter, enteringAndUpdatingLinks);
+      //animateTree(nodeGroupEnter, enteringAndUpdatingLinks);
     }
   }, [jsonData, dimensions, previouslyRenderedData, onNodeClick]);
 
