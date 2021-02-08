@@ -13,21 +13,21 @@ import "./Tree.module.css";
  */
 
 function animateTree(nodeGroupEnter, enteringAndUpdatingLinks) {
-  // nodeGroupEnter
-  //   .attr("opacity", 0)
-  //   .transition()
-  //   .duration(500)
-  //   .delay((node) => node.depth * 300)
-  //   .attr("opacity", 1);
+  nodeGroupEnter
+    .attr("opacity", 0)
+    .transition()
+    .duration(500)
+    .delay((node) => node.depth * 300)
+    .attr("opacity", 1);
 
-  // enteringAndUpdatingLinks
-  //   .attr("stroke-dashoffset", function () {
-  //     return this.getTotalLength();
-  //   })
-  //   .transition()
-  //   .duration(500)
-  //   .delay((link) => link.source.depth * 500)
-  //   .attr("stroke-dashoffset", 0);
+  enteringAndUpdatingLinks
+    .attr("stroke-dashoffset", function () {
+      return this.getTotalLength();
+    })
+    .transition()
+    .duration(500)
+    .delay((link) => link.source.depth * 500)
+    .attr("stroke-dashoffset", 0);
 }
 
 /**
@@ -203,20 +203,14 @@ export function Tree({ jsonData, onNodeClick }) {
    * animates the tree links only when the data changes.
    */
   useEffect(() => {
-    // const [nodeGroupEnter, enteringAndUpdatingLinks] = renderTree(
-    //   dimensions,
-    //   jsonData,
-    //   svgRef,
-    //   onNodeClick
-    // );
-    renderTree(
-        dimensions,
-        jsonData,
-        svgRef,
-        onNodeClick
-      );
+    const [nodeGroupEnter, enteringAndUpdatingLinks] = renderTree(
+      dimensions,
+      jsonData,
+      svgRef,
+      onNodeClick
+    );
     if (jsonData !== previouslyRenderedData) {
-      //animateTree(nodeGroupEnter, enteringAndUpdatingLinks);
+      animateTree(nodeGroupEnter, enteringAndUpdatingLinks);
     }
   }, [jsonData, dimensions, previouslyRenderedData, onNodeClick]);
 
