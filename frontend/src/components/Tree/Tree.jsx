@@ -11,7 +11,6 @@ import "./Tree.module.css";
  * @param enteringAndUpdatingLinks : The inter-node links, represented as lines joining 
  * nodes together on the tree.
  */
-  /*background-color: blueviolet;*/
 function animateTree(nodeGroupEnter, enteringAndUpdatingLinks) {
   nodeGroupEnter
     .attr("opacity", 0)
