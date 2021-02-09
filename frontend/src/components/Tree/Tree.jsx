@@ -125,9 +125,10 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick) {
     .attr("font-size", 18)
     .attr("y", -15)
     .attr("transform", d => `
-    rotate(${d.x * 180 / Math.PI - 90})
-    translate(${d.y},0)
-    `)
+        rotate(${d.x * 180 / Math.PI - 90}) 
+        translate(${d.y},0) 
+        rotate(${d.x >= Math.PI ? 180 : 0})
+      `)
     .text((node) => node.data.name);
 
   // Add links between nodes
