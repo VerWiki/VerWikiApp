@@ -2,6 +2,10 @@
   overflow: visible;
   display: block;
   width: 100vw;
-  height: 80vh;
+  /*height: 80vh;*/
   min-height: 700px;
+  /*background-color: blueviolet;*/
+  padding-left: 20%;
+  padding-top: 20%;
+  padding-bottom: 0%;
 }

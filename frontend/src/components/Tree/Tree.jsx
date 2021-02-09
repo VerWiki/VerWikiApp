@@ -72,9 +72,11 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick) {
   const marginLeft = 70;
   const marginTop = 30;
 
+  const radius = width < height ? width : height
+
   // Transform hierarchical data
   const root = hierarchy(jsonData).sort((a, b) => ascending(a.data.name, b.data.name));
-  const treeLayout = tree().size([2 * Math.PI, 300]).separation((a, b) => (a.parent === b.parent ? 1 : 2) / a.depth);
+  const treeLayout = tree().size([2 * Math.PI, radius / 5]).separation((a, b) => (a.parent === b.parent ? 1 : 2) / a.depth);
   //const treeLayout = tree().size([500, 500])
 
   // Creates the links between nodes
@@ -84,8 +86,6 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick) {
 
   // Enrich hierarchical data with coordinates
   treeLayout(root);
-  console.log("The root.descendants are");
-  console.log(root.descendants())
 
   // Create the node group, which will hold the nodes and labels
   const nodeGroup = svg.selectAll(".node-group").data(root.descendants());
@@ -122,6 +122,8 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick) {
     .append("text")
     .merge(nodeGroup.select("text"))
     .attr("text-anchor", "middle")
+    //.attr("stroke-linejoin", "round")
+    //.attr("stroke-width", 3)
     .attr("font-size", 18)
     .attr("y", -15)
     .attr("transform", d => `
@@ -133,7 +135,7 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick) {
 
   // Add links between nodes
   const enteringAndUpdatingLinks = svg
-    .append("g")
+    //.append("g")
     .selectAll(".link")
     .data(root.links())
     .join("path")
@@ -204,6 +206,7 @@ export function Tree({ jsonData, onNodeClick }) {
    * animates the tree links only when the data changes.
    */
   useEffect(() => {
+    console.log("Reached the re-render useEffect");
     const [nodeGroupEnter, enteringAndUpdatingLinks] = renderTree(
       dimensions,
       jsonData,
