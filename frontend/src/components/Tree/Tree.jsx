@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import styles from "./Tree.module.css";
-import { select, hierarchy, tree, linkHorizontal, linkRadial, ascending, create } from "d3";
+import { select, hierarchy, tree, linkRadial, ascending } from "d3";
 import ResizeObserver from "resize-observer-polyfill";
 import "./Tree.module.css";
 
@@ -11,7 +11,7 @@ import "./Tree.module.css";
  * @param enteringAndUpdatingLinks : The inter-node links, represented as lines joining 
  * nodes together on the tree.
  */
-
+  /*background-color: blueviolet;*/
 function animateTree(nodeGroupEnter, enteringAndUpdatingLinks) {
   nodeGroupEnter
     .attr("opacity", 0)
@@ -45,39 +45,14 @@ function animateTree(nodeGroupEnter, enteringAndUpdatingLinks) {
 
 function renderTree(dimensions, jsonData, svgRef, onNodeClick) {
 
-  // const root = hierarchy(jsonData).sort((a, b) => ascending(a.data.name, b.data.name));
-  // const treeLayout = tree().size([2 * Math.PI, 500]).separation((a, b) => (a.parent === b.parent ? 1 : 2) / a.depth);
-
-  // const svg = create("svg");
-
-  // treeLayout(root);
-
-  // svg.append("g")
-  //     .attr("fill", "none")
-  //     .attr("stroke", "#555")
-  //     .attr("stroke-opacity", 0.4)
-  //     .attr("stroke-width", 1.5)
-  //   .selectAll("path")
-  //   .data(root.links())
-  //   .join("path")
-  //     .attr("d", linkRadial()
-  //         .angle(d => d.x)
-  //         .radius(d => d.y));
-  // return svg.attr("viewBox", autoBox).node();
-
-
-
   const svg = select(svgRef.current);
   const { width, height } = dimensions;
-  const marginLeft = 70;
-  const marginTop = 30;
 
   const radius = width < height ? width : height
 
   // Transform hierarchical data
   const root = hierarchy(jsonData).sort((a, b) => ascending(a.data.name, b.data.name));
-  const treeLayout = tree().size([2 * Math.PI, radius / 5]).separation((a, b) => (a.parent === b.parent ? 1 : 2) / a.depth);
-  //const treeLayout = tree().size([500, 500])
+  const treeLayout = tree().size([2 * Math.PI, radius / 4]).separation((a, b) => (a.parent === b.parent ? 1 : 2) / a.depth);
 
   // Creates the links between nodes
   const linkGenerator = linkRadial().source(link => link.source).target(link => link.target)
@@ -96,10 +71,6 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick) {
   nodeGroupEnter
     .merge(nodeGroup)
     .attr("class", "node-group")
-    // .attr(
-    //   "transform",
-    //   (node) => `translate(${node.y + marginLeft},${node.x + marginTop})`
-    // )
     .style("cursor", "pointer")
     .on("click", onNodeClick);
 
@@ -109,21 +80,18 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick) {
   nodeGroupEnter
     .append("circle")
     .merge(nodeGroup.select("circle"))
-    .attr("r", 4)
     .attr("transform", d => `
         rotate(${d.x * 180 / Math.PI - 90})
         translate(${d.y},0)
       `)
       .attr("fill", d => d.children ? "#555" : "#999")
-      .attr("r", 2.5);
+      .attr("r", 6);
 
   // Add labels to the node group
   nodeGroupEnter
     .append("text")
     .merge(nodeGroup.select("text"))
     .attr("text-anchor", "middle")
-    //.attr("stroke-linejoin", "round")
-    //.attr("stroke-width", 3)
     .attr("font-size", 18)
     .attr("y", -15)
     .attr("transform", d => `
@@ -135,7 +103,6 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick) {
 
   // Add links between nodes
   const enteringAndUpdatingLinks = svg
-    //.append("g")
     .selectAll(".link")
     .data(root.links())
     .join("path")
@@ -149,13 +116,6 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick) {
     .attr("fill", "none")
     .attr("opacity", 1);
   return [nodeGroupEnter, enteringAndUpdatingLinks];
-}
-
-function autoBox() {
-  document.body.appendChild(this);
-  const {x, y, width, height} = this.getBBox();
-  document.body.removeChild(this);
-  return [x, y, width, height];
 }
 
 /**
