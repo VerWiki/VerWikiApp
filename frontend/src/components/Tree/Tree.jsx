@@ -84,7 +84,7 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick) {
         translate(${d.y},0)
       `)
       .attr("fill", d => d.children ? "#555" : "#999")
-      .attr("r", 4);
+      .attr("r", 6);
 
   // Add labels to the node group
   nodeGroupEnter
