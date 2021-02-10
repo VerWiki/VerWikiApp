@@ -8,7 +8,7 @@ import "./Tree.module.css";
  * This function takes node-text grouping, and inter-node link grouping and performs the animation
  * of the links between them.
  * @param nodeGroupEnter : A grouping of nodes and text boxes grouped together under the SVG tag
- * @param enteringAndUpdatingLinks : The inter-node links, represented as lines joining 
+ * @param enteringAndUpdatingLinks : The inter-node links, represented as lines joining
  * nodes together on the tree.
  */
 function animateTree(nodeGroupEnter, enteringAndUpdatingLinks) {
@@ -43,29 +43,34 @@ function animateTree(nodeGroupEnter, enteringAndUpdatingLinks) {
  */
 
 function renderTree(dimensions, jsonData, svgRef, onNodeClick) {
-
   const svg = select(svgRef.current);
   const { width, height } = dimensions;
 
-  const radius = width < height ? width : height
+  const radius = width < height ? width : height;
 
   // Transform hierarchical data
-  const root = hierarchy(jsonData).sort((a, b) => ascending(a.data.name, b.data.name));
-  const treeLayout = tree().size([2 * Math.PI, radius / 3]).separation((a, b) => (a.parent === b.parent ? 1 : 2) / a.depth);
+  const root = hierarchy(jsonData).sort((a, b) =>
+    ascending(a.data.name, b.data.name)
+  );
+  const treeLayout = tree()
+    .size([2 * Math.PI, radius / 3])
+    .separation((a, b) => (a.parent === b.parent ? 1 : 2) / a.depth);
 
   // Creates the links between nodes
-  const linkGenerator = linkRadial().source(link => link.source).target(link => link.target)
-    .angle(d => d.x)
-    .radius(d => d.y);
+  const linkGenerator = linkRadial()
+    .source((link) => link.source)
+    .target((link) => link.target)
+    .angle((d) => d.x)
+    .radius((d) => d.y);
 
   // Enrich hierarchical data with coordinates
   treeLayout(root);
 
   // Create the node group, which will hold the nodes and labels
   const nodeGroup = svg.selectAll(".node-group").data(root.descendants());
-  // Append a `g` element, to group SVG shapes together. 
+  // Append a `g` element, to group SVG shapes together.
   // More info at https://stackoverflow.com/questions/17057809/d3-js-what-is-g-in-appendg-d3-js-code
-  const nodeGroupEnter = nodeGroup.enter().append("g"); 
+  const nodeGroupEnter = nodeGroup.enter().append("g");
 
   nodeGroupEnter
     .merge(nodeGroup)
@@ -79,12 +84,15 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick) {
   nodeGroupEnter
     .append("circle")
     .merge(nodeGroup.select("circle"))
-    .attr("transform", d => `
-        rotate(${d.x * 180 / Math.PI - 90})
+    .attr(
+      "transform",
+      (d) => `
+        rotate(${(d.x * 180) / Math.PI - 90})
         translate(${d.y},0)
-      `)
-      .attr("fill", d => d.children ? "#555" : "#999")
-      .attr("r", 6);
+      `
+    )
+    .attr("fill", (d) => (d.children ? "#555" : "#999"))
+    .attr("r", 6);
 
   // Add labels to the node group
   nodeGroupEnter
@@ -93,11 +101,14 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick) {
     .attr("text-anchor", "middle")
     .attr("font-size", 18)
     .attr("y", -15)
-    .attr("transform", d => `
-        rotate(${d.x * 180 / Math.PI - 90}) 
+    .attr(
+      "transform",
+      (d) => `
+        rotate(${(d.x * 180) / Math.PI - 90}) 
         translate(${d.y},0) 
         rotate(${d.x >= Math.PI ? 180 : 0})
-      `)
+      `
+    )
     .attr("dy", "0.90em")
     .attr("dx", "0.0em")
     // eslint-disable-next-line
