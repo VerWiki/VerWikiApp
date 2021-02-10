@@ -51,7 +51,7 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick) {
 
   // Transform hierarchical data
   const root = hierarchy(jsonData).sort((a, b) => ascending(a.data.name, b.data.name));
-  const treeLayout = tree().size([2 * Math.PI, radius / 4]).separation((a, b) => (a.parent === b.parent ? 1 : 2) / a.depth);
+  const treeLayout = tree().size([2 * Math.PI, radius / 3]).separation((a, b) => (a.parent === b.parent ? 1 : 2) / a.depth);
 
   // Creates the links between nodes
   const linkGenerator = linkRadial().source(link => link.source).target(link => link.target)
@@ -84,7 +84,7 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick) {
         translate(${d.y},0)
       `)
       .attr("fill", d => d.children ? "#555" : "#999")
-      .attr("r", 6);
+      .attr("r", 4);
 
   // Add labels to the node group
   nodeGroupEnter
@@ -98,7 +98,14 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick) {
         translate(${d.y},0) 
         rotate(${d.x >= Math.PI ? 180 : 0})
       `)
-    .text((node) => node.data.name);
+    .attr("dy", "0.90em")
+    .attr("dx", "0.0em")
+    // eslint-disable-next-line
+    .attr("x", d => d.x < Math.PI === !d.children ? 6 : -6)
+    // eslint-disable-next-line
+    .attr("text-anchor", d => d.x < Math.PI === !d.children ? "start" : "end")
+    // eslint-disable-next-line
+    .text((node) => node.data.name + " ");
 
   // Add links between nodes
   const enteringAndUpdatingLinks = svg
@@ -165,7 +172,6 @@ export function Tree({ jsonData, onNodeClick }) {
    * animates the tree links only when the data changes.
    */
   useEffect(() => {
-    console.log("Reached the re-render useEffect");
     const [nodeGroupEnter, enteringAndUpdatingLinks] = renderTree(
       dimensions,
       jsonData,
