@@ -1,5 +1,6 @@
-# This file is a convenient way for us to populate and repopulate our DB, at least in phase 1 where we won't have professors creating
-# trees for us. Feel free to add more trees here.
+# This file is a convenient way for us to populate and repopulate our local DBs for development purposes, at least in phase 1
+# where we won't have professors creating trees for us. Feel free to add more trees and other data here. This file has no role in
+# production.
 
 from pymongo import MongoClient
 from db_interface import VERWIKI_DB_NAME, TREES_TABLE_NAME, LINKS_TABLE_NAME
@@ -17,13 +18,13 @@ if __name__ == "__main__":
     deleted_data = radialTrees.delete_many({})
     deleted_links = nodeLinks.delete_many({})
 
-    # Tree for testing purposes
+    # Sample Tree for local development
     tree1 = {
         "id": 1,
         "data": {"name": "Root", "children": [{"name": "Front", "children": []}]},
     }
 
-    # Links for testing purposes
+    # Sample link for local development
     link1 = {
         "id": "Root-1",
         "link": "https://cwsl.ca/wiki/doku.php?id=philosophy_of_wisdom_socrates_and_plato#psychotechnologies_metacognition_and_second_order_thinkingimplications_for_the_machinery_of_meaning-making",
@@ -387,7 +388,8 @@ if __name__ == "__main__":
     # Insert another tree
     result = radialTrees.insert_one(tree2)
     print(result.inserted_id)
-    # Links for testing purposes
+
+    # Sample link for local development
     link2 = {
         "id": "Root-2",
         "link": "https://cwsl.ca/wiki/doku.php?id=philosophy_of_wisdom_socrates_and_plato#psychotechnologies_metacognition_and_second_order_thinkingimplications_for_the_machinery_of_meaning-making",
