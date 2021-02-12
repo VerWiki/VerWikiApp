@@ -71,9 +71,10 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick) {
   // Append a `g` element, to group SVG shapes together.
   // More info at https://stackoverflow.com/questions/17057809/d3-js-what-is-g-in-appendg-d3-js-code
   const nodeGroupEnter = nodeGroup.enter().append("g");
+  const nodeGroupEnterAndUpdate = nodeGroupEnter.merge(nodeGroup);
 
-  nodeGroupEnter
-    .merge(nodeGroup)
+  nodeGroupEnterAndUpdate
+    //.merge(nodeGroup)
     .attr("class", "node-group")
     .style("cursor", "pointer")
     .on("click", onNodeClick);
@@ -132,7 +133,7 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick) {
     .attr("stroke", "black")
     .attr("fill", "none")
     .attr("opacity", 1);
-  return [nodeGroupEnter, enteringAndUpdatingLinks];
+  return [nodeGroupEnterAndUpdate, enteringAndUpdatingLinks];
 }
 
 /**
