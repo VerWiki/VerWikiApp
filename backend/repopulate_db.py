@@ -375,6 +375,7 @@ if __name__ == "__main__":
     result = radialTrees.insert_one(tree2)
     print(result.inserted_id)
 
+    # The JSON for the tree found here: https://observablehq.com/@d3/radial-tidy-tree
     tree3 = {
         "id": 3,
         "data": {
