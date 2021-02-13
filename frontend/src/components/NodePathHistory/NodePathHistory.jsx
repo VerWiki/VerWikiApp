@@ -15,10 +15,13 @@ import DoneRounded from "@material-ui/icons/DoneRounded";
 const MODES = { VIEW: 0, EDIT: 1 };
 
 /**
- * Join the list of node names into one string
+ * Join the list of node names into one string, and add
+ * an extra slash at the end so the user knows what the
+ * delimiter is initially, when there is only one node
+ * in the path.
  */
 function convertPathToString(path) {
-  return path.join("/");
+  return path.join("/") + "/";
 }
 
 export const NodePathHistory = ({
@@ -94,6 +97,12 @@ export const NodePathHistory = ({
     </Button>
   ));
 
+  // This view renders the breadcrumbs that show the current
+  // path from the root to the current node, with the ability
+  // to click on any internal nodes within that path. This renders
+  // at most 4 elements in the path. If there are more, an ellipsis
+  // is added to hide everything besides the 3 nodes that are closest
+  // to the current node.
   const BreadcrumbsView = (
     <Breadcrumbs
       maxItems={4}
@@ -112,9 +121,13 @@ export const NodePathHistory = ({
     </Breadcrumbs>
   );
 
+  // This view shows the text field that lets you edit the current
+  // path from the root, and if the button is clicked, or enter is
+  // pressed, the tree will update accordingly.
   const EditPathView = (
     <ClickAwayListener onClickAway={clearChanges}>
       <TextField
+        fullWidth
         label="Path"
         value={currentText}
         variant="outlined"
@@ -125,7 +138,6 @@ export const NodePathHistory = ({
           // to clicking on Done
           if (e.keyCode === 13) onDoneClickHandler();
         }}
-        fullWidth
       />
     </ClickAwayListener>
   );
