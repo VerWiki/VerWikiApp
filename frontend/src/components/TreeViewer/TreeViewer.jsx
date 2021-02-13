@@ -65,27 +65,6 @@ function pathToAncestor(currNode, ancestorNodeName, history = []) {
   return history;
 }
 
-/**
- * Recursive helper for isValidPath() that traverses the
- * path given by 'path' and verifies that all the nodes
- * in the path do exist in the right place.
- */
-function isValidPathHelper(path, index, json) {
-  if (index >= path.length) return true;
-
-  /**
-   * Check if node exists in the json's children array.
-   * If it does, then recursively call this function with
-   * the next element in 'path' and considering the child node
-   * found as the new 'json'.
-   */
-  const itemIndex = json.children.findIndex((obj) => obj.name === path[index]);
-  if (itemIndex !== -1) {
-    return isValidPathHelper(path, index + 1, json.children[itemIndex]);
-  }
-  return false;
-}
-
 export const TreeViewer = ({ data }) => {
   const [trimmedData, setTrimmedData] = useState({});
   const [nameToNodeMapping, setNameToNodeMapping] = useState({});
@@ -148,11 +127,26 @@ export const TreeViewer = ({ data }) => {
   const historyChangeHandler = (path) => setCurrentPath(path);
 
   /**
-   * Return true iif the path exists in the tree.
+   * Recursive function that traverses the
+   * path given by 'path' and verifies that all the nodes
+   * in the path do exist in the right place.
    */
-  const isValidPath = (path) => {
-    if (path[0] !== data.name) return false;
-    return isValidPathHelper(path, 1, data);
+  const isValidPath = (path, index = 0, json = { children: [data] }) => {
+    if (index >= path.length) return true;
+
+    /**
+     * Check if node exists in the json's children array.
+     * If it does, then recursively call this function with
+     * the next element in 'path' and considering the child node
+     * found as the new 'json'.
+     */
+    const itemIndex = json.children.findIndex(
+      (obj) => obj.name === path[index]
+    );
+    if (itemIndex !== -1) {
+      return isValidPath(path, index + 1, json.children[itemIndex]);
+    }
+    return false;
   };
 
   /**

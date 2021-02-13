@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 // import styles from "./NodePathHistory.module.css";
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
-import IconButton from "@material-ui/core/IconButton";
 import Breadcrumbs from "@material-ui/core/Breadcrumbs";
 import TextField from "@material-ui/core/TextField";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
@@ -143,19 +142,25 @@ export const NodePathHistory = ({
   );
 
   const EditButton = (
-    <IconButton
-      size="small"
+    <Button
       color="primary"
+      variant="outlined"
+      size="large"
       onClick={() => setMode(MODES.EDIT)}
     >
       <EditRounded fontSize="small" />
-    </IconButton>
+    </Button>
   );
 
   const DoneButton = (
-    <IconButton size="small" color="primary" onClick={onDoneClickHandler}>
+    <Button
+      color="primary"
+      variant="outlined"
+      size="large"
+      onClick={onDoneClickHandler}
+    >
       <DoneRounded />
-    </IconButton>
+    </Button>
   );
 
   return (
