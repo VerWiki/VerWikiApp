@@ -46,14 +46,14 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick) {
   const svg = select(svgRef.current);
   const { width, height } = dimensions;
 
-  const radius = width < height ? width : height;
+  const radius = Math.min(width, height);
 
   // Transform hierarchical data
   const root = hierarchy(jsonData).sort((a, b) =>
     ascending(a.data.name, b.data.name)
   );
   const treeLayout = tree()
-    .size([2 * Math.PI, radius / 3])
+    .size([2 * Math.PI, radius / 3.5])
     .separation((a, b) => (a.parent === b.parent ? 1 : 2) / a.depth);
 
   // Creates the links between nodes
@@ -68,10 +68,12 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick) {
 
   // Create the node group, which will hold the nodes and labels
   const nodeGroup = svg.selectAll(".node-group").data(root.descendants());
+
   // Append a `g` element, to group SVG shapes together.
   // More info at https://stackoverflow.com/questions/17057809/d3-js-what-is-g-in-appendg-d3-js-code
   const nodeGroupEnter = nodeGroup.enter().append("g");
   const nodeGroupEnterAndUpdate = nodeGroupEnter.merge(nodeGroup);
+  // .attr("transform", "translate(" + radius + "," + 300 + ")");
 
   nodeGroupEnterAndUpdate
     //.merge(nodeGroup)
@@ -113,9 +115,11 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick) {
     .attr("dy", "0.90em")
     .attr("dx", "0.0em")
     // eslint-disable-next-line
-    .attr("x", d => d.x < Math.PI === !d.children ? 6 : -6)
+    .attr("x", (d) => (d.x < Math.PI === !d.children ? 6 : -6))
     // eslint-disable-next-line
-    .attr("text-anchor", d => d.x < Math.PI === !d.children ? "start" : "end")
+    .attr("text-anchor", (d) =>
+      d.x < Math.PI === !d.children ? "start" : "end"
+    )
     // eslint-disable-next-line
     .text((node) => node.data.name + " ");
 
@@ -125,6 +129,7 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick) {
     .data(root.links())
     .join("path")
     .attr("class", "link")
+    // .attr("transform", "translate(" + radius + "," + 300 + ")")
     .attr("d", linkGenerator)
     .attr("stroke-dasharray", function () {
       const length = this.getTotalLength();
@@ -197,8 +202,8 @@ export function Tree({ jsonData, onNodeClick }) {
 
   return (
     <React.Fragment>
-      <div ref={wrapperRef} style={{ marginBottom: "2rem" }}>
-        <svg className={styles.treeContainer} ref={svgRef}></svg>
+      <div ref={wrapperRef} className={styles.treeContainer}>
+        <svg className={styles.tree} ref={svgRef}></svg>
       </div>
     </React.Fragment>
   );
