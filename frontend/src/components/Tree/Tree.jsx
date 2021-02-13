@@ -73,7 +73,6 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick) {
   // More info at https://stackoverflow.com/questions/17057809/d3-js-what-is-g-in-appendg-d3-js-code
   const nodeGroupEnter = nodeGroup.enter().append("g");
   const nodeGroupEnterAndUpdate = nodeGroupEnter.merge(nodeGroup);
-  // .attr("transform", "translate(" + radius + "," + 300 + ")");
 
   nodeGroupEnterAndUpdate
     //.merge(nodeGroup)
@@ -129,7 +128,6 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick) {
     .data(root.links())
     .join("path")
     .attr("class", "link")
-    // .attr("transform", "translate(" + radius + "," + 300 + ")")
     .attr("d", linkGenerator)
     .attr("stroke-dasharray", function () {
       const length = this.getTotalLength();
