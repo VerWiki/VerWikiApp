@@ -53,7 +53,7 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick) {
     ascending(a.data.name, b.data.name)
   );
   const treeLayout = tree()
-    .size([2 * Math.PI, radius / 3.5])
+    .size([2 * Math.PI, radius / 3.0])
     .separation((a, b) => (a.parent === b.parent ? 1 : 2) / a.depth);
 
   // Creates the links between nodes
@@ -75,7 +75,6 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick) {
   const nodeGroupEnterAndUpdate = nodeGroupEnter.merge(nodeGroup);
 
   nodeGroupEnterAndUpdate
-    //.merge(nodeGroup)
     .attr("class", "node-group")
     .style("cursor", "pointer")
     .on("click", onNodeClick);
@@ -93,7 +92,7 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick) {
         translate(${d.y},0)
       `
     )
-    .attr("fill", (d) => (d.children ? "#555" : "#999"))
+    .attr("fill", (d) => (d.depth % 2 === 0 ? "#555" : "#999"))
     .attr("r", 6);
 
   // Add labels to the node group
@@ -101,7 +100,7 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick) {
     .append("text")
     .merge(nodeGroup.select("text"))
     .attr("text-anchor", "middle")
-    .attr("font-size", 18)
+    .attr("font-size", Math.max(6, sigmoid(width) * 12))
     .attr("y", -15)
     .attr(
       "transform",
@@ -113,13 +112,12 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick) {
     )
     .attr("dy", "0.90em")
     .attr("dx", "0.0em")
-    // eslint-disable-next-line
+    // Adds spacing between the node and the label; At even numbered depths, the label is on the
+    // left side; at even numbered depths on the right side hence the if statament
     .attr("x", (d) => (d.x < Math.PI === !d.children ? 6 : -6))
-    // eslint-disable-next-line
     .attr("text-anchor", (d) =>
       d.x < Math.PI === !d.children ? "start" : "end"
     )
-    // eslint-disable-next-line
     .text((node) => node.data.name + " ");
 
   // Add links between nodes
@@ -151,6 +149,14 @@ function usePrevious(value) {
     ref.current = value;
   });
   return ref.current;
+}
+
+/**
+ * todo
+ * @param {*} z
+ */
+function sigmoid(z) {
+  return 1 / (1 + Math.exp(-z));
 }
 
 export function Tree({ jsonData, onNodeClick }) {
