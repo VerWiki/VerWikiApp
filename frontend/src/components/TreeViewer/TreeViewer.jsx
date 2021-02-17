@@ -129,10 +129,12 @@ export const TreeViewer = ({ data }) => {
   /**
    * Recursive function that traverses the
    * path given by 'path' and verifies that all the nodes
-   * in the path do exist in the right place.
+   * in the path do exist in the right place. If the case is
+   * incorrect for any words, then the path parameter is
+   * updated.
    */
-  const isValidPath = (path, index = 0, json = { children: [data] }) => {
-    if (index >= path.length) return true;
+  const validatePath = (path, index = 0, json = { children: [data] }) => {
+    if (index >= path.length) return [true, false];
 
     /**
      * Check if node exists in the json's children array.
@@ -141,12 +143,26 @@ export const TreeViewer = ({ data }) => {
      * found as the new 'json'.
      */
     const itemIndex = json.children.findIndex(
-      (obj) => obj.name === path[index]
+      (obj) =>
+        (obj.name && obj.name.toLowerCase()) ===
+        (path[index] && path[index].toLowerCase())
     );
     if (itemIndex !== -1) {
-      return isValidPath(path, index + 1, json.children[itemIndex]);
+      let currentChanged = false;
+      if (json.children[itemIndex].name !== path[index]) {
+        path[index] = json.children[itemIndex].name;
+        currentChanged = true;
+      }
+
+      const [isValid, childPathChanged] = validatePath(
+        path,
+        index + 1,
+        json.children[itemIndex]
+      );
+
+      return [isValid, childPathChanged || currentChanged];
     }
-    return false;
+    return [false, false];
   };
 
   /**
@@ -210,7 +226,7 @@ export const TreeViewer = ({ data }) => {
           path={currentPath}
           onNodeNameClick={nodeNameClickHandler}
           onPathChange={pathChangeHandler}
-          isValidPath={isValidPath}
+          validatePath={validatePath}
         />
       </Toolbar>
       <Tree jsonData={trimmedData} onNodeClick={nodeClickHandler}></Tree>

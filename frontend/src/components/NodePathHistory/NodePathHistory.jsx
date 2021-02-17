@@ -30,7 +30,7 @@ export const NodePathHistory = ({
   path,
   onNodeNameClick,
   onPathChange,
-  isValidPath,
+  validatePath,
 }) => {
   const [mode, setMode] = useState(MODES.VIEW);
   const [currentText, setCurrentText] = useState("");
@@ -51,8 +51,16 @@ export const NodePathHistory = ({
    * and store it.
    */
   useEffect(() => {
-    setIsCurrentTextValid(isValidPath(convertStringToPath(currentText)));
-  }, [currentText, isValidPath]);
+    const pathAsList = convertStringToPath(currentText);
+    const [isValid, pathChanged] = validatePath(pathAsList);
+    setIsCurrentTextValid(isValid);
+
+    // isValidPath can change the list if any words are not correct
+    // in their casing. If this happens, we need to update currentText.
+    if (isValid && pathChanged) {
+      setCurrentText(convertPathToString(pathAsList));
+    }
+  }, [currentText, validatePath]);
 
   /**
    * Store the current text being typed
