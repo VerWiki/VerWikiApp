@@ -1,11 +1,15 @@
 .treeContainer {
-  width: 100vw;
   height: calc(100vh - 140px);
+  min-height: 700px;
+  justify-content: center;
+  display: flex;
+  align-items: center;
+  /*width: 100vw;
   min-height: 700px;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding-bottom: 2em;
+  /*padding-bottom: 2em;*/
 }
 
 .tree {

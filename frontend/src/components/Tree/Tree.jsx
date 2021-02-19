@@ -57,7 +57,7 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick, onRightClick) {
     ascending(a.data.name, b.data.name)
   );
   const treeLayout = tree()
-    .size([2 * Math.PI, radius / 3.0])
+    .size([2 * Math.PI, radius / 2.5])
     .separation((a, b) => (a.parent === b.parent ? 1 : 2) / a.depth);
 
   // Creates the links between nodes
@@ -105,7 +105,7 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick, onRightClick) {
     .append("text")
     .merge(nodeGroup.select("text"))
     .attr("text-anchor", "middle")
-    .attr("font-size", Math.max(6, sigmoid(width) * 12))
+    .attr("font-size", Math.max(6, sigmoid(width) * 17))
     .attr("y", -15)
     .attr(
       "transform",

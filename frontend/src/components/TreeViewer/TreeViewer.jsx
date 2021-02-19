@@ -77,20 +77,20 @@ function toggleInfoBoxVisibility(clickedNodeName, previouslyClickedNodeName) {
   const treeDiv = document.getElementById("course-tree");
 
   if (
-    articleDiv.classList.contains("span-1-of-4") &&
+    articleDiv.classList.contains("span-1-of-2") &&
     previouslyClickedNodeName === clickedNodeName
   ) {
     // Already displaying and the user clicked on the same node again
     articleDiv.classList.remove("col");
-    articleDiv.classList.remove("span-1-of-4");
+    articleDiv.classList.remove("span-1-of-2");
     treeDiv.classList.remove("col");
-    treeDiv.classList.remove("span-3-of-4");
+    treeDiv.classList.remove("span-1-of-2");
   } else {
     //Not yet displaying
     articleDiv.classList.add("col");
-    articleDiv.classList.add("span-1-of-4");
+    articleDiv.classList.add("span-1-of-2");
     treeDiv.classList.add("col");
-    treeDiv.classList.add("span-3-of-4");
+    treeDiv.classList.add("span-1-of-2");
 
     //Set the height of the textbox equal to the height of the
     //treeDiv
