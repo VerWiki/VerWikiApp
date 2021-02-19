@@ -11,8 +11,9 @@ import "./Tree.module.css";
  * @param enteringAndUpdatingLinks : The inter-node links, represented as lines joining
  * nodes together on the tree.
  */
-function animateTree(nodeGroupEnter, enteringAndUpdatingLinks) {
-  nodeGroupEnter
+
+function animateTree(nodeGroupEnterAndUpdate, enteringAndUpdatingLinks) {
+  nodeGroupEnterAndUpdate
     .attr("opacity", 0)
     .transition()
     .duration(500)
@@ -193,14 +194,14 @@ export function Tree({ jsonData, onNodeClick }) {
    * animates the tree links only when the data changes.
    */
   useEffect(() => {
-    const [nodeGroupEnter, enteringAndUpdatingLinks] = renderTree(
+    const [nodeGroupEnterAndUpdate, enteringAndUpdatingLinks] = renderTree(
       dimensions,
       jsonData,
       svgRef,
       onNodeClick
     );
     if (jsonData !== previouslyRenderedData) {
-      animateTree(nodeGroupEnter, enteringAndUpdatingLinks);
+      animateTree(nodeGroupEnterAndUpdate, enteringAndUpdatingLinks);
     }
   }, [jsonData, dimensions, previouslyRenderedData, onNodeClick]);
 
