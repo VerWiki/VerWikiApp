@@ -1,38 +1,107 @@
-import pytest
-import mock
+import unittest
+from unittest import mock
+from mock import MagicMock
+from mock import patch
+import sys
+import os
 
-from logger.py import Logger, Level
+sys.path.append("../logger")
+from file_handler import FileHandler
+
+from logger import Logger, Level
 
 
-class LoggerTest:
+class LoggerTest(unittest.TestCase):
+    def setup(self, level):
+        self.logger = Logger("Logger_Test", level=level)
+        self.writer = MagicMock()
+
     def test_singleton_design_pattern(self):
         logger1 = Logger()
         logger2 = Logger()
         assert logger1 is logger2
 
-    def test_debug_level_write_debug(self):
-        logger = Logger(file_name="test", level=Level.debug)
+    @patch("file_handler.FileHandler.get_write_handle")
+    def test_debug_level_write_debug(self, _handle):
+        self.setup(Level.debug)
+        _handle.return_value = self.writer
 
-    def test_debug_level_write_warning(self):
-        logger = Logger(file_name="test", level=Level.debug)
+        self.logger.debug("message")
 
-    def test_debug_level_write_error(self):
-        logger = Logger(file_naem="test", level=Level.debug)
+        self.logger.writer.write.assert_called()
 
-    def test_warn_level_not_write_debug(self):
-        logger = Logger(file_name="test", level=Level.warning)
+    @patch("file_handler.FileHandler.get_write_handle")
+    def test_debug_level_write_warning(self, _handle):
+        self.setup(Level.debug)
+        _handle.return_value = self.writer
 
-    def test_warn_level_write_warning(self):
-        logger = Logger(file_name="test", level=Level.warning)
+        self.logger.warn("message")
 
-    def test_warn_level_write_error(self):
-        logger = Logger(file_name="test", level=Level.warning)
+        self.logger.writer.write.assert_called()
 
-    def test_error_level_not_write_debug(self):
-        logger = Logger(file_name="test", level=Level.error)
+    @patch("file_handler.FileHandler.get_write_handle")
+    def test_debug_level_write_error(self, _handle):
+        self.setup(Level.debug)
+        _handle.return_value = self.writer
 
-    def test_error_level_not_write_warning(self):
-        logger = Logger(file_name="test", level=Level.error)
+        self.logger.error("message")
 
-    def test_error_level_write_error(self):
-        logger = Logger(file_name="test", level=Level.error)
+        self.logger.writer.write.assert_called()
+
+    @patch("file_handler.FileHandler.get_write_handle")
+    def test_warn_level_not_write_debug(self, _handle):
+        self.setup(Level.warning)
+        _handle.return_value = self.writer
+
+        self.logger.debug("message")
+
+        self.logger.writer.write.assert_not_called()
+
+    @patch("file_handler.FileHandler.get_write_handle")
+    def test_warn_level_write_warning(self, _handle):
+        self.setup(Level.warning)
+        _handle.return_value = self.writer
+
+        self.logger.warn("message")
+
+        self.logger.writer.write.assert_called()
+
+    @patch("file_handler.FileHandler.get_write_handle")
+    def test_warn_level_write_error(self, _handle):
+        self.setup(Level.warning)
+        _handle.return_value = self.writer
+
+        self.logger.error("message")
+
+        self.logger.writer.write.assert_called()
+
+    @patch("file_handler.FileHandler.get_write_handle")
+    def test_error_level_not_write_debug(self, _handle):
+        self.setup(Level.error)
+        _handle.return_value = self.writer
+
+        self.logger.debug("message")
+
+        self.logger.writer.write.assert_not_called()
+
+    @patch("file_handler.FileHandler.get_write_handle")
+    def test_error_level_not_write_warning(self, _handle):
+        self.setup(Level.error)
+        _handle.return_value = self.writer
+
+        self.logger.warn("message")
+
+        self.logger.writer.write.assert_not_called()
+
+    @patch("file_handler.FileHandler.get_write_handle")
+    def test_error_level_write_error(self, _handle):
+        self.setup(Level.error)
+        _handle.return_value = self.writer
+
+        self.logger.error("message")
+
+        self.logger.writer.write.assert_called()
+
+
+if __name__ == "__main__":
+    unittest.main()
