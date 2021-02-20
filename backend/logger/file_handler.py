@@ -30,7 +30,7 @@ class FileHandler:
         self.full_name = self.file_name + "-" + uid + "-" + date + ".log"
         return self.full_name
 
-    def get_file_location(self):
+    def get_log_directory(self):
         """Return the location in which the file should be
         stored. Print this to stdout as well. Return value
         is platform-dependent
@@ -39,30 +39,26 @@ class FileHandler:
         location (str) : location log will be stored
         """
 
-        curr_dir = os.getcwd()
-        if os.name == "nt":
-            return curr_dir + "\..\logs\\"
-        else:
-            return curr_dir + "/../logs/"
+        return os.path.join("..", "logs")
 
     def open_new_file_write(self):
         """Open a new file to write to. Write the file to the
-        location from get_file_location and use the name created
+        location from get_log_directory and use the name created
         by create_name. Set the class's file_handle as the new
         handle opened to write
         """
 
-        if os.path.exists(self.get_file_location()):
+        if os.path.exists(self.get_log_directory()):
             try:
                 self.file_handle = open(self.get_full_path(), "a")
             except IOError as e:
-                print(e)
+                raise(e)
         else:
-            os.mkdir(self.get_file_location())
+            os.mkdir(self.get_log_directory())
             try:
                 self.file_handle = open(self.get_full_path(), "a")
             except IOError as e:
-                print(e)
+                raise(e)
 
     def get_write_handle(self):
         """Get the handle of the class for writing to the file
@@ -77,13 +73,14 @@ class FileHandler:
     def get_full_path(self):
         """Get the full path of where the log is stored"""
         if self.full_name != self.file_name:  # File name has already been created
-            return self.get_file_location() + self.full_name
+            return os.path.join(self.get_log_directory(), self.full_name)
         self.full_name = self.create_name()  # Name hasn't been created. Do it now.
-        return self.get_file_location() + self.full_name
+        return os.path.join(self.get_log_directory(), self.full_name)
 
     def close_file(self):
         """Close the file handle"""
-        try:
-            self.file_handle.close()
-        except IOError as e:
-            print(e)
+        if self.file_handle != None:
+            try:
+                self.file_handle.close()
+            except IOError as e:
+                raise(e)
