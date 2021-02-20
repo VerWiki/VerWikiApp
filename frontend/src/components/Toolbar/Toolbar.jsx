@@ -10,6 +10,7 @@ export const Toolbar = ({ children }) => {
       borderRight={0}
       display="flex"
       alignItems="center"
+      flexWrap="wrap"
       p={1.5}
       minHeight={40}
     >

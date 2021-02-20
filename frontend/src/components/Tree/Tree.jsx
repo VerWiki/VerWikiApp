@@ -47,7 +47,10 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick) {
   const svg = select(svgRef.current);
   const { width, height } = dimensions;
 
+  console.log(width);
+
   const radius = Math.min(width, height);
+  const translateStr = "translate(" + width / 2 + "," + height / 2 + ")";
 
   // Transform hierarchical data
   const root = hierarchy(jsonData).sort((a, b) =>
@@ -73,11 +76,13 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick) {
   // Append a `g` element, to group SVG shapes together.
   // More info at https://stackoverflow.com/questions/17057809/d3-js-what-is-g-in-appendg-d3-js-code
   const nodeGroupEnter = nodeGroup.enter().append("g");
+
   const nodeGroupEnterAndUpdate = nodeGroupEnter.merge(nodeGroup);
 
   nodeGroupEnterAndUpdate
     .attr("class", "node-group")
     .style("cursor", "pointer")
+    .attr("transform", translateStr)
     .on("click", onNodeClick);
 
   nodeGroup.exit().remove();
@@ -127,6 +132,7 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick) {
     .data(root.links())
     .join("path")
     .attr("class", "link")
+    .attr("transform", translateStr)
     .attr("d", linkGenerator)
     .attr("stroke-dasharray", function () {
       const length = this.getTotalLength();
@@ -178,8 +184,8 @@ export function Tree({ jsonData, onNodeClick }) {
       entries.forEach((entry) => {
         setDimensions({
           // add margins to prevent chopped off content
-          width: entry.contentRect.width - 200,
-          height: entry.contentRect.height - 50,
+          width: entry.contentRect.width,
+          height: entry.contentRect.height,
         });
       });
     });
@@ -207,7 +213,7 @@ export function Tree({ jsonData, onNodeClick }) {
 
   return (
     <React.Fragment>
-      <div ref={wrapperRef} className={styles.treeContainer}>
+      <div ref={wrapperRef}>
         <svg className={styles.tree} ref={svgRef}></svg>
       </div>
     </React.Fragment>
