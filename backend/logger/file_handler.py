@@ -52,13 +52,13 @@ class FileHandler:
             try:
                 self.file_handle = open(self.get_full_path(), "a")
             except IOError as e:
-                raise(e)
+                raise (e)
         else:
             os.mkdir(self.get_log_directory())
             try:
                 self.file_handle = open(self.get_full_path(), "a")
             except IOError as e:
-                raise(e)
+                raise (e)
 
     def get_write_handle(self):
         """Get the handle of the class for writing to the file
@@ -83,4 +83,4 @@ class FileHandler:
             try:
                 self.file_handle.close()
             except IOError as e:
-                raise(e)
+                raise (e)
