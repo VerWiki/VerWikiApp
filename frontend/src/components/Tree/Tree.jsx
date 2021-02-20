@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import styles from "./Tree.module.css";
-import { select, hierarchy, tree, linkHorizontal } from "d3";
+import { select, hierarchy, tree, linkRadial, ascending } from "d3";
 import ResizeObserver from "resize-observer-polyfill";
 import "./Tree.module.css";
 
@@ -8,12 +8,12 @@ import "./Tree.module.css";
  * This function takes node-text grouping, and inter-node link grouping and performs the animation
  * of the links between them.
  * @param nodeGroupEnter : A grouping of nodes and text boxes grouped together under the SVG tag
- * @param enteringAndUpdatingLinks : The inter-node links, represented as lines joining 
+ * @param enteringAndUpdatingLinks : The inter-node links, represented as lines joining
  * nodes together on the tree.
  */
 
-function animateTree(nodeGroupEnter, enteringAndUpdatingLinks) {
-  nodeGroupEnter
+function animateTree(nodeGroupEnterAndUpdate, enteringAndUpdatingLinks) {
+  nodeGroupEnterAndUpdate
     .attr("opacity", 0)
     .transition()
     .duration(500)
@@ -46,34 +46,37 @@ function animateTree(nodeGroupEnter, enteringAndUpdatingLinks) {
 function renderTree(dimensions, jsonData, svgRef, onNodeClick) {
   const svg = select(svgRef.current);
   const { width, height } = dimensions;
-  const marginLeft = 70;
-  const marginTop = 30;
+
+  const radius = Math.min(width, height);
 
   // Transform hierarchical data
-  const root = hierarchy(jsonData);
-  const treeLayout = tree().size([height, width]);
+  const root = hierarchy(jsonData).sort((a, b) =>
+    ascending(a.data.name, b.data.name)
+  );
+  const treeLayout = tree()
+    .size([2 * Math.PI, radius / 3.0])
+    .separation((a, b) => (a.parent === b.parent ? 1 : 2) / a.depth);
 
   // Creates the links between nodes
-  const linkGenerator = linkHorizontal()
-    .x((link) => link.y + marginLeft)
-    .y((link) => link.x + marginTop);
+  const linkGenerator = linkRadial()
+    .source((link) => link.source)
+    .target((link) => link.target)
+    .angle((d) => d.x)
+    .radius((d) => d.y);
 
   // Enrich hierarchical data with coordinates
   treeLayout(root);
 
   // Create the node group, which will hold the nodes and labels
   const nodeGroup = svg.selectAll(".node-group").data(root.descendants());
-  // Append a `g` element, to group SVG shapes together. 
-  // More info at https://stackoverflow.com/questions/17057809/d3-js-what-is-g-in-appendg-d3-js-code
-  const nodeGroupEnter = nodeGroup.enter().append("g"); 
 
-  nodeGroupEnter
-    .merge(nodeGroup)
+  // Append a `g` element, to group SVG shapes together.
+  // More info at https://stackoverflow.com/questions/17057809/d3-js-what-is-g-in-appendg-d3-js-code
+  const nodeGroupEnter = nodeGroup.enter().append("g");
+  const nodeGroupEnterAndUpdate = nodeGroupEnter.merge(nodeGroup);
+
+  nodeGroupEnterAndUpdate
     .attr("class", "node-group")
-    .attr(
-      "transform",
-      (node) => `translate(${node.y + marginLeft},${node.x + marginTop})`
-    )
     .style("cursor", "pointer")
     .on("click", onNodeClick);
 
@@ -83,16 +86,40 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick) {
   nodeGroupEnter
     .append("circle")
     .merge(nodeGroup.select("circle"))
-    .attr("r", 4);
+    .attr(
+      "transform",
+      (d) => `
+        rotate(${(d.x * 180) / Math.PI - 90})
+        translate(${d.y},0)
+      `
+    )
+    .attr("fill", (d) => (d.depth % 2 === 0 ? "#555" : "#999"))
+    .attr("r", 6);
 
   // Add labels to the node group
   nodeGroupEnter
     .append("text")
     .merge(nodeGroup.select("text"))
     .attr("text-anchor", "middle")
-    .attr("font-size", 18)
+    .attr("font-size", Math.max(6, sigmoid(width) * 12))
     .attr("y", -15)
-    .text((node) => node.data.name);
+    .attr(
+      "transform",
+      (d) => `
+        rotate(${(d.x * 180) / Math.PI - 90}) 
+        translate(${d.y},0) 
+        rotate(${d.x >= Math.PI ? 180 : 0})
+      `
+    )
+    .attr("dy", "0.90em")
+    .attr("dx", "0.0em")
+    // Adds spacing between the node and the label; At even numbered depths, the label is on the
+    // left side; at even numbered depths on the right side hence the if statament
+    .attr("x", (d) => (d.x < Math.PI === !d.children ? 6 : -6))
+    .attr("text-anchor", (d) =>
+      d.x < Math.PI === !d.children ? "start" : "end"
+    )
+    .text((node) => node.data.name + " ");
 
   // Add links between nodes
   const enteringAndUpdatingLinks = svg
@@ -108,7 +135,7 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick) {
     .attr("stroke", "black")
     .attr("fill", "none")
     .attr("opacity", 1);
-  return [nodeGroupEnter, enteringAndUpdatingLinks];
+  return [nodeGroupEnterAndUpdate, enteringAndUpdatingLinks];
 }
 
 /**
@@ -123,6 +150,14 @@ function usePrevious(value) {
     ref.current = value;
   });
   return ref.current;
+}
+
+/**
+ * todo
+ * @param {*} z
+ */
+function sigmoid(z) {
+  return 1 / (1 + Math.exp(-z));
 }
 
 export function Tree({ jsonData, onNodeClick }) {
@@ -159,21 +194,21 @@ export function Tree({ jsonData, onNodeClick }) {
    * animates the tree links only when the data changes.
    */
   useEffect(() => {
-    const [nodeGroupEnter, enteringAndUpdatingLinks] = renderTree(
+    const [nodeGroupEnterAndUpdate, enteringAndUpdatingLinks] = renderTree(
       dimensions,
       jsonData,
       svgRef,
       onNodeClick
     );
     if (jsonData !== previouslyRenderedData) {
-      animateTree(nodeGroupEnter, enteringAndUpdatingLinks);
+      animateTree(nodeGroupEnterAndUpdate, enteringAndUpdatingLinks);
     }
   }, [jsonData, dimensions, previouslyRenderedData, onNodeClick]);
 
   return (
     <React.Fragment>
-      <div ref={wrapperRef} style={{ marginBottom: "2rem" }}>
-        <svg className={styles.treeContainer} ref={svgRef}></svg>
+      <div ref={wrapperRef} className={styles.treeContainer}>
+        <svg className={styles.tree} ref={svgRef}></svg>
       </div>
     </React.Fragment>
   );
