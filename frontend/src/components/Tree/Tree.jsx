@@ -8,7 +8,7 @@ import { usePrevious } from "../../utils/utils";
 /**
  * This function takes node-text grouping, and inter-node link grouping and performs the animation
  * of the links between them.
- * @param nodeGroupEnter : A grouping of nodes and text boxes grouped together under the SVG tag
+ * @param nodeGroupEnterAndUpdate : A grouping of nodes and text boxes grouped together under the SVG tag
  * @param enteringAndUpdatingLinks : The inter-node links, represented as lines joining
  * nodes together on the tree.
  */
@@ -50,14 +50,14 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick, onRightClick) {
   const svg = select(svgRef.current);
   const { width, height } = dimensions;
 
-  const radius = Math.min(width, height);
+  const radius = Math.min(width, height) / 2.5;
 
   // Transform hierarchical data
   const root = hierarchy(jsonData).sort((a, b) =>
     ascending(a.data.name, b.data.name)
   );
   const treeLayout = tree()
-    .size([2 * Math.PI, radius / 2.5])
+    .size([2 * Math.PI, radius])
     .separation((a, b) => (a.parent === b.parent ? 1 : 2) / a.depth);
 
   // Creates the links between nodes
@@ -143,8 +143,8 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick, onRightClick) {
 }
 
 /**
- * todo
- * @param {*} z
+ * A function to bound the passed in value to 1 upper bound
+ * @param {*} z TODO sultan help pls
  */
 function sigmoid(z) {
   return 1 / (1 + Math.exp(-z));
