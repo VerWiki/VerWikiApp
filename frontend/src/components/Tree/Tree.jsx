@@ -47,8 +47,6 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick) {
   const svg = select(svgRef.current);
   const { width, height } = dimensions;
 
-  console.log(width);
-
   const radius = Math.min(width, height);
   const translateStr = "translate(" + width / 2 + "," + height / 2 + ")";
 
@@ -76,7 +74,6 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick) {
   // Append a `g` element, to group SVG shapes together.
   // More info at https://stackoverflow.com/questions/17057809/d3-js-what-is-g-in-appendg-d3-js-code
   const nodeGroupEnter = nodeGroup.enter().append("g");
-
   const nodeGroupEnterAndUpdate = nodeGroupEnter.merge(nodeGroup);
 
   nodeGroupEnterAndUpdate
