@@ -180,7 +180,6 @@ export function Tree({ jsonData, onNodeClick }) {
     const resizeObserver = new ResizeObserver((entries) => {
       entries.forEach((entry) => {
         setDimensions({
-          // add margins to prevent chopped off content
           width: entry.contentRect.width,
           height: entry.contentRect.height,
         });
