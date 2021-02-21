@@ -111,6 +111,36 @@ class LoggerTest(unittest.TestCase):
 
         self.logger.writer.write.assert_called()
 
+    @patch("file_handler.FileHandler.get_write_handle")
+    def test_debug_level_write_info(self, _handle):
+        self.setup(Level.ERROR)
+        _handle.return_value = self.writer
+        self.logger.writer = self.writer
+
+        self.logger.info("message")
+
+        self.logger.writer.write.assert_called()
+
+    @patch("file_handler.FileHandler.get_write_handle")
+    def test_warn_level_write_info(self, _handle):
+        self.setup(Level.ERROR)
+        _handle.return_value = self.writer
+        self.logger.writer = self.writer
+
+        self.logger.info("message")
+
+        self.logger.writer.write.assert_called()
+
+    @patch("file_handler.FileHandler.get_write_handle")
+    def test_error_level_write_info(self, _handle):
+        self.setup(Level.ERROR)
+        _handle.return_value = self.writer
+        self.logger.writer = self.writer
+
+        self.logger.info("message")
+
+        self.logger.writer.write.assert_called()
+
 
 if __name__ == "__main__":
     unittest.main()

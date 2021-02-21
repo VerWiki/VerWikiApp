@@ -45,36 +45,34 @@ class FileHandlerTest(unittest.TestCase):
             _dir_exists.return_value = True
 
             # Mock call to builtin open function
-            mock_open = mock.mock_open()
-            mock_open.side_effect = IOError()
+            _open = mock.mock_open()
+            _open.side_effect = IOError()
 
-            with mock.patch("builtins.open", mock_open):
+            with mock.patch("builtins.open", _open):
                 self.assertRaises(IOError, self.file_handler.open_new_file_write)
 
     @patch("os.mkdir")
-    def test_open_new_file_write_nonexistent_throws_error(self, _mock_mkdir):
+    def test_open_new_file_write_nonexistent_throws_error(self, _mkdir):
         self.setup()
         _dir_exists = MagicMock()
         with mock.patch("os.path.exists", _dir_exists):
             _dir_exists.return_value = False
 
             # Mock call to builtin open function
-            mock_open = mock.mock_open()
-            mock_open.side_effect = IOError()
+            _open = mock.mock_open()
+            _open.side_effect = IOError()
 
-            with mock.patch("builtins.open", mock_open):
+            with mock.patch("builtins.open", _open):
                 self.assertRaises(IOError, self.file_handler.open_new_file_write)
 
     @patch("file_handler.FileHandler.close_file")
     @patch("builtins.open")
     @patch("os.path.exists")
-    def test_open_new_file_write_existing_directory(
-        self, _dir_exists, mock_open, mock_close
-    ):
+    def test_open_new_file_write_existing_directory(self, _dir_exists, _open, _close):
         self.setup()
         _dir_exists.return_value = True
-        mock_close.return_value = True
-        mock_open.return_value = "opened"
+        _close.return_value = True
+        _open.return_value = "opened"
         self.file_handler.open_new_file_write()
         self.assertEqual("opened", self.file_handler.file_handle)
 
@@ -83,12 +81,12 @@ class FileHandlerTest(unittest.TestCase):
     @patch("builtins.open")
     @patch("os.path.exists")
     def test_open_new_file_write_non_existing_directory(
-        self, _dir_exists, mock_open, mock_close, _mkdir
+        self, _dir_exists, _open, _close, _mkdir
     ):
         self.setup()
         _dir_exists.return_value = False
-        mock_close.return_value = True
-        mock_open.return_value = "opened"
+        _close.return_value = True
+        _open.return_value = "opened"
         self.file_handler.open_new_file_write()
         self.assertEqual("opened", self.file_handler.file_handle)
 
@@ -141,12 +139,12 @@ class FileHandlerTest(unittest.TestCase):
     @patch("builtins.open")
     @patch("os.path.exists")
     def test_open_new_file_write_non_existing_directory(
-        self, _dir_exists, mock_open, mock_close, _mkdir
+        self, _dir_exists, _open, _close, _mkdir
     ):
         self.setup()
         _dir_exists.return_value = False
-        mock_close.return_value = True
-        mock_open.return_value = "opened"
+        _close.return_value = True
+        _open.return_value = "opened"
         self.file_handler.open_new_file_write()
         self.assertEqual("opened", self.file_handler.file_handle)
 

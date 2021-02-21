@@ -27,7 +27,8 @@ class FileHandler:
         """
         date = datetime.date.today().strftime("%b-%d-%Y")
         uid = str(uuid.uuid4())
-        self.full_name = self.file_name + "-" + uid + "-" + date + ".log"
+        self.full_name = f"{self.file_name}-{uid}-{date}.log"
+
         return self.full_name
 
     def get_log_directory(self):

@@ -61,6 +61,17 @@ class Logger(metaclass=Singleton):
             f"({str(datetime.now().time())}) ERROR:   {frameinfo.filename}:{str(frameinfo.lineno)} : {message}\n"
         )
 
+    def info(self, message):
+        """Write an info message to the file using the writer
+
+        Parameters:
+        message (str) : The message you want to output.
+        """
+        frameinfo = getframeinfo(stack()[1][0])
+        self.writer.write(
+            f"({str(datetime.now().time())}) INFO:   {frameinfo.filename}:{str(frameinfo.lineno)} : {message}\n"
+        )
+
     def set_level(self, level):
         """Set the level of the logger
 
