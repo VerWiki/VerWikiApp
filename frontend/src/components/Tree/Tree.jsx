@@ -48,6 +48,7 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick) {
   const { width, height } = dimensions;
 
   const radius = Math.min(width, height);
+  const translateStr = "translate(" + width / 2 + "," + height / 2 + ")";
 
   // Transform hierarchical data
   const root = hierarchy(jsonData).sort((a, b) =>
@@ -78,6 +79,7 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick) {
   nodeGroupEnterAndUpdate
     .attr("class", "node-group")
     .style("cursor", "pointer")
+    .attr("transform", translateStr)
     .on("click", onNodeClick);
 
   nodeGroup.exit().remove();
@@ -127,6 +129,7 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick) {
     .data(root.links())
     .join("path")
     .attr("class", "link")
+    .attr("transform", translateStr)
     .attr("d", linkGenerator)
     .attr("stroke-dasharray", function () {
       const length = this.getTotalLength();
@@ -177,9 +180,8 @@ export function Tree({ jsonData, onNodeClick }) {
     const resizeObserver = new ResizeObserver((entries) => {
       entries.forEach((entry) => {
         setDimensions({
-          // add margins to prevent chopped off content
-          width: entry.contentRect.width - 200,
-          height: entry.contentRect.height - 50,
+          width: entry.contentRect.width,
+          height: entry.contentRect.height,
         });
       });
     });
@@ -207,7 +209,7 @@ export function Tree({ jsonData, onNodeClick }) {
 
   return (
     <React.Fragment>
-      <div ref={wrapperRef} className={styles.treeContainer}>
+      <div ref={wrapperRef}>
         <svg className={styles.tree} ref={svgRef}></svg>
       </div>
     </React.Fragment>
