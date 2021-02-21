@@ -13,7 +13,8 @@ from logger import Logger, Level
 
 class LoggerTest(unittest.TestCase):
     def setup(self, level):
-        self.logger = Logger("Logger_Test", level=level)
+        self.logger = Logger("Logger_Test", level)
+        self.logger.level = level
         self.writer = MagicMock()
 
     def test_singleton_design_pattern(self):
@@ -23,8 +24,9 @@ class LoggerTest(unittest.TestCase):
 
     @patch("file_handler.FileHandler.get_write_handle")
     def test_debug_level_write_debug(self, _handle):
-        self.setup(Level.debug)
+        self.setup(Level.DEBUG)
         _handle.return_value = self.writer
+        self.logger.writer = self.writer
 
         self.logger.debug("message")
 
@@ -32,8 +34,9 @@ class LoggerTest(unittest.TestCase):
 
     @patch("file_handler.FileHandler.get_write_handle")
     def test_debug_level_write_warning(self, _handle):
-        self.setup(Level.debug)
+        self.setup(Level.DEBUG)
         _handle.return_value = self.writer
+        self.logger.writer = self.writer
 
         self.logger.warn("message")
 
@@ -41,8 +44,9 @@ class LoggerTest(unittest.TestCase):
 
     @patch("file_handler.FileHandler.get_write_handle")
     def test_debug_level_write_error(self, _handle):
-        self.setup(Level.debug)
+        self.setup(Level.DEBUG)
         _handle.return_value = self.writer
+        self.logger.writer = self.writer
 
         self.logger.error("message")
 
@@ -50,17 +54,18 @@ class LoggerTest(unittest.TestCase):
 
     @patch("file_handler.FileHandler.get_write_handle")
     def test_warn_level_not_write_debug(self, _handle):
-        self.setup(Level.warning)
+        self.setup(Level.WARNING)
         _handle.return_value = self.writer
+        self.logger.writer = self.writer
 
         self.logger.debug("message")
-
         self.logger.writer.write.assert_not_called()
 
     @patch("file_handler.FileHandler.get_write_handle")
     def test_warn_level_write_warning(self, _handle):
-        self.setup(Level.warning)
+        self.setup(Level.WARNING)
         _handle.return_value = self.writer
+        self.logger.writer = self.writer
 
         self.logger.warn("message")
 
@@ -68,8 +73,9 @@ class LoggerTest(unittest.TestCase):
 
     @patch("file_handler.FileHandler.get_write_handle")
     def test_warn_level_write_error(self, _handle):
-        self.setup(Level.warning)
+        self.setup(Level.WARNING)
         _handle.return_value = self.writer
+        self.logger.writer = self.writer
 
         self.logger.error("message")
 
@@ -77,8 +83,9 @@ class LoggerTest(unittest.TestCase):
 
     @patch("file_handler.FileHandler.get_write_handle")
     def test_error_level_not_write_debug(self, _handle):
-        self.setup(Level.error)
+        self.setup(Level.ERROR)
         _handle.return_value = self.writer
+        self.logger.writer = self.writer
 
         self.logger.debug("message")
 
@@ -86,8 +93,9 @@ class LoggerTest(unittest.TestCase):
 
     @patch("file_handler.FileHandler.get_write_handle")
     def test_error_level_not_write_warning(self, _handle):
-        self.setup(Level.error)
+        self.setup(Level.ERROR)
         _handle.return_value = self.writer
+        self.logger.writer = self.writer
 
         self.logger.warn("message")
 
@@ -95,8 +103,9 @@ class LoggerTest(unittest.TestCase):
 
     @patch("file_handler.FileHandler.get_write_handle")
     def test_error_level_write_error(self, _handle):
-        self.setup(Level.error)
+        self.setup(Level.ERROR)
         _handle.return_value = self.writer
+        self.logger.writer = self.writer
 
         self.logger.error("message")
 

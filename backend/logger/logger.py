@@ -7,10 +7,10 @@ import os
 from inspect import stack, getframeinfo
 
 
-class Level(enum.Enum):
-    debug = 0
-    warning = 1
-    error = 2
+class Level(enum.IntEnum):
+    DEBUG = 0
+    WARNING = 1
+    ERROR = 2
 
 
 class Logger(metaclass=Singleton):
@@ -18,7 +18,7 @@ class Logger(metaclass=Singleton):
     Main class for logging functionalities.
     """
 
-    def __init__(self, file_name="session", level=Level.debug):
+    def __init__(self, file_name="session", level=Level.DEBUG):
         self.level = level
         file_handler = FileHandler(file_name)
         self.writer = file_handler.get_write_handle()
@@ -29,7 +29,8 @@ class Logger(metaclass=Singleton):
         Parameters:
         message (str) : The message you want to output.
         """
-        if self.level == Level.warning or self.level == Level.error:
+
+        if self.level > Level.DEBUG:
             return
         frameinfo = getframeinfo(stack()[1][0])
         self.writer.write(
@@ -42,7 +43,7 @@ class Logger(metaclass=Singleton):
         Parameters:
         message (str) : The message you want to output.
         """
-        if self.level == Level.error:
+        if self.level > Level.WARNING:
             return
         frameinfo = getframeinfo(stack()[1][0])
         self.writer.write(
