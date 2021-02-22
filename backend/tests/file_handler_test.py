@@ -181,6 +181,18 @@ class FileHandlerTest(unittest.TestCase):
         full_path = self.file_handler.get_full_path()
         assert NAME_OF_LOGS_DIR in full_path
 
+    def test_get_full_path_create_name_contains_name_name(self):
+        self.setup()
+        self.file_handler.full_name = self.file_handler.file_name
+        full_path = self.file_handler.get_full_path()
+        assert self.file_handler.file_name in full_path
+
+    def test_get_full_path_create_name_contains_dir_name(self):
+        self.setup()
+        self.file_handler.full_name = self.file_handler.file_name
+        full_path = self.file_handler.get_full_path()
+        assert NAME_OF_LOGS_DIR in full_path
+
     @patch("file_handler.FileHandler.close_file")
     def test_close_file_throws_exception(self, _close):
         self.setup()
@@ -188,6 +200,17 @@ class FileHandlerTest(unittest.TestCase):
         _close.side_effect = IOError()
 
         self.assertRaises(IOError, self.file_handler.close_file)
+
+    @patch("builtins.open")
+    def test_close_file_closes_file(self, _open):
+        self.setup()
+        _file = MagicMock()
+        _open.return_value = _file
+        self.file_handler.file_handle = _file
+
+        self.file_handler.close_file()
+
+        _file.close.assert_called()
 
     def set_file_handle_to_non_null(self):
         self.file_handler.file_handle = MagicMock()
