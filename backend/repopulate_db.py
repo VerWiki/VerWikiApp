@@ -1,5 +1,6 @@
-# This file is a convenient way for us to populate and repopulate our DB, at least in phase 1 where we won't have professors creating
-# trees for us. Feel free to add more trees here.
+# This file is a convenient way for us to populate and repopulate our local DBs for development purposes, at least in phase 1
+# where we won't have professors creating trees for us. Feel free to add more trees and other data here. This file has no role in
+# production.
 
 from pymongo import MongoClient
 import pprint
@@ -16,13 +17,15 @@ if __name__ == "__main__":
     client = MongoClient("localhost", port=27017, serverSelectionTimeoutMS=1000)
     # Select the radialTrees collection (Similar to a table in SQL)
     radialTrees = client[VERWIKI_DB_NAME][TREES_TABLE_NAME]
+
+    # select the nodeLinks collection
     nodeLinks = client[VERWIKI_DB_NAME][LINKS_TABLE_NAME]
 
     # Clear out all the old data
     deleted_data = radialTrees.delete_many({})
     deleted_links = nodeLinks.delete_many({})
 
-    # Tree for testing purposes
+    # Sample Tree for local development
     tree1 = {
         "id": 1,
         "data": temp_add_node_links(
@@ -33,9 +36,17 @@ if __name__ == "__main__":
     node_tree, links1 = create_node_ids(tree1["data"])
     tree1["data"] = node_tree
 
+    # Sample link for local development
+    link1 = {
+        "id": "Root-1",
+        "link": "https://cwsl.ca/wiki/doku.php?id=philosophy_of_wisdom_socrates_and_plato#psychotechnologies_metacognition_and_second_order_thinkingimplications_for_the_machinery_of_meaning-making",
+    }
+
     # Insert a tree
     result = radialTrees.insert_one(tree1)
     res = nodeLinks.insert_many(links1)
+    print(result.inserted_id)
+    result = nodeLinks.insert_one(link1)
     print(result.inserted_id)
 
     # The JSON for the tree found here: https://marmelab.com/ArchitectureTree/
@@ -783,4 +794,12 @@ if __name__ == "__main__":
     }
 
     result = radialTrees.insert_one(tree3)
+    print(result.inserted_id)
+
+    # Sample link for local development
+    link2 = {
+        "id": "Root-2",
+        "link": "https://cwsl.ca/wiki/doku.php?id=philosophy_of_wisdom_socrates_and_plato#psychotechnologies_metacognition_and_second_order_thinkingimplications_for_the_machinery_of_meaning-making",
+    }
+    result = nodeLinks.insert_one(link2)
     print(result.inserted_id)

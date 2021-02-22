@@ -3,6 +3,7 @@ import styles from "./Tree.module.css";
 import { select, hierarchy, tree, linkRadial, ascending } from "d3";
 import ResizeObserver from "resize-observer-polyfill";
 import "./Tree.module.css";
+import { usePrevious } from "../../utils/utils";
 
 /**
  * This function takes node-text grouping, and inter-node link grouping and performs the animation
@@ -40,10 +41,12 @@ function animateTree(nodeGroupEnterAndUpdate, enteringAndUpdatingLinks) {
  * will be displayed
  * @param onNodeClick : Function pointer specifying the action
  * to take when a node in the tree is clicked
+ * @param onRightClick: Function pointer specifying the action
+ * to take when a node in the tree is right-clicked
  * @returns SVG groupings of nodes-and-text, and inter-node links
  */
 
-function renderTree(dimensions, jsonData, svgRef, onNodeClick) {
+function renderTree(dimensions, jsonData, svgRef, onNodeClick, onRightClick) {
   const svg = select(svgRef.current);
   const { width, height } = dimensions;
 
@@ -78,7 +81,8 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick) {
   nodeGroupEnterAndUpdate
     .attr("class", "node-group")
     .style("cursor", "pointer")
-    .on("click", onNodeClick);
+    .on("click", onNodeClick)
+    .on("contextmenu", onRightClick);
 
   nodeGroup.exit().remove();
 
@@ -160,7 +164,7 @@ function sigmoid(z) {
   return 1 / (1 + Math.exp(-z));
 }
 
-export function Tree({ jsonData, onNodeClick }) {
+export function Tree({ jsonData, onNodeClick, onRightClick }) {
   const svgRef = useRef();
   const wrapperRef = useRef();
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
@@ -198,12 +202,13 @@ export function Tree({ jsonData, onNodeClick }) {
       dimensions,
       jsonData,
       svgRef,
-      onNodeClick
+      onNodeClick,
+      onRightClick
     );
     if (jsonData !== previouslyRenderedData) {
       animateTree(nodeGroupEnterAndUpdate, enteringAndUpdatingLinks);
     }
-  }, [jsonData, dimensions, previouslyRenderedData, onNodeClick]);
+  }, [jsonData, dimensions, previouslyRenderedData, onNodeClick, onRightClick]);
 
   return (
     <React.Fragment>

@@ -1,3 +1,13 @@
 .App {
   text-align: center;
 }
+.tree {
+  width: 96%;
+  margin: 2%;
+}
+.article {
+  display: none;
+  margin: 2%;
+  width: 96%;
+  overflow-y: scroll;
+}

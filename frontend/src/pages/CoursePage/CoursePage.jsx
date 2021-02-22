@@ -29,14 +29,14 @@ export const CoursePage = () => {
   if (error) {
     Viewer = <h2>{`Error: ${error.message}`}</h2>;
   } else {
-    Viewer = <TreeViewer data={treeObj} />;
+    Viewer = <TreeViewer data={treeObj} treeID={courseId} />;
   }
 
   return (
     <>
       <Navigation />
       <h1 className={styles.heading}>{courseData[courseId].name}</h1>
-      {Viewer}
+      <div className="tree">{Viewer}</div>
     </>
   );
 };

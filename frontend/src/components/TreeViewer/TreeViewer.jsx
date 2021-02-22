@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import styles from "./TreeViewer.module.css";
 import { Tree } from "../Tree/Tree";
 import { NodePathHistory } from "../NodePathHistory/NodePathHistory";
@@ -10,6 +10,8 @@ import NavigateNextRounded from "@material-ui/icons/NavigateNextRounded";
 import HomeRounded from "@material-ui/icons/HomeRounded";
 import { HistoryRecorder } from "../../utils/HistoryRecorder";
 import "fontsource-roboto";
+import { InfoWindow } from "../../components/InfoWindow/InfoWindow";
+import { replaceSpaceCharacters } from "../../utils/utils";
 
 const MAX_DEPTH = 2;
 
@@ -53,23 +55,43 @@ function createNameToNodeMapping(currNode, mapping = {}) {
 }
 
 /**
- * Traverse from currNode to the ancestor node called ancestorNodeName
- * and collect all the node names along the path.
+ * toggleInfoBoxVisibility determines whether to hide or show the text
+ * box to the right of the screen.
+ * @param clickedNodeName: The name of the node that was just clicked
+ * TODO: Change the param to an ID when we integrate that feature
  */
-function pathToAncestor(currNode, ancestorNodeName, history = []) {
-  if (currNode && currNode.data.name !== ancestorNodeName) {
-    history.push(currNode.data.name);
-    pathToAncestor(currNode.parent, ancestorNodeName, history);
-  }
+function toggleInfoBoxVisibility(clickedNodeName, previouslyClickedNodeName) {
+  const articleDiv = document.getElementsByClassName("article")[0];
+  const treeDiv = document.getElementById("course-tree");
 
-  return history;
+  if (
+    articleDiv.classList.contains("span-1-of-4") &&
+    previouslyClickedNodeName === clickedNodeName
+  ) {
+    // Already displaying and the user clicked on the same node again
+    articleDiv.classList.remove("col");
+    articleDiv.classList.remove("span-1-of-4");
+    treeDiv.classList.remove("col");
+    treeDiv.classList.remove("span-3-of-4");
+  } else {
+    //Not yet displaying
+    articleDiv.classList.add("col");
+    articleDiv.classList.add("span-1-of-4");
+    treeDiv.classList.add("col");
+    treeDiv.classList.add("span-3-of-4");
+
+    //Set the height of the textbox equal to the height of the
+    //treeDiv
+    const treeHeightpx = treeDiv.offsetHeight.toString().concat("px");
+    articleDiv.style.height = treeHeightpx;
+  }
 }
 
-export const TreeViewer = ({ data }) => {
+export const TreeViewer = ({ data, treeID }) => {
   const [trimmedData, setTrimmedData] = useState({});
   const [nameToNodeMapping, setNameToNodeMapping] = useState({});
-  const [currentPath, setCurrentPath] = useState([]);
-  const [historyRecorder, setHistoryRecorder] = useState();
+  const [nodeInfoContent, setNodeInfoContent] = useState("");
+  const previouslyClickedNode = useRef("");
 
   /**
    * This function handles the event where a user clicks a node on the tree
@@ -169,6 +191,45 @@ export const TreeViewer = ({ data }) => {
    * When this component mounts, create the node name -> node pointer
    * mapping from the data and set current path to the root. Also,
    * instantiate the history recorder for tracking path history.
+   * The function to handle right clicks - opens up a window to show
+   * summarized information for a given wiki link.
+   */
+  const rightClickHandler = (event, clickedNode) => {
+    event.preventDefault();
+    toggleInfoBoxVisibility(
+      clickedNode.data.name,
+      previouslyClickedNode.current
+    );
+    previouslyClickedNode.current = clickedNode.data.name;
+    const nodeInfoUrl = replaceSpaceCharacters(
+      `http://localhost:3003/get-node-info/${clickedNode.data.name}-${treeID}`
+    );
+    console.log(nodeInfoUrl);
+    fetch(nodeInfoUrl)
+      .then((res) => {
+        if (res.status !== 200) {
+          throw Error(res.status);
+        }
+        return res.json();
+      })
+      .then((res) => {
+        setNodeInfoContent(res);
+      })
+      .catch((err) => {
+        console.log("An error occurred: ", err);
+        const defaultInfo = {
+          content: "No additional information available for the topic ".concat(
+            clickedNode.data.name
+          ),
+        };
+        setNodeInfoContent(defaultInfo);
+      });
+  };
+
+  /**
+   * When this component mounts, create the node name -> node pointer mapping
+   * from the data and also trim the data so we only render a limited number
+   * of levels of the tree.
    */
   useEffect(() => {
     setNameToNodeMapping(createNameToNodeMapping(data));
@@ -229,7 +290,7 @@ export const TreeViewer = ({ data }) => {
           validatePath={validatePath}
         />
       </Toolbar>
-      <Tree jsonData={trimmedData} onNodeClick={nodeClickHandler}></Tree>
+      <Tree jsonData={trimmedData} onNodeClick={nodeClickHandler} onRightClick={rightClickHandler}></Tree>
     </div>
   );
 };
