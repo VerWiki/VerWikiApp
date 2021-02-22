@@ -1,7 +1,43 @@
 from pymongo import MongoClient, errors
+import uuid
+from typing import Tuple
 
 VERWIKI_DB_NAME = "verwiki"
 TREES_TABLE_NAME = "radialTrees"
+LINKS_TABLE_NAME = "nodeLinks"
+
+
+def temp_add_node_links(tree: dict) -> dict:
+    """
+    TEMPORARY - adds links as a sibling field to name.
+    Should enable clicking on every node to open up a link.
+    """
+    tree[
+        "link"
+    ] = "https://cwsl.ca/wiki/doku.php?id=wisdom_perspectival_and_participatory_knowing"
+    if "children" in tree and len(tree["children"]) != 0:
+        for i, child in enumerate(tree["children"]):
+            tree["children"][i] = temp_add_node_links(child)
+    return tree
+
+
+def create_node_ids(tree: dict) -> tuple:
+    """
+    For each node within the tree, adds a UID, and creates a relation
+    between links and nodes.
+    ASSUMPTION - The tree structure would have a `link` subfield
+    at the same level as `name` subfield.
+    """
+    node_link_relation = []
+    uid = str(uuid.uuid4())
+    node_link_relation.append({"uid": uid, "link": tree["link"]})
+    tree["uid"] = uid
+    if "children" in tree and len(tree["children"]) != 0:
+        for i, child in enumerate(tree["children"]):
+            subtree, node_link_rel = create_node_ids(child)
+            tree["children"][i] = subtree
+            node_link_relation.extend(node_link_rel)
+    return tree, node_link_relation
 
 
 def get_tree_by_id(id: int) -> object:
