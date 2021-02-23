@@ -3,7 +3,6 @@ from unittest.mock import Mock, MagicMock, patch
 import sys
 import os
 
-sys.path.append("../logger")
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + "/logger")
 import file_handler
 from file_handler import FileHandler

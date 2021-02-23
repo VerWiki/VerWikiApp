@@ -52,7 +52,6 @@ jobs:
       - name: Testing Backend
         run: |
           export PYTHONPATH=$PYTHONPATH:`pwd`/backend
-          echo "About to run tests..."
           pytest --cov-fail-under=90 --cov-report term-missing --cov=./backend backend > backend-coverage.txt
 
       - name: Coverage

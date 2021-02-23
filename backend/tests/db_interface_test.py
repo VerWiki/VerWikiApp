@@ -5,10 +5,6 @@ from pymongo import errors
 import os
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-sys.modules[
-    "pymongo.MongoClient"
-] = MagicMock()  # Mock out the pymongo dependency in db_interface
 import db_interface
 from db_interface import (
     VERWIKI_DB_NAME,
@@ -16,6 +12,10 @@ from db_interface import (
     get_tree_by_id,
     validate_and_retrieve_client,
 )
+
+sys.modules[
+    "pymongo.MongoClient"
+] = MagicMock()  # Mock out the pymongo dependency in db_interface
 
 
 class TestValidateAndRetrieveClient:
