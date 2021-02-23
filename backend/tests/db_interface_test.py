@@ -2,12 +2,15 @@ import pytest
 from unittest.mock import Mock, MagicMock
 import sys
 from pymongo import errors
+import os
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 sys.modules[
     "pymongo.MongoClient"
 ] = MagicMock()  # Mock out the pymongo dependency in db_interface
-from backend import db_interface
-from backend.db_interface import (
+import db_interface
+from db_interface import (
     VERWIKI_DB_NAME,
     TREES_TABLE_NAME,
     get_tree_by_id,

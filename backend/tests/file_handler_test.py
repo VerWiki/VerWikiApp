@@ -1,11 +1,10 @@
 import unittest
-from unittest.mock import MagicMock, Mock
-from unittest import mock
-from mock import patch
+from unittest.mock import MagicMock, Mock, patch
 import sys
 import os
 
 sys.path.append("../logger")
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + "/logger")
 from file_handler import FileHandler
 
 NAME_OF_LOGS_DIR = "logs"
@@ -41,28 +40,28 @@ class FileHandlerTest(unittest.TestCase):
 
         # Mock directory existing and return true
         _dir_exists = MagicMock()
-        with mock.patch("os.path.exists", _dir_exists):
+        with patch("os.path.exists", _dir_exists):
             _dir_exists.return_value = True
 
             # Mock call to builtin open function
-            _open = mock.mock_open()
+            _open = unittest.mock.mock_open()
             _open.side_effect = IOError()
 
-            with mock.patch("builtins.open", _open):
+            with patch("builtins.open", _open):
                 self.assertRaises(IOError, self.file_handler.open_new_file_write)
 
     @patch("os.mkdir")
     def test_open_new_file_write_nonexistent_throws_error(self, _mkdir):
         self.setup()
         _dir_exists = MagicMock()
-        with mock.patch("os.path.exists", _dir_exists):
+        with patch("os.path.exists", _dir_exists):
             _dir_exists.return_value = False
 
             # Mock call to builtin open function
-            _open = mock.mock_open()
+            _open = unittest.mock.mock_open()
             _open.side_effect = IOError()
 
-            with mock.patch("builtins.open", _open):
+            with patch("builtins.open", _open):
                 self.assertRaises(IOError, self.file_handler.open_new_file_write)
 
     @patch("file_handler.FileHandler.close_file")
