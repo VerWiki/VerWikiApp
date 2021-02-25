@@ -131,6 +131,7 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick, onRightClick) {
     .data(root.links())
     .join("path")
     .attr("class", "link")
+    .attr("transform", translateStr)
     .attr("d", linkGenerator)
     .attr("stroke-dasharray", function () {
       const length = this.getTotalLength();
@@ -167,9 +168,8 @@ export function Tree({ jsonData, onNodeClick, onRightClick }) {
     const resizeObserver = new ResizeObserver((entries) => {
       entries.forEach((entry) => {
         setDimensions({
-          // add margins to prevent chopped off content
-          width: entry.contentRect.width - 200,
-          height: entry.contentRect.height - 50,
+          width: entry.contentRect.width,
+          height: entry.contentRect.height,
         });
       });
     });
@@ -198,7 +198,7 @@ export function Tree({ jsonData, onNodeClick, onRightClick }) {
 
   return (
     <React.Fragment>
-      <div ref={wrapperRef} className={styles.treeContainer}>
+      <div ref={wrapperRef}>
         <svg className={styles.tree} ref={svgRef}></svg>
       </div>
     </React.Fragment>
