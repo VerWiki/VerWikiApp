@@ -1,7 +1,6 @@
-.treeContainer {
+.tree {
   overflow: visible;
-  display: block;
   width: 100vw;
-  height: 80vh;
+  height: calc(100vh - 210px);
   min-height: 700px;
 }
