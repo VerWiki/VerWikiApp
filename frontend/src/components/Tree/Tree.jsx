@@ -51,7 +51,7 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick, onRightClick) {
   const { width, height } = dimensions;
 
   const radius = Math.min(width, height) / 2.5;
-  //const translateStr = "translate(" + width / 2 + "," + height / 2 + ")";
+  const translateStr = "translate(" + width / 2 + "," + height / 2 + ")";
 
   // Transform hierarchical data
   const root = hierarchy(jsonData).sort((a, b) =>
@@ -81,6 +81,7 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick, onRightClick) {
 
   nodeGroupEnterAndUpdate
     .attr("class", "node-group")
+    .attr("transform", translateStr)
     .style("cursor", "pointer")
     .on("click", onNodeClick)
     .on("contextmenu", onRightClick);
@@ -132,7 +133,7 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick, onRightClick) {
     .data(root.links())
     .join("path")
     .attr("class", "link")
-    //.attr("transform", translateStr)
+    .attr("transform", translateStr)
     .attr("d", linkGenerator)
     .attr("stroke-dasharray", function () {
       const length = this.getTotalLength();
