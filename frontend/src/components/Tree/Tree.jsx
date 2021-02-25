@@ -144,7 +144,7 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick, onRightClick) {
 
 /**
  * A function to bound the passed in value to 1 upper bound
- * @param {*} z TODO sultan help pls
+ * @param z - An integer to be bound between 0 and 1
  */
 function sigmoid(z) {
   return 1 / (1 + Math.exp(-z));
