@@ -142,6 +142,7 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick, onRightClick) {
     .attr("stroke", "black")
     .attr("fill", "none")
     .attr("opacity", 1);
+  svg.attr("viewBox", autoBox).node();
   return [nodeGroupEnterAndUpdate, enteringAndUpdatingLinks];
 }
 
@@ -151,6 +152,19 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick, onRightClick) {
  */
 function sigmoid(z) {
   return 1 / (1 + Math.exp(-z));
+}
+
+function autoBox() {
+  //document.body.appendChild(this);
+  const { x, y, width, height } = this.getBBox();
+  //document.body.removeChild(this);
+  const log = console.log;
+  log(x);
+  log(y);
+  log(width);
+  log(height);
+  log("===================");
+  return [x, y, width, height];
 }
 
 export function Tree({ jsonData, onNodeClick, onRightClick }) {
