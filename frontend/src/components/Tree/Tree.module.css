@@ -8,8 +8,8 @@
 
 .tree {
   overflow: visible;
-  /*width: 100vw;*/
   width: 100%;
   height: calc(100vh - 210px);
   min-height: 700px;
+  margin-top: 2%;
 }
