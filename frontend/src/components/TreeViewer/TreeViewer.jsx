@@ -76,7 +76,7 @@ function pathToAncestor(currNode, ancestorNodeName, history = []) {
 function toggleInfoBoxVisibility(clickedNodeName, previouslyClickedNodeName) {
   const articleDiv = document.getElementsByClassName("article")[0];
   const treeDiv = document.getElementById("course-tree");
-
+  let isViewing = false;
   if (
     articleDiv.classList.contains("span-1-of-2") &&
     previouslyClickedNodeName === clickedNodeName
@@ -92,12 +92,14 @@ function toggleInfoBoxVisibility(clickedNodeName, previouslyClickedNodeName) {
     articleDiv.classList.add("span-1-of-2");
     treeDiv.classList.add("col");
     treeDiv.classList.add("span-1-of-2");
+    isViewing = true;
 
     //Set the height of the textbox equal to the height of the
     //treeDiv
     const treeHeightpx = treeDiv.offsetHeight.toString().concat("px");
     articleDiv.style.height = treeHeightpx;
   }
+  return isViewing;
 }
 
 export const TreeViewer = ({ data, treeID }) => {
@@ -134,10 +136,15 @@ export const TreeViewer = ({ data, treeID }) => {
    */
   const rightClickHandler = (event, clickedNode) => {
     event.preventDefault();
-    toggleInfoBoxVisibility(
+    const isViewing = toggleInfoBoxVisibility(
       clickedNode.data.name,
       previouslyClickedNode.current
     );
+    if (!isViewing) {
+      delete clickedNode.viewingInfo;
+    } else {
+      clickedNode["viewingInfo"] = true;
+    }
     previouslyClickedNode.current = clickedNode.data.name;
     const nodeInfoUrl = replaceSpaceCharacters(
       `http://localhost:3003/get-node-info/${clickedNode.data.name}-${treeID}`
