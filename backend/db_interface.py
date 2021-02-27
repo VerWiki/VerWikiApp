@@ -10,9 +10,11 @@ class Utils:
         return
 
     @staticmethod
-    def add_child_counts(tree):
+    def add_child_counts(tree: object) -> object:
         """
-        Assumes the "data" field of the tree has been passed in
+        Recursive function to add the numChildren field of each node in the tree.
+        tree: The "data" field of the tree (not the entire tree itself).
+        returns the updated tree.
         """
         children = tree.get("children", [])
         tree["numChildren"] = len(children)
@@ -22,7 +24,7 @@ class Utils:
         return tree
 
     @staticmethod
-    def pretty_printer(d, indent=0):
+    def pretty_printer(d: object, indent: int = 0):
         """
         Prints a python dictionary in a readable fashion.
         d = python dictionary to print.
@@ -31,7 +33,7 @@ class Utils:
         for key, value in d.items():
             print("\t" * indent + str(key))
             if isinstance(value, dict):
-                Utils.pretty(value, indent + 1)
+                Utils.pretty_printer(value, indent + 1)
             else:
                 print("\t" * (indent + 1) + str(value))
 
