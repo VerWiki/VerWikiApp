@@ -118,7 +118,6 @@ export const TreeViewer = ({ data, treeID }) => {
      * to determine all the nodes in between, and append those to the
      * current path.
      */
-    console.log(clickedNode);
     if (clickedNode.data.numChildren > 0) {
       const path = pathToAncestor(
         clickedNode,
@@ -143,7 +142,6 @@ export const TreeViewer = ({ data, treeID }) => {
     const nodeInfoUrl = replaceSpaceCharacters(
       `http://localhost:3003/get-node-info/${clickedNode.data.name}-${treeID}`
     );
-    console.log(nodeInfoUrl);
     fetch(nodeInfoUrl)
       .then((res) => {
         if (res.status !== 200) {
@@ -155,7 +153,6 @@ export const TreeViewer = ({ data, treeID }) => {
         setNodeInfoContent(res);
       })
       .catch((err) => {
-        console.log("An error occurred: ", err);
         const defaultInfo = {
           content: "No additional information available for the topic ".concat(
             clickedNode.data.name

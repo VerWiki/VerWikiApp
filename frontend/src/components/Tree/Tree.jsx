@@ -183,7 +183,6 @@ export function Tree({ jsonData, onNodeClick, onRightClick }) {
       //Skip rerender if the data hasn't been fetched yet
       return;
     }
-    console.log(jsonData);
     const [nodeGroupEnterAndUpdate, enteringAndUpdatingLinks] = renderTree(
       dimensions,
       jsonData,
