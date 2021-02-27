@@ -1,6 +1,15 @@
+.treeContainer {
+  height: calc(100vh - 140px);
+  min-height: 700px;
+  justify-content: center;
+  display: flex;
+  align-items: center;
+}
+
 .tree {
   overflow: visible;
-  width: 100vw;
+  width: 100%;
   height: calc(100vh - 210px);
   min-height: 700px;
+  margin-top: 2%;
 }

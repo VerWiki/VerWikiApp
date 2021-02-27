@@ -3,11 +3,12 @@ import styles from "./Tree.module.css";
 import { select, hierarchy, tree, linkRadial, ascending } from "d3";
 import ResizeObserver from "resize-observer-polyfill";
 import "./Tree.module.css";
+import { usePrevious, sigmoid, autoBox } from "../../utils/utils";
 
 /**
  * This function takes node-text grouping, and inter-node link grouping and performs the animation
  * of the links between them.
- * @param nodeGroupEnter : A grouping of nodes and text boxes grouped together under the SVG tag
+ * @param nodeGroupEnterAndUpdate : A grouping of nodes and text boxes grouped together under the SVG tag
  * @param enteringAndUpdatingLinks : The inter-node links, represented as lines joining
  * nodes together on the tree.
  */
@@ -40,14 +41,16 @@ function animateTree(nodeGroupEnterAndUpdate, enteringAndUpdatingLinks) {
  * will be displayed
  * @param onNodeClick : Function pointer specifying the action
  * to take when a node in the tree is clicked
+ * @param onRightClick: Function pointer specifying the action
+ * to take when a node in the tree is right-clicked
  * @returns SVG groupings of nodes-and-text, and inter-node links
  */
 
-function renderTree(dimensions, jsonData, svgRef, onNodeClick) {
+function renderTree(dimensions, jsonData, svgRef, onNodeClick, onRightClick) {
   const svg = select(svgRef.current);
   const { width, height } = dimensions;
 
-  const radius = Math.min(width, height);
+  const radius = Math.min(width, height) / 2.5;
   const translateStr = "translate(" + width / 2 + "," + height / 2 + ")";
 
   // Transform hierarchical data
@@ -55,7 +58,7 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick) {
     ascending(a.data.name, b.data.name)
   );
   const treeLayout = tree()
-    .size([2 * Math.PI, radius / 3.0])
+    .size([2 * Math.PI, radius])
     .separation((a, b) => (a.parent === b.parent ? 1 : 2) / a.depth);
 
   // Creates the links between nodes
@@ -78,9 +81,10 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick) {
 
   nodeGroupEnterAndUpdate
     .attr("class", "node-group")
-    .style("cursor", "pointer")
     .attr("transform", translateStr)
-    .on("click", onNodeClick);
+    .style("cursor", "pointer")
+    .on("click", onNodeClick)
+    .on("contextmenu", onRightClick);
 
   nodeGroup.exit().remove();
 
@@ -103,7 +107,7 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick) {
     .append("text")
     .merge(nodeGroup.select("text"))
     .attr("text-anchor", "middle")
-    .attr("font-size", Math.max(6, sigmoid(width) * 12))
+    .attr("font-size", Math.max(6, sigmoid(width) * 17))
     .attr("y", -15)
     .attr(
       "transform",
@@ -138,32 +142,11 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick) {
     .attr("stroke", "black")
     .attr("fill", "none")
     .attr("opacity", 1);
+  svg.attr("viewBox", autoBox).node();
   return [nodeGroupEnterAndUpdate, enteringAndUpdatingLinks];
 }
 
-/**
- * Tracks the previous value of the given item. Returns
- * the previous value
- * @param value : The object to be tracked
- */
-
-function usePrevious(value) {
-  const ref = useRef();
-  useEffect(() => {
-    ref.current = value;
-  });
-  return ref.current;
-}
-
-/**
- * todo
- * @param {*} z
- */
-function sigmoid(z) {
-  return 1 / (1 + Math.exp(-z));
-}
-
-export function Tree({ jsonData, onNodeClick }) {
+export function Tree({ jsonData, onNodeClick, onRightClick }) {
   const svgRef = useRef();
   const wrapperRef = useRef();
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
@@ -196,16 +179,21 @@ export function Tree({ jsonData, onNodeClick }) {
    * animates the tree links only when the data changes.
    */
   useEffect(() => {
+    if (jsonData.name === undefined) {
+      //Skip rerender if the data hasn't been fetched yet
+      return;
+    }
     const [nodeGroupEnterAndUpdate, enteringAndUpdatingLinks] = renderTree(
       dimensions,
       jsonData,
       svgRef,
-      onNodeClick
+      onNodeClick,
+      onRightClick
     );
     if (jsonData !== previouslyRenderedData) {
       animateTree(nodeGroupEnterAndUpdate, enteringAndUpdatingLinks);
     }
-  }, [jsonData, dimensions, previouslyRenderedData, onNodeClick]);
+  }, [jsonData, dimensions, previouslyRenderedData, onNodeClick, onRightClick]);
 
   return (
     <React.Fragment>

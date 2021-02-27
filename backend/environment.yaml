@@ -12,4 +12,7 @@ dependencies:
   - pytest-cov
   - black
   - pip:
+      - pymongo
       - pre-commit
+      - bs4
+      - keybert

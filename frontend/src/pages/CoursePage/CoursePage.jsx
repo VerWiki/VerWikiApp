@@ -13,7 +13,9 @@ export const CoursePage = () => {
 
   useEffect(() => {
     fetch(`http://localhost:3003/get-tree-by-id/${courseId}`)
-      .then((res) => res.json())
+      .then((res) => {
+        return res.json();
+      })
       .then(
         (result) => {
           setTreeObj(result);
@@ -29,14 +31,14 @@ export const CoursePage = () => {
   if (error) {
     Viewer = <h2>{`Error: ${error.message}`}</h2>;
   } else {
-    Viewer = <TreeViewer data={treeObj} />;
+    Viewer = <TreeViewer data={treeObj} treeID={courseId} />;
   }
 
   return (
     <>
       <Navigation />
       <h1 className={styles.heading}>{courseData[courseId].name}</h1>
-      {Viewer}
+      <div>{Viewer}</div>
     </>
   );
 };

@@ -13,6 +13,7 @@
 /build
 
 # misc
+package-lock.json
 .DS_Store
 .env.local
 .env.development.local
@@ -29,3 +30,4 @@ yarn-error.log*
 */__pycache__
 backend-coverage.txt
 node_modules
+backend/tests/__pycache__
