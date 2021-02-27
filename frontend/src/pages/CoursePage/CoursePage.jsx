@@ -38,7 +38,7 @@ export const CoursePage = () => {
     <>
       <Navigation />
       <h1 className={styles.heading}>{courseData[courseId].name}</h1>
-      <div className="tree">{Viewer}</div>
+      <div>{Viewer}</div>
     </>
   );
 };
