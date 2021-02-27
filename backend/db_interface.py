@@ -22,7 +22,12 @@ class Utils:
         return tree
 
     @staticmethod
-    def pretty(d, indent=0):
+    def pretty_printer(d, indent=0):
+        """
+        Prints a python dictionary in a readable fashion.
+        d = python dictionary to print.
+        indent = how much to indent the children in each level.
+        """
         for key, value in d.items():
             print("\t" * indent + str(key))
             if isinstance(value, dict):

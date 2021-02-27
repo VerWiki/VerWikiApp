@@ -390,7 +390,6 @@ if __name__ == "__main__":
 
     tree2["data"] = Utils.add_child_counts(tree2["data"])
     # Insert another tree
-    Utils.pretty(tree2)
     result = radialTrees.insert_one(tree2)
     print(result.inserted_id)
 
