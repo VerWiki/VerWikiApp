@@ -13,7 +13,9 @@ export const CoursePage = () => {
 
   useEffect(() => {
     fetch(`http://localhost:3003/get-tree-by-id/${courseId}`)
-      .then((res) => res.json())
+      .then((res) => {
+        return res.json();
+      })
       .then(
         (result) => {
           setTreeObj(result);

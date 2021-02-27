@@ -21,3 +21,22 @@ export function replaceSpaceCharacters(urlString) {
   let url = urlString.trim();
   return url.replaceAll(" ", "-");
 }
+
+/**
+ * A function to bound the passed in value to 1 upper bound
+ * @param z - An integer to be bound between 0 and 1
+ */
+export function sigmoid(z) {
+  return 1 / (1 + Math.exp(-z));
+}
+
+/**
+ * Function to return the x, y, width and height of "this".
+ * x, y are the coordinates of the root, and width, height are
+ * the dimensions of the object.
+ * See https://css-tricks.com/scale-svg/#the-viewbox-attribute
+ */
+export function autoBox() {
+  const { x, y, width, height } = this.getBBox();
+  return [x, y, width, height];
+}

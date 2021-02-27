@@ -3,7 +3,7 @@ import styles from "./Tree.module.css";
 import { select, hierarchy, tree, linkRadial, ascending } from "d3";
 import ResizeObserver from "resize-observer-polyfill";
 import "./Tree.module.css";
-import { usePrevious } from "../../utils/utils";
+import { usePrevious, sigmoid, autoBox } from "../../utils/utils";
 
 /**
  * This function takes node-text grouping, and inter-node link grouping and performs the animation
@@ -146,27 +146,6 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick, onRightClick) {
   return [nodeGroupEnterAndUpdate, enteringAndUpdatingLinks];
 }
 
-/**
- * A function to bound the passed in value to 1 upper bound
- * @param z - An integer to be bound between 0 and 1
- */
-function sigmoid(z) {
-  return 1 / (1 + Math.exp(-z));
-}
-
-function autoBox() {
-  //document.body.appendChild(this);
-  const { x, y, width, height } = this.getBBox();
-  //document.body.removeChild(this);
-  const log = console.log;
-  log(x);
-  log(y);
-  log(width);
-  log(height);
-  log("===================");
-  return [x, y, width, height];
-}
-
 export function Tree({ jsonData, onNodeClick, onRightClick }) {
   const svgRef = useRef();
   const wrapperRef = useRef();
@@ -200,6 +179,10 @@ export function Tree({ jsonData, onNodeClick, onRightClick }) {
    * animates the tree links only when the data changes.
    */
   useEffect(() => {
+    if (jsonData.name === undefined) {
+      //Skip rerender if the data hasn't been fetched yet
+      return;
+    }
     const [nodeGroupEnterAndUpdate, enteringAndUpdatingLinks] = renderTree(
       dimensions,
       jsonData,
