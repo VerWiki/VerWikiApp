@@ -29,6 +29,7 @@ function extractObjectWithMaxDepth(obj, depth = MAX_DEPTH) {
   // exceed the max depth
   return {
     name: obj.name,
+    numChildren: obj.numChildren,
     children: obj.children
       ? obj.children
           .map((node) => extractObjectWithMaxDepth(node, depth - 1))
@@ -117,7 +118,6 @@ export const TreeViewer = ({ data, treeID }) => {
      * to determine all the nodes in between, and append those to the
      * current path.
      */
-    console.log(clickedNode);
     if (clickedNode.data.children.length > 0) {
       const path = pathToAncestor(
         clickedNode,
