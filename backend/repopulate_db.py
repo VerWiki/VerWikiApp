@@ -3,7 +3,7 @@
 # production.
 
 from pymongo import MongoClient
-from db_interface import VERWIKI_DB_NAME, TREES_TABLE_NAME, LINKS_TABLE_NAME
+from db_interface import VERWIKI_DB_NAME, TREES_TABLE_NAME, LINKS_TABLE_NAME, Utils
 
 if __name__ == "__main__":
 
@@ -23,6 +23,8 @@ if __name__ == "__main__":
         "id": 1,
         "data": {"name": "Root", "children": [{"name": "Front", "children": []}]},
     }
+
+    tree1["data"] = Utils.add_child_counts(tree1["data"])
 
     # Sample link for local development
     link1 = {
@@ -385,7 +387,10 @@ if __name__ == "__main__":
             ],
         },
     }
+
+    tree2["data"] = Utils.add_child_counts(tree2["data"])
     # Insert another tree
+    Utils.pretty(tree2)
     result = radialTrees.insert_one(tree2)
     print(result.inserted_id)
 
@@ -773,6 +778,7 @@ if __name__ == "__main__":
             ],
         },
     }
+    tree3["data"] = Utils.add_child_counts(tree3["data"])
 
     result = radialTrees.insert_one(tree3)
     print(result.inserted_id)

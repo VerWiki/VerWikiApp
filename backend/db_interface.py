@@ -5,6 +5,32 @@ TREES_TABLE_NAME = "radialTrees"
 LINKS_TABLE_NAME = "nodeLinks"
 
 
+class Utils:
+    def __init__(self):
+        return
+
+    @staticmethod
+    def add_child_counts(tree):
+        """
+        Assumes the "data" field of the tree has been passed in
+        """
+        children = tree.get("children", [])
+        tree["numChildren"] = len(children)
+        for i, child in enumerate(children):
+            subtree = Utils.add_child_counts(child)
+            tree["children"][i] = subtree
+        return tree
+
+    @staticmethod
+    def pretty(d, indent=0):
+        for key, value in d.items():
+            print("\t" * indent + str(key))
+            if isinstance(value, dict):
+                Utils.pretty(value, indent + 1)
+            else:
+                print("\t" * (indent + 1) + str(value))
+
+
 def get_tree_by_id(id: int) -> object:
     """
     Returns the tree with the specified ID from the database, or

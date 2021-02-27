@@ -117,6 +117,7 @@ export const TreeViewer = ({ data, treeID }) => {
      * to determine all the nodes in between, and append those to the
      * current path.
      */
+    console.log(clickedNode);
     if (clickedNode.data.children.length > 0) {
       const path = pathToAncestor(
         clickedNode,
