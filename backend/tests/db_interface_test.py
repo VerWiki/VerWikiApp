@@ -14,11 +14,40 @@ from db_interface import (
     validate_and_retrieve_client,
     get_link_by_node_id,
     get_node_id_by_link,
+    Utils,
 )
 
 sys.modules[
     "pymongo.MongoClient"
 ] = MagicMock()  # Mock out the pymongo dependency in db_interface
+
+
+class TestUtilsAddChildCounts:
+    def test_add_child_counts(self):
+        tree1 = {
+            "id": 1,
+            "data": {"name": "Root", "children": [{"name": "Front", "children": []}]},
+        }
+        expected_output = {
+            "name": "Root",
+            "children": [{"name": "Front", "children": [], "numChildren": 0}],
+            "numChildren": 1,
+        }
+        output = Utils.add_child_counts(tree1["data"])
+        assert output == expected_output
+
+    def test_add_child_counts_no_children_key(self):
+        tree1 = {"name": "Root"}
+        assert Utils.add_child_counts(tree1) == {"name": "Root", "numChildren": 0}
+
+
+class TestPrettyPrinter:
+    def test_pretty_printers(self):
+        tree1 = {
+            "id": 1,
+            "data": {"name": "Root", "children": [{"name": "Front", "children": []}]},
+        }
+        assert Utils.pretty_printer(tree1) == None
 
 
 class TestValidateAndRetrieveClient:

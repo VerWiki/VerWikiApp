@@ -6,9 +6,6 @@ LINKS_TABLE_NAME = "nodeLinks"
 
 
 class Utils:
-    def __init__(self):
-        return
-
     @staticmethod
     def add_child_counts(tree: object) -> object:
         """
