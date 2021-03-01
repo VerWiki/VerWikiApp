@@ -142,7 +142,6 @@ export const TreeViewer = ({ data, treeID }) => {
       clickedNode.data.name,
       previouslyClickedNode.current
     );
-    console.log(isCurrentlyViewing);
     VIEWED_NODE = isCurrentlyViewing;
     previouslyClickedNode.current = clickedNode.data.name;
     const nodeInfoUrl = replaceSpaceCharacters(

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useLayoutEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import styles from "./Tree.module.css";
 import { select, hierarchy, tree, linkRadial, ascending } from "d3";
 import ResizeObserver from "resize-observer-polyfill";
@@ -115,8 +115,7 @@ function renderTree(
     .attr("fill", (d) => {
       if (d.data.name === viewedNode) {
         return "#377bfa";
-      }
-      if (d.data.numChildren === 0) {
+      } else if (d.data.numChildren === 0) {
         return "#b30000";
       } else {
         return "#555";
@@ -172,17 +171,9 @@ export function Tree({ jsonData, onNodeClick, onRightClick, viewedNode }) {
   const svgRef = useRef();
   const wrapperRef = useRef();
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
-
+  const firstRender = useRef(true);
   // We save data to see if it changed
   const previouslyRenderedData = usePrevious(jsonData);
-
-  const firstRender = useRef(true);
-  useLayoutEffect(() => {
-    if (firstRender.current) {
-      firstRender.current = false;
-      return;
-    }
-  });
 
   /**
    * This effect updates the dimensions' state every time the user
@@ -211,6 +202,7 @@ export function Tree({ jsonData, onNodeClick, onRightClick, viewedNode }) {
   useEffect(() => {
     if (jsonData.name === undefined) {
       //Skip rerender if the data hasn't been fetched yet
+      firstRender.current = true;
       return;
     }
     const [nodeGroupEnterAndUpdate, enteringAndUpdatingLinks] = renderTree(
@@ -225,6 +217,7 @@ export function Tree({ jsonData, onNodeClick, onRightClick, viewedNode }) {
     if (jsonData !== previouslyRenderedData) {
       animateTree(nodeGroupEnterAndUpdate, enteringAndUpdatingLinks);
     }
+    firstRender.current = false;
   }, [
     jsonData,
     dimensions,
