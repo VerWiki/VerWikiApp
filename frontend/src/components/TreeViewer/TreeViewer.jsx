@@ -78,7 +78,7 @@ function toggleInfoBoxVisibility(clickedNodeName, previouslyClickedNodeName) {
   const articleDiv = document.getElementsByClassName("article")[0];
   const treeDiv = document.getElementById("course-tree");
   let isViewing = null;
-  
+
   if (
     articleDiv.classList.contains("span-1-of-2") &&
     previouslyClickedNodeName === clickedNodeName
