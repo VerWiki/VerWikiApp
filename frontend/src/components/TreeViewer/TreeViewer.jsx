@@ -14,6 +14,7 @@ import { HistoryRecorder } from "../../utils/HistoryRecorder";
 import "fontsource-roboto";
 
 const MAX_DEPTH = 2;
+let VIEWED_NODE = null;
 
 /**
  * Given the original data which has an unbounded number
@@ -76,7 +77,8 @@ function pathToAncestor(currNode, ancestorNodeName, history = []) {
 function toggleInfoBoxVisibility(clickedNodeName, previouslyClickedNodeName) {
   const articleDiv = document.getElementsByClassName("article")[0];
   const treeDiv = document.getElementById("course-tree");
-  let isViewing = false;
+  let isViewing = null;
+  
   if (
     articleDiv.classList.contains("span-1-of-2") &&
     previouslyClickedNodeName === clickedNodeName
@@ -92,7 +94,7 @@ function toggleInfoBoxVisibility(clickedNodeName, previouslyClickedNodeName) {
     articleDiv.classList.add("span-1-of-2");
     treeDiv.classList.add("col");
     treeDiv.classList.add("span-1-of-2");
-    isViewing = true;
+    isViewing = clickedNodeName;
 
     //Set the height of the textbox equal to the height of the
     //treeDiv
@@ -136,15 +138,12 @@ export const TreeViewer = ({ data, treeID }) => {
    */
   const rightClickHandler = (event, clickedNode) => {
     event.preventDefault();
-    const isViewing = toggleInfoBoxVisibility(
+    const isCurrentlyViewing = toggleInfoBoxVisibility(
       clickedNode.data.name,
       previouslyClickedNode.current
     );
-    if (!isViewing) {
-      delete clickedNode.viewingInfo;
-    } else {
-      clickedNode["viewingInfo"] = true;
-    }
+    console.log(isCurrentlyViewing);
+    VIEWED_NODE = isCurrentlyViewing;
     previouslyClickedNode.current = clickedNode.data.name;
     const nodeInfoUrl = replaceSpaceCharacters(
       `http://localhost:3003/get-node-info/${clickedNode.data.name}-${treeID}`
@@ -313,6 +312,7 @@ export const TreeViewer = ({ data, treeID }) => {
             jsonData={trimmedData}
             onNodeClick={nodeClickHandler}
             onRightClick={rightClickHandler}
+            viewedNode={VIEWED_NODE}
           ></Tree>
         </div>
         <div className="article">

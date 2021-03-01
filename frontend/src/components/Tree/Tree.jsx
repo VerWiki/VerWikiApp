@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useLayoutEffect } from "react";
 import styles from "./Tree.module.css";
 import { select, hierarchy, tree, linkRadial, ascending } from "d3";
 import ResizeObserver from "resize-observer-polyfill";
@@ -46,7 +46,18 @@ function animateTree(nodeGroupEnterAndUpdate, enteringAndUpdatingLinks) {
  * @returns SVG groupings of nodes-and-text, and inter-node links
  */
 
-function renderTree(dimensions, jsonData, svgRef, onNodeClick, onRightClick) {
+function renderTree(
+  dimensions,
+  jsonData,
+  svgRef,
+  onNodeClick,
+  onRightClick,
+  viewedNode,
+  firstRender
+) {
+  if (firstRender === true) {
+    viewedNode = null;
+  }
   const svg = select(svgRef.current);
   const { width, height } = dimensions;
 
@@ -102,8 +113,7 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick, onRightClick) {
       `
     )
     .attr("fill", (d) => {
-      console.log(d.viewingInfo);
-      if (d.data.viewingInfo) {
+      if (d.data.name === viewedNode) {
         return "#377bfa";
       }
       if (d.data.numChildren === 0) {
@@ -158,13 +168,21 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick, onRightClick) {
   return [nodeGroupEnterAndUpdate, enteringAndUpdatingLinks];
 }
 
-export function Tree({ jsonData, onNodeClick, onRightClick }) {
+export function Tree({ jsonData, onNodeClick, onRightClick, viewedNode }) {
   const svgRef = useRef();
   const wrapperRef = useRef();
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
   // We save data to see if it changed
   const previouslyRenderedData = usePrevious(jsonData);
+
+  const firstRender = useRef(true);
+  useLayoutEffect(() => {
+    if (firstRender.current) {
+      firstRender.current = false;
+      return;
+    }
+  });
 
   /**
    * This effect updates the dimensions' state every time the user
@@ -200,12 +218,21 @@ export function Tree({ jsonData, onNodeClick, onRightClick }) {
       jsonData,
       svgRef,
       onNodeClick,
-      onRightClick
+      onRightClick,
+      viewedNode,
+      firstRender.current
     );
     if (jsonData !== previouslyRenderedData) {
       animateTree(nodeGroupEnterAndUpdate, enteringAndUpdatingLinks);
     }
-  }, [jsonData, dimensions, previouslyRenderedData, onNodeClick, onRightClick]);
+  }, [
+    jsonData,
+    dimensions,
+    previouslyRenderedData,
+    onNodeClick,
+    onRightClick,
+    viewedNode,
+  ]);
 
   return (
     <React.Fragment>
