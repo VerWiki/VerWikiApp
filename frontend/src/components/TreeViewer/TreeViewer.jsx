@@ -14,7 +14,6 @@ import { HistoryRecorder } from "../../utils/HistoryRecorder";
 import "fontsource-roboto";
 
 const MAX_DEPTH = 2;
-let VIEWED_NODE = null;
 
 /**
  * Given the original data which has an unbounded number
@@ -74,43 +73,41 @@ function pathToAncestor(currNode, ancestorNodeName, history = []) {
  * @param clickedNodeName: The name of the node that was just clicked
  * TODO: Change the param to an ID when we integrate that feature
  */
-function toggleInfoBoxVisibility(clickedNodeName, previouslyClickedNodeName) {
+function toggleInfoBoxVisibility(clickedNodeName, curViewingNodeName) {
   const articleDiv = document.getElementsByClassName("article")[0];
   const treeDiv = document.getElementById("course-tree");
-  let isViewing = null;
+  let nodeViewingAfterToggle;
 
-  if (
-    articleDiv.classList.contains("span-1-of-2") &&
-    previouslyClickedNodeName === clickedNodeName
-  ) {
+  if (curViewingNodeName === clickedNodeName) {
     // Already displaying and the user clicked on the same node again
     articleDiv.classList.remove("col");
     articleDiv.classList.remove("span-1-of-2");
     treeDiv.classList.remove("col");
     treeDiv.classList.remove("span-1-of-2");
+    nodeViewingAfterToggle = null;
   } else {
     //Not yet displaying
     articleDiv.classList.add("col");
     articleDiv.classList.add("span-1-of-2");
     treeDiv.classList.add("col");
     treeDiv.classList.add("span-1-of-2");
-    isViewing = clickedNodeName;
+    nodeViewingAfterToggle = clickedNodeName;
 
     //Set the height of the textbox equal to the height of the
     //treeDiv
     const treeHeightpx = treeDiv.offsetHeight.toString().concat("px");
     articleDiv.style.height = treeHeightpx;
   }
-  return isViewing;
+  return nodeViewingAfterToggle;
 }
 
 export const TreeViewer = ({ data, treeID }) => {
   const [trimmedData, setTrimmedData] = useState({});
   const [nameToNodeMapping, setNameToNodeMapping] = useState({});
   const [nodeInfoContent, setNodeInfoContent] = useState("");
-  const previouslyClickedNode = useRef("");
   const [currentPath, setCurrentPath] = useState([]);
   const [historyRecorder, setHistoryRecorder] = useState();
+  const curViewingNode = useRef(null);
 
   /**
    * This function handles the event where a user clicks a node on the tree
@@ -138,11 +135,10 @@ export const TreeViewer = ({ data, treeID }) => {
    */
   const rightClickHandler = (event, clickedNode) => {
     event.preventDefault();
-    VIEWED_NODE = toggleInfoBoxVisibility(
+    curViewingNode.current = toggleInfoBoxVisibility(
       clickedNode.data.name,
-      previouslyClickedNode.current
+      curViewingNode.current
     );
-    previouslyClickedNode.current = clickedNode.data.name;
     const nodeInfoUrl = replaceSpaceCharacters(
       `http://localhost:3003/get-node-info/${clickedNode.data.name}-${treeID}`
     );
@@ -310,7 +306,7 @@ export const TreeViewer = ({ data, treeID }) => {
             jsonData={trimmedData}
             onNodeClick={nodeClickHandler}
             onRightClick={rightClickHandler}
-            viewedNode={VIEWED_NODE}
+            viewedNode={curViewingNode.current}
           ></Tree>
         </div>
         <div className="article">
