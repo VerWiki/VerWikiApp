@@ -99,7 +99,7 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick, onRightClick) {
         translate(${d.y},0)
       `
     )
-    .attr("fill", (d) => (d.depth % 2 === 0 ? "#555" : "#999"))
+    .attr("fill", (d) => (d.data.numChildren === 0 ? "#b30000" : "#555"))
     .attr("r", 6);
 
   // Add labels to the node group

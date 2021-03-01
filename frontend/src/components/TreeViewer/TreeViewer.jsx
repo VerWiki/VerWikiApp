@@ -29,6 +29,7 @@ function extractObjectWithMaxDepth(obj, depth = MAX_DEPTH) {
   // exceed the max depth
   return {
     name: obj.name,
+    numChildren: obj.numChildren,
     children: obj.children
       ? obj.children
           .map((node) => extractObjectWithMaxDepth(node, depth - 1))
@@ -117,13 +118,14 @@ export const TreeViewer = ({ data, treeID }) => {
      * to determine all the nodes in between, and append those to the
      * current path.
      */
-    const path = pathToAncestor(
-      clickedNode,
-      currentPath[currentPath.length - 1]
-    );
-    path.reverse(); // We want ancestor -> clicked node
-
-    historyRecorder.resetPath([...currentPath, ...path]);
+    if (clickedNode.data.numChildren > 0) {
+      const path = pathToAncestor(
+        clickedNode,
+        currentPath[currentPath.length - 1]
+      );
+      path.reverse(); // We want ancestor -> clicked node
+      historyRecorder.resetPath([...currentPath, ...path]);
+    }
   };
 
   /**
@@ -140,7 +142,6 @@ export const TreeViewer = ({ data, treeID }) => {
     const nodeInfoUrl = replaceSpaceCharacters(
       `http://localhost:3003/get-node-info/${clickedNode.data.name}-${treeID}`
     );
-    console.log(nodeInfoUrl);
     fetch(nodeInfoUrl)
       .then((res) => {
         if (res.status !== 200) {
@@ -152,7 +153,6 @@ export const TreeViewer = ({ data, treeID }) => {
         setNodeInfoContent(res);
       })
       .catch((err) => {
-        console.log("An error occurred: ", err);
         const defaultInfo = {
           content: "No additional information available for the topic ".concat(
             clickedNode.data.name

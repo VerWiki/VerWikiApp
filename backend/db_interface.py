@@ -5,6 +5,36 @@ TREES_TABLE_NAME = "radialTrees"
 LINKS_TABLE_NAME = "nodeLinks"
 
 
+class Utils:
+    @staticmethod
+    def add_child_counts(tree: object) -> object:
+        """
+        Recursive function to add the numChildren field of each node in the tree.
+        tree: The "data" field of the tree (not the entire tree itself).
+        returns the updated tree.
+        """
+        children = tree.get("children", [])
+        tree["numChildren"] = len(children)
+        for i, child in enumerate(children):
+            subtree = Utils.add_child_counts(child)
+            tree["children"][i] = subtree
+        return tree
+
+    @staticmethod
+    def pretty_printer(d: object, indent: int = 0):
+        """
+        Prints a python dictionary in a readable fashion.
+        d = python dictionary to print.
+        indent = how much to indent the children in each level.
+        """
+        for key, value in d.items():
+            print("\t" * indent + str(key))
+            if isinstance(value, dict):
+                Utils.pretty_printer(value, indent + 1)
+            else:
+                print("\t" * (indent + 1) + str(value))
+
+
 def get_tree_by_id(id: int) -> object:
     """
     Returns the tree with the specified ID from the database, or
