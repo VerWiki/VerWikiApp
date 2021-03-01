@@ -138,11 +138,10 @@ export const TreeViewer = ({ data, treeID }) => {
    */
   const rightClickHandler = (event, clickedNode) => {
     event.preventDefault();
-    const isCurrentlyViewing = toggleInfoBoxVisibility(
+    VIEWED_NODE = toggleInfoBoxVisibility(
       clickedNode.data.name,
       previouslyClickedNode.current
     );
-    VIEWED_NODE = isCurrentlyViewing;
     previouslyClickedNode.current = clickedNode.data.name;
     const nodeInfoUrl = replaceSpaceCharacters(
       `http://localhost:3003/get-node-info/${clickedNode.data.name}-${treeID}`
