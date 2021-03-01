@@ -117,7 +117,13 @@ function renderTree(
         return "#555";
       }
     })
-    .attr("r", 6);
+    .attr("r", (d) => {
+      if (d.data.name === curViewingNodeID) {
+        return 9;
+      } else {
+        return 6;
+      }
+    });
 
   // Add labels to the node group
   nodeGroupEnter
