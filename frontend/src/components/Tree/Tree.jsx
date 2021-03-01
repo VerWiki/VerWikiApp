@@ -121,7 +121,7 @@ function renderTree(
       if (d.data.name === curViewingNodeID) {
         return 9;
       } else {
-        return 6;
+        return 7;
       }
     });
 
@@ -131,7 +131,7 @@ function renderTree(
     .merge(nodeGroup.select("text"))
     .attr("text-anchor", "middle")
     .attr("font-size", Math.max(6, sigmoid(width) * 17))
-    .attr("y", -15)
+    .attr("y", -20)
     .attr(
       "transform",
       (d) => `
@@ -144,11 +144,22 @@ function renderTree(
     .attr("dx", "0.0em")
     // Adds spacing between the node and the label; At even numbered depths, the label is on the
     // left side; at even numbered depths on the right side hence the if statament
-    .attr("x", (d) => (d.x < Math.PI === !d.children ? 6 : -6))
+    .attr("x", (d) => (d.x < Math.PI === !d.children ? 10 : -10))
+    .attr("x", (d) => {
+      let distance = 10;
+      if (d.data.name === curViewingNodeID) {
+        distance = distance * 2;
+      }
+      if (d.x < Math.PI === !d.children) {
+        return distance;
+      } else {
+        return -1 * distance;
+      }
+    })
     .attr("text-anchor", (d) =>
       d.x < Math.PI === !d.children ? "start" : "end"
     )
-    .text((node) => node.data.name + " ");
+    .text((node) => ` ${node.data.name} `);
 
   // Add links between nodes
   const enteringAndUpdatingLinks = svg
