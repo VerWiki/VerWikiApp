@@ -131,24 +131,36 @@ function renderTree(
     .merge(nodeGroup.select("text"))
     .attr("text-anchor", "middle")
     .attr("font-size", Math.max(6, sigmoid(width) * 17))
-    .attr("y", -20)
-    .attr(
-      "transform",
-      (d) => `
-        rotate(${(d.x * 180) / Math.PI - 90}) 
-        translate(${d.y},0) 
-        rotate(${d.x >= Math.PI ? 180 : 0})
-      `
-    )
+    .attr("y", (d) => {
+      if (d.data.name === curViewingNodeID) {
+        return -30;
+      } else {
+        return -20;
+      }
+    })
+    .attr("transform", (d) => {
+      if (d.data.name === curViewingNodeID) {
+        return `
+          rotate(${(d.x * 180) / Math.PI - 90})
+          translate(${d.y},0)
+          rotate ${(d.angle * 180) / Math.PI}, 225, 225
+        `;
+      } else {
+        return `
+          rotate(${(d.x * 180) / Math.PI - 90}) 
+          translate(${d.y},0) 
+          rotate(${d.x >= Math.PI ? 180 : 0})
+        `;
+      }
+    })
     .attr("dy", "0.90em")
     .attr("dx", "0.0em")
     // Adds spacing between the node and the label; At even numbered depths, the label is on the
     // left side; at even numbered depths on the right side hence the if statament
-    .attr("x", (d) => (d.x < Math.PI === !d.children ? 10 : -10))
     .attr("x", (d) => {
       let distance = 10;
       if (d.data.name === curViewingNodeID) {
-        distance = distance * 2;
+        distance = distance * -2;
       }
       if (d.x < Math.PI === !d.children) {
         return distance;
@@ -156,9 +168,15 @@ function renderTree(
         return -1 * distance;
       }
     })
-    .attr("text-anchor", (d) =>
-      d.x < Math.PI === !d.children ? "start" : "end"
-    )
+    .attr("text-anchor", (d) => {
+      if (d.data.name === curViewingNodeID) {
+        return "start";
+      } else if (d.x < Math.PI === !d.children) {
+        return "start";
+      } else {
+        return "end";
+      }
+    })
     .text((node) => ` ${node.data.name} `);
 
   // Add links between nodes
