@@ -91,9 +91,7 @@ function renderTree(
     .attr("transform", translateStr)
     .style("cursor", "pointer")
     .on("click", onNodeClick)
-    .on("contextmenu", (event, clickedNode) => {
-      onRightClick(event, clickedNode);
-    });
+    .on("contextmenu", onRightClick);
 
   nodeGroup.exit().remove();
 
@@ -198,7 +196,12 @@ function renderTree(
   return [nodeGroupEnterAndUpdate, enteringAndUpdatingLinks];
 }
 
-export function Tree({ jsonData, onNodeClick, onRightClick, viewedNode }) {
+export function Tree({
+  jsonData,
+  onNodeClick,
+  onRightClick,
+  curViewingNodeID,
+}) {
   const svgRef = useRef();
   const wrapperRef = useRef();
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
@@ -240,7 +243,7 @@ export function Tree({ jsonData, onNodeClick, onRightClick, viewedNode }) {
       svgRef,
       onNodeClick,
       onRightClick,
-      viewedNode
+      curViewingNodeID
     );
     if (jsonData !== previouslyRenderedData) {
       animateTree(nodeGroupEnterAndUpdate, enteringAndUpdatingLinks);
@@ -251,7 +254,7 @@ export function Tree({ jsonData, onNodeClick, onRightClick, viewedNode }) {
     previouslyRenderedData,
     onNodeClick,
     onRightClick,
-    viewedNode,
+    curViewingNodeID,
   ]);
 
   return (

@@ -306,7 +306,7 @@ export const TreeViewer = ({ data, treeID }) => {
             jsonData={trimmedData}
             onNodeClick={nodeClickHandler}
             onRightClick={rightClickHandler}
-            viewedNode={curViewingNode.current}
+            curViewingNodeID={curViewingNode.current}
           ></Tree>
         </div>
         <div className="article">
