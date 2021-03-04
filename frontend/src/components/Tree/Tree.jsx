@@ -43,6 +43,8 @@ function animateTree(nodeGroupEnterAndUpdate, enteringAndUpdatingLinks) {
  * to take when a node in the tree is clicked
  * @param onRightClick: Function pointer specifying the action
  * to take when a node in the tree is right-clicked
+ * @param curViewingNodeID: A node that is currently being viewed
+ * (if any)
  * @returns SVG groupings of nodes-and-text, and inter-node links
  */
 
@@ -107,6 +109,7 @@ function renderTree(
       `
     )
     .attr("fill", (d) => {
+      // Separate color if a node is being viewed by the user
       if (d.data.name === curViewingNodeID) {
         return "#377bfa";
       } else if (d.data.numChildren === 0) {
@@ -116,6 +119,8 @@ function renderTree(
       }
     })
     .attr("r", (d) => {
+      // Makes node bigger to help differentiate which node 
+      // is being looked at
       if (d.data.name === curViewingNodeID) {
         return 10;
       } else {
