@@ -75,7 +75,9 @@ def configure_routes(app):
 def _get_content_from_site(url):
     page = requests.get(url)
     soup = BeautifulSoup(page.content, "html.parser")
-    return str(soup)
+    content = soup.find("div", {"id": "dokuwiki__content"})
+    content.find("div", {"class": "pageId"}).decompose()
+    return str(content)
 
 
 if __name__ == "__main__":
