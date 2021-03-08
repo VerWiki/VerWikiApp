@@ -1,6 +1,8 @@
 /**
  * The react component for the information window for each node
  * in the concept tree.
+ * Note: dangerouslySetInnerHTML property used here becomes safe if
+ * sanitization is done to the incoming htmlInfo using DOMPurify
  */
 
 import React from "react";

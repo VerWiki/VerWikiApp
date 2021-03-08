@@ -75,11 +75,21 @@ def configure_routes(app):
 def _get_content_from_site(url):
     page = requests.get(url)
     soup = BeautifulSoup(page.content, "html.parser")
+
+    # dokuwiki__content is assumed to have the main content of the article
     content = soup.find("div", {"id": "dokuwiki__content"})
-    content.find("div", {"class": "pageId"}).decompose()
-    results = content.findAll("a", {"href": True})
-    for link in results:
-        link["href"] = f"https://cwsl.ca{link['href']}"
+
+    # Remove the pageID from the displayed article
+    page_id = content.find("div", {"class": "pageId"})
+    if page_id is not None:
+        page_id.decompose()
+
+    anchors = content.findAll("a", {"href": True})
+    for anchor in anchors:
+        # Prepend https://cwsl.ca to all links which were local links within cwsl
+        if len(anchor["href"]) > 0 and anchor["href"][0] == "/":
+            anchor["href"] = f"https://cwsl.ca{anchor['href']}"
+
     return str(content)
 
 
