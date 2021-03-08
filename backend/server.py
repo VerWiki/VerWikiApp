@@ -77,6 +77,9 @@ def _get_content_from_site(url):
     soup = BeautifulSoup(page.content, "html.parser")
     content = soup.find("div", {"id": "dokuwiki__content"})
     content.find("div", {"class": "pageId"}).decompose()
+    results = content.findAll("a", {"href": True})
+    for link in results:
+        link["href"] = f"https://cwsl.ca{link['href']}"
     return str(content)
 
 
