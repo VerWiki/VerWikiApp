@@ -86,7 +86,7 @@ def _get_content_from_site(url):
 
     anchors = content.findAll("a", {"href": True})
     for anchor in anchors:
-        # Prepend https://cwsl.ca to all links which were local links within cwsl
+        # Prepend https://cwsl.ca to all links which were previously local links
         if len(anchor["href"]) > 0 and anchor["href"][0] == "/":
             anchor["href"] = f"https://cwsl.ca{anchor['href']}"
 
