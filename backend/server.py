@@ -55,7 +55,10 @@ def configure_routes(app):
             internalSrvErr = InternalServerError()
             internalSrvErr.description = str(e)
             raise internalSrvErr
-        content = _get_content_from_site(link)
+        try:
+            content = _get_content_from_site(link)
+        except Exception as e:
+            raise e
         return jsonify({"content": content})
 
     @app.errorhandler(HTTPException)
@@ -75,13 +78,13 @@ def configure_routes(app):
 def _get_content_from_site(url: str) -> str:
     page = requests.get(url)
     if not page.ok:
-        return f"No additional information available for the topic - {page.status}"
+        raise NotFound("No additional information available for the topic - 404")
     soup = BeautifulSoup(page.content, "html.parser")
 
     # dokuwiki__content is assumed to have the main content of the article
     content = soup.find("div", {"id": "dokuwiki__content"})
     if content is None:
-        return "Error when showing article preview"
+        raise InternalServerError("Error when showing article preview")
 
     # Remove the pageID from the displayed article
     page_id = content.find("div", {"class": "pageId"})

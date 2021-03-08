@@ -5,7 +5,9 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import server
 import json
-from unittest.mock import Mock
+from unittest.mock import Mock, MagicMock, patch, PropertyMock
+import pytest
+from werkzeug.exceptions import InternalServerError, NotFound
 
 
 def test_base_route():
@@ -18,6 +20,42 @@ def test_base_route():
     print(response.get_data())
     assert response.get_data() == b"Hello World!"
     assert response.status_code == 200
+
+
+class TestGetContentFromSite:
+    def test_get_content_from_site_no_error(self):
+        contentMock = Mock()
+        contentMock.find.return_value = None
+        contentMock.findAll.return_value = []
+
+        soupMock = Mock()
+        server.BeautifulSoup = Mock()
+        server.BeautifulSoup.return_value = soupMock
+        soupMock.find.return_value = contentMock
+
+        with patch("server.requests.get") as patched_get:
+            type(patched_get.return_value).ok = PropertyMock(return_value=True)
+            assert (
+                server._get_content_from_site("randomURL")
+                != "mock_get_content_from_site_return_value"
+            )
+
+    def test_get_content_from_site_not_found_error(self):
+        with patch("server.requests.get") as patched_get:
+            type(patched_get.return_value).ok = PropertyMock(return_value=False)
+            with pytest.raises(NotFound):
+                server._get_content_from_site("randomURL")
+
+    def test_get_content_from_site_internal_server_error(self):
+        soupMock = Mock()
+        server.BeautifulSoup = Mock()
+        server.BeautifulSoup.return_value = soupMock
+        soupMock.find.return_value = None
+
+        with patch("server.requests.get") as patched_get:
+            type(patched_get.return_value).ok = PropertyMock(return_value=True)
+            with pytest.raises(InternalServerError):
+                server._get_content_from_site("randomURL")
 
 
 class TestGetTreeByIDRoute:
@@ -86,11 +124,13 @@ class TestGetNodeInfo:
         server.db_interface.get_link_by_node_id.return_value = fake_link
 
         server._get_content_from_site = Mock()
-        server._get_content_from_site.return_value = "marner"
+        server._get_content_from_site.return_value = (
+            "mock_get_content_from_site_return_value"
+        )
 
         response = client.get(url)
         assert response.status_code == 200
-        assert response.json == {"content": "marner"}
+        assert response.json == {"content": "mock_get_content_from_site_return_value"}
 
     def test_get_node_info_db_returns_key_error(self):
         app = Flask(__name__)
