@@ -75,8 +75,7 @@ def configure_routes(app):
 def _get_content_from_site(url):
     page = requests.get(url)
     soup = BeautifulSoup(page.content, "html.parser")
-    content = soup.find_all(["h1", "h2", "p"])
-    return "\n".join([c.text for c in content])
+    return str(soup)
 
 
 if __name__ == "__main__":

@@ -4,12 +4,17 @@
  */
 
 import React from "react";
+import DOMPurify from "dompurify";
 
 export const InfoWindow = ({ info }) => {
+  const safeHTML = DOMPurify.sanitize(info);
   return (
     <div>
       <h2>Wiki Information</h2>
-      <p>{info}</p>
+      <div
+        id="infoWindowDiv"
+        dangerouslySetInnerHTML={{ __html: safeHTML }}
+      ></div>
     </div>
   );
 };
