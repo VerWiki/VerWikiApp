@@ -96,10 +96,7 @@ def _get_content_from_site(url: str) -> str:
         # Prepend https://cwsl.ca to all links which were previously local links
         if len(anchor["href"]) > 0 and anchor["href"][0] == "/":
             anchor["href"] = f"https://cwsl.ca{anchor['href']}"
-        print("got here")
-        anchor["onmouseenter"] = "console.log(this)"
-        print("got here after mouseover")
-        print(anchor)
+        anchor["onMouseEnter"] = "{highlightRelatedNode}"
     print(content)
 
     return str(content)
