@@ -204,7 +204,6 @@ export function Tree({ jsonData, onNodeClick, onRightClick }) {
   );
 }
 
-
 /**
  * 1. Add links from the Root tree's article to the rest of the nodes within the tree (repopulate_db.py) [DONE]
  * 2. Add links added in step 1 to the node-ID <-> link table (repopulate_db.py) [DONE]
