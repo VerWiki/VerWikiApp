@@ -42,7 +42,7 @@ if __name__ == "__main__":
     tree2 = {
         "id": 2,
         "data": {
-            "name": "Root",
+            "name": "Wisdom",
             "children": [
                 {
                     "name": "Front",
@@ -221,7 +221,7 @@ if __name__ == "__main__":
                         {"name": "Xiti"},
                         {"name": "Google Ads"},
                         {"name": "Video Player"},
-                        {"name": "S3 Storage"},
+                        {"name": "Self-Regulation"},
                         {"name": "Simple Queue Service"},
                         {
                             "name": "Facebook",
@@ -231,7 +231,7 @@ if __name__ == "__main__":
                     ],
                 },
                 {
-                    "name": "API",
+                    "name": "Rationality",
                     "children": [
                         {
                             "name": "Content API",
@@ -273,7 +273,7 @@ if __name__ == "__main__":
                             "host": {"Amazon": ["api-1", "api-2"]},
                         },
                         {
-                            "name": "SEO API",
+                            "name": "Insight",
                             "url": "api.my-media-website.com/seo",
                             "dependsOn": ["BO SEO"],
                             "technos": ["PHP", "Silex", "Postgresql"],
@@ -300,7 +300,7 @@ if __name__ == "__main__":
                             "host": {"Amazon": ["api-1", "api-2"]},
                         },
                     ],
-                    "dependsOn": ["S3 Storage", "Simple Queue Service"],
+                    "dependsOn": ["Self-Regulation", "Simple Queue Service"],
                 },
                 {
                     "name": "Back",
@@ -382,7 +382,7 @@ if __name__ == "__main__":
                             "host": {"OVH": ["store"]},
                         },
                     ],
-                    "dependsOn": ["S3 Storage", "Simple Queue Service"],
+                    "dependsOn": ["Self-Regulation", "Simple Queue Service"],
                 },
             ],
         },
@@ -395,10 +395,26 @@ if __name__ == "__main__":
 
     # Sample link for local development
     link2 = {
-        "id": "Root-2",
+        "id": "Wisdom-2",
         "link": "https://cwsl.ca/wiki/doku.php?id=philosophy_of_wisdom_socrates_and_plato#psychotechnologies_metacognition_and_second_order_thinkingimplications_for_the_machinery_of_meaning-making",
     }
+    link3 = {
+        "id": "Rationality-2",
+        "link": "https://cwsl.ca/wiki/doku.php?id=rationality_thinking_dispositions_and_cognitive_styles#rationality_thinking_dispositions_and_levels_of_analysis_in_cognitive_science",
+    }
+    link4 = {
+        "id": "Self-Regulation-2",
+        "link": "https://cwsl.ca/wiki/doku.php?id=self_regulation#ayduk_and_mischelfoolishness_and_self_regulation",
+    }
+    link5 = {
+        "id": "Insight-2",
+        "link": "https://cwsl.ca/wiki/doku.php?id=theoretical_debate_and_experimental_competition_on_insight#theoretical_debate_and_experimental_competition_on_insight",
+    }
+
     result = nodeLinks.insert_one(link2)
+    result = nodeLinks.insert_one(link3)
+    result = nodeLinks.insert_one(link4)
+    result = nodeLinks.insert_one(link5)
     print(result.inserted_id)
     # The JSON for the tree found here: https://observablehq.com/@d3/radial-tidy-tree
     tree3 = {
