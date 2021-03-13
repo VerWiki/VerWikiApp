@@ -14,7 +14,7 @@ export const InfoWindow = ({ info, linkHoverHandler }) => {
     if (tagName === "A") {
       const link = tag.target.getAttribute("href");
       if (!link.startsWith("#")) {
-        // Link to VerWiki
+        // Link to a webpage
         linkHoverHandler(tag.target);
       }
     } else {

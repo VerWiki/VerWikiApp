@@ -130,14 +130,11 @@ export const TreeViewer = ({ data, treeID }) => {
     }
   };
 
+  /**
+   * Sets the currently hovered link which eventually triggers a
+   * re-render of the tree.
+   */
   const linkHoverHandler = (hoveredElement) => {
-    /* Get the link of hoveredElement
-    
-     - Change the hoveredNodeLink variable to the link => causes re-rendering
-    When re render, check if link == link being hovered on for each node
-    - if not make it lesser opacity
-    - else normal
-    */
     if (hoveredElement === null) {
       setHoveredNodeLink("");
       return;
