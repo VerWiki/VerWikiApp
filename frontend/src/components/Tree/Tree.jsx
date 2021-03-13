@@ -35,23 +35,27 @@ function animateTree(nodeGroupEnterAndUpdate, enteringAndUpdatingLinks) {
 
 /**
  * Function to render the hovered subtree when hovering over a given tree
+ * @param {Array} renderedNodesList Array of all nodes that were rendered with opacity 1
  * @param {string} hoveredNodeLink The link of the node being hovered on
  * @param {Node} node The node to render
  */
-function renderNodeAndTag(hoveredNodeLink, node) {
+function renderNodeAndTag(renderedNodesList, hoveredNodeLink, node) {
   if (hoveredNodeLink === "") {
     // Nothing being hovered on, so return full opacity
     node.data.opacity = 1;
+    renderedNodesList.push(node);
     return 1;
   } else if (node.data.url === hoveredNodeLink) {
     // Node being hovered on, hence add opacity 1 for children to follow
     node.data.opacity = 1;
+    renderedNodesList.push(node);
     return 1;
   } else {
     if (node.parent !== null && node.parent.data.opacity === 1) {
       // Node is a child of highlighted node, so highlight and
       // add opacity 1 for its children to follow
       node.data.opacity = 1;
+      renderedNodesList.push(node);
       return 1;
     }
     // Unrelated node, so dim opacity
@@ -74,6 +78,8 @@ function renderNodeAndTag(hoveredNodeLink, node) {
  * to take when a node in the tree is right-clicked
  * @param hoveredNodeLink: String representing the link that the
  * user is currently hovering over
+ * @param renderedNodesList: A list of all the nodes that were
+ * rendered with opacity = 1
  * @returns SVG groupings of nodes-and-text, and inter-node links
  */
 
@@ -83,8 +89,12 @@ function renderTree(
   svgRef,
   onNodeClick,
   onRightClick,
-  hoveredNodeLink
+  hoveredNodeLink,
+  renderedNodesList
 ) {
+  if (renderedNodesList.length > 0) {
+    renderedNodesList.length = 0;
+  }
   const svg = select(svgRef.current);
   const { width, height } = dimensions;
 
@@ -140,7 +150,7 @@ function renderTree(
     .attr("fill", (d) => (d.data.numChildren === 0 ? "#b30000" : "#555"))
     .attr("r", 6)
     .attr("opacity", (d) => {
-      return renderNodeAndTag(hoveredNodeLink, d);
+      return renderNodeAndTag(renderedNodesList, hoveredNodeLink, d);
     });
 
   // Add labels to the node group
@@ -167,7 +177,7 @@ function renderTree(
       d.x < Math.PI === !d.children ? "start" : "end"
     )
     .attr("opacity", (d) => {
-      return renderNodeAndTag(hoveredNodeLink, d);
+      return renderNodeAndTag(renderedNodesList, hoveredNodeLink, d);
     })
     .text((node) => node.data.name + " ");
 
@@ -209,7 +219,14 @@ function renderTree(
  * @param hoveredNodeLink: Link that the user is currently hovering over, else ""
  * @returns the tree component
  */
-export function Tree({ jsonData, onNodeClick, onRightClick, hoveredNodeLink }) {
+export function Tree({
+  jsonData,
+  onNodeClick,
+  onRightClick,
+  hoveredNodeLink,
+  renderedNodesList,
+  previewData,
+}) {
   const svgRef = useRef();
   const wrapperRef = useRef();
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
@@ -252,8 +269,22 @@ export function Tree({ jsonData, onNodeClick, onRightClick, hoveredNodeLink }) {
       svgRef,
       onNodeClick,
       onRightClick,
-      hoveredNodeLink
+      hoveredNodeLink,
+      renderedNodesList
     );
+    if (renderedNodesList.length === 0) {
+      console.log("RENDER ALTERNATIVE TREE"); // TODO
+      console.log(hoveredNodeLink);
+      [nodeGroupEnterAndUpdate, enteringAndUpdatingLinks] = renderTree(
+        dimensions,
+        previewData,
+        svgRef,
+        onNodeClick,
+        onRightClick,
+        hoveredNodeLink,
+        renderedNodesList
+      );
+    }
     if (jsonData !== previouslyRenderedData) {
       animateTree(nodeGroupEnterAndUpdate, enteringAndUpdatingLinks);
     }
@@ -264,6 +295,7 @@ export function Tree({ jsonData, onNodeClick, onRightClick, hoveredNodeLink }) {
     onNodeClick,
     onRightClick,
     hoveredNodeLink,
+    renderedNodesList,
   ]);
 
   return (
@@ -277,4 +309,10 @@ export function Tree({ jsonData, onNodeClick, onRightClick, hoveredNodeLink }) {
 
 /**
  * RENDER PREVIEW-TREE WHEN HOVERING OVER A LINK THAT IS NOT IN THE PRESENT VIEW [NEXT TICKET]
+ * 1. how to make the decision of whether to show a preview window or to highlight subtree?
+ * - COULD HAVE A LIST OF ALL NODES THAT WERE MADE OPAQUE DURING A HIGHLIGHT, IF THAT NUMBER IS 0 THEN TRIGGER A PREVIEW WINDOW
+ * 2. a good path to use as experiment is WISDOM > FRONT > WEBSITE > VIDEOS
+ * 3. if the list of highlighted nodes is empty, trigger a preview window
+ * 4. When triggering the preview window, get the URL of the thing youre hovering over, and call the TrimTree and RenderTree and display
+ * 5. When not rendering, render whatever you were rendering before
  */

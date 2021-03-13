@@ -102,10 +102,13 @@ function toggleInfoBoxVisibility(clickedNodeName, previouslyClickedNodeName) {
 }
 
 export const TreeViewer = ({ data, treeID }) => {
+  console.log(data); // THIS GUY GETS THE WHOLE DATA ON INITIAL RENDER. 
   const [trimmedData, setTrimmedData] = useState({});
   const [nameToNodeMapping, setNameToNodeMapping] = useState({});
   const [nodeInfoContent, setNodeInfoContent] = useState("");
   const previouslyClickedNode = useRef("");
+  const opaqueNodes = useRef([]);
+  const [previewData, setPreviewData] = useState({});
   const [currentPath, setCurrentPath] = useState([]);
   const [historyRecorder, setHistoryRecorder] = useState();
   const [hoveredNodeLink, setHoveredNodeLink] = useState("");
@@ -139,7 +142,6 @@ export const TreeViewer = ({ data, treeID }) => {
       setHoveredNodeLink("");
       return;
     }
-    // const link =
     setHoveredNodeLink(hoveredElement.getAttribute("href"));
   };
 
@@ -322,6 +324,8 @@ export const TreeViewer = ({ data, treeID }) => {
             onNodeClick={nodeClickHandler}
             onRightClick={rightClickHandler}
             hoveredNodeLink={hoveredNodeLink}
+            renderedNodesList={opaqueNodes.current}
+            previewData={previewData}
           ></Tree>
         </div>
         <div className="article">
