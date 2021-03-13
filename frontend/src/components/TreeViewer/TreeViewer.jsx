@@ -30,6 +30,7 @@ function extractObjectWithMaxDepth(obj, depth = MAX_DEPTH) {
   return {
     name: obj.name,
     numChildren: obj.numChildren,
+    url: obj.url,
     children: obj.children
       ? obj.children
           .map((node) => extractObjectWithMaxDepth(node, depth - 1))

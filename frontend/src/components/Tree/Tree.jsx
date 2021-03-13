@@ -57,9 +57,6 @@ function renderTree(
   const svg = select(svgRef.current);
   const { width, height } = dimensions;
 
-  console.log("RERENDERING>>>>>");
-  console.log(hoveredNodeLink);
-
   const radius = Math.min(width, height) / 2.5;
   const translateStr = "translate(" + width / 2 + "," + height / 2 + ")";
 
@@ -110,7 +107,17 @@ function renderTree(
       `
     )
     .attr("fill", (d) => (d.data.numChildren === 0 ? "#b30000" : "#555"))
-    .attr("r", 6);
+    .attr("r", 6)
+    .attr("opacity", (d) => {
+      if (hoveredNodeLink === "") {
+        return 1;
+      }
+      if (d.data.url === hoveredNodeLink) {
+        return 1;
+      } else {
+        return 0.25;
+      }
+    });
 
   // Add labels to the node group
   nodeGroupEnter
@@ -135,6 +142,16 @@ function renderTree(
     .attr("text-anchor", (d) =>
       d.x < Math.PI === !d.children ? "start" : "end"
     )
+    .attr("opacity", (d) => {
+      if (hoveredNodeLink === "") {
+        return 1;
+      }
+      if (d.data.url === hoveredNodeLink) {
+        return 1;
+      } else {
+        return 0.25;
+      }
+    })
     .text((node) => node.data.name + " ");
 
   // Add links between nodes
@@ -151,7 +168,12 @@ function renderTree(
     })
     .attr("stroke", "black")
     .attr("fill", "none")
-    .attr("opacity", 1);
+    .attr("opacity", () => {
+      if (hoveredNodeLink !== "") {
+        return 0.25;
+      }
+      return 1;
+    });
   svg.attr("viewBox", autoBox).node();
   return [nodeGroupEnterAndUpdate, enteringAndUpdatingLinks];
 }
