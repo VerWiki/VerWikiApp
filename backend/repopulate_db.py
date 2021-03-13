@@ -43,6 +43,7 @@ if __name__ == "__main__":
         "id": 2,
         "data": {
             "name": "Wisdom",
+            "url": "https://cwsl.ca/wiki/doku.php?id=philosophy_of_wisdom_socrates_and_plato#psychotechnologies_metacognition_and_second_order_thinkingimplications_for_the_machinery_of_meaning-making",
             "children": [
                 {
                     "name": "Front",
@@ -221,7 +222,10 @@ if __name__ == "__main__":
                         {"name": "Xiti"},
                         {"name": "Google Ads"},
                         {"name": "Video Player"},
-                        {"name": "Self-Regulation"},
+                        {
+                            "name": "Self-Regulation",
+                            "url": "https://cwsl.ca/wiki/doku.php?id=self_regulation#ayduk_and_mischelfoolishness_and_self_regulation",
+                        },
                         {"name": "Simple Queue Service"},
                         {
                             "name": "Facebook",
@@ -232,6 +236,7 @@ if __name__ == "__main__":
                 },
                 {
                     "name": "Rationality",
+                    "url": "https://cwsl.ca/wiki/doku.php?id=rationality_thinking_dispositions_and_cognitive_styles#rationality_thinking_dispositions_and_levels_of_analysis_in_cognitive_science",
                     "children": [
                         {
                             "name": "Content API",
@@ -274,7 +279,7 @@ if __name__ == "__main__":
                         },
                         {
                             "name": "Insight",
-                            "url": "api.my-media-website.com/seo",
+                            "url": "https://cwsl.ca/wiki/doku.php?id=theoretical_debate_and_experimental_competition_on_insight#theoretical_debate_and_experimental_competition_on_insight",
                             "dependsOn": ["BO SEO"],
                             "technos": ["PHP", "Silex", "Postgresql"],
                             "host": {"Amazon": ["api-1", "api-2"]},

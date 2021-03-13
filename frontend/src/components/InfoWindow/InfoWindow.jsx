@@ -13,7 +13,7 @@ import DOMPurify from "dompurify";
  * sanitization is done to the incoming htmlInfo using DOMPurify
  */
 
-export const InfoWindow = ({ info }) => {
+export const InfoWindow = ({ info, linkHoverHandler }) => {
   const highlightRelatedNode = (tag) => {
     const tagName = tag.target.tagName;
     if (tagName === "A") {
@@ -23,14 +23,10 @@ export const InfoWindow = ({ info }) => {
         console.log("YOURE IN TABLE OF CONTENTS");
       } else {
         // Link to VerWiki
-        const url = `/get-node-id-by-link/${link}`;
-        fetch(url)
-          .then((res) => {
-            console.log(res);
-            return res.json();
-          })
-          .then((res) => console.log(res));
+        linkHoverHandler(tag.target);
       }
+    } else {
+      linkHoverHandler(null);
     }
   };
 

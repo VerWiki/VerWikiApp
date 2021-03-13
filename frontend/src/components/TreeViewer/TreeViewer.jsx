@@ -107,6 +107,7 @@ export const TreeViewer = ({ data, treeID }) => {
   const previouslyClickedNode = useRef("");
   const [currentPath, setCurrentPath] = useState([]);
   const [historyRecorder, setHistoryRecorder] = useState();
+  const [hoveredNodeLink, setHoveredNodeLink] = useState("");
 
   /**
    * This function handles the event where a user clicks a node on the tree
@@ -126,6 +127,24 @@ export const TreeViewer = ({ data, treeID }) => {
       path.reverse(); // We want ancestor -> clicked node
       historyRecorder.resetPath([...currentPath, ...path]);
     }
+  };
+
+  const linkHoverHandler = (hoveredElement) => {
+    /* Get the link of hoveredElement
+    
+     - Change the hoveredNodeLink variable to the link => causes re-rendering
+    When re render, check if link == link being hovered on for each node
+    - if not make it lesser opacity
+    - else normal
+    */
+    //console.log("linkHoveredHandler");
+    if (hoveredElement === null) {
+      setHoveredNodeLink("");
+      return;
+    }
+    //console.log(hoveredElement);
+    //console.log(hoveredElement.getAttribute("href"));
+    setHoveredNodeLink(hoveredElement.getAttribute("href"));
   };
 
   /**
@@ -306,11 +325,15 @@ export const TreeViewer = ({ data, treeID }) => {
             jsonData={trimmedData}
             onNodeClick={nodeClickHandler}
             onRightClick={rightClickHandler}
+            hoveredNodeLink={hoveredNodeLink}
           ></Tree>
         </div>
         <div className="article">
           <p>
-            <InfoWindow info={nodeInfoContent.content} />
+            <InfoWindow
+              info={nodeInfoContent.content}
+              linkHoverHandler={linkHoverHandler}
+            ></InfoWindow>
           </p>
         </div>
       </div>

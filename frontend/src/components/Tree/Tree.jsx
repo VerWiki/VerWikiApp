@@ -46,9 +46,19 @@ function animateTree(nodeGroupEnterAndUpdate, enteringAndUpdatingLinks) {
  * @returns SVG groupings of nodes-and-text, and inter-node links
  */
 
-function renderTree(dimensions, jsonData, svgRef, onNodeClick, onRightClick) {
+function renderTree(
+  dimensions,
+  jsonData,
+  svgRef,
+  onNodeClick,
+  onRightClick,
+  hoveredNodeLink
+) {
   const svg = select(svgRef.current);
   const { width, height } = dimensions;
+
+  console.log("RERENDERING>>>>>");
+  console.log(hoveredNodeLink);
 
   const radius = Math.min(width, height) / 2.5;
   const translateStr = "translate(" + width / 2 + "," + height / 2 + ")";
@@ -146,7 +156,7 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick, onRightClick) {
   return [nodeGroupEnterAndUpdate, enteringAndUpdatingLinks];
 }
 
-export function Tree({ jsonData, onNodeClick, onRightClick }) {
+export function Tree({ jsonData, onNodeClick, onRightClick, hoveredNodeLink }) {
   const svgRef = useRef();
   const wrapperRef = useRef();
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
@@ -188,12 +198,20 @@ export function Tree({ jsonData, onNodeClick, onRightClick }) {
       jsonData,
       svgRef,
       onNodeClick,
-      onRightClick
+      onRightClick,
+      hoveredNodeLink
     );
     if (jsonData !== previouslyRenderedData) {
       animateTree(nodeGroupEnterAndUpdate, enteringAndUpdatingLinks);
     }
-  }, [jsonData, dimensions, previouslyRenderedData, onNodeClick, onRightClick]);
+  }, [
+    jsonData,
+    dimensions,
+    previouslyRenderedData,
+    onNodeClick,
+    onRightClick,
+    hoveredNodeLink,
+  ]);
 
   return (
     <React.Fragment>
