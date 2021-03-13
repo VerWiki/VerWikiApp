@@ -138,13 +138,10 @@ export const TreeViewer = ({ data, treeID }) => {
     - if not make it lesser opacity
     - else normal
     */
-    //console.log("linkHoveredHandler");
     if (hoveredElement === null) {
       setHoveredNodeLink("");
       return;
     }
-    //console.log(hoveredElement);
-    //console.log(hoveredElement.getAttribute("href"));
     setHoveredNodeLink(hoveredElement.getAttribute("href"));
   };
 

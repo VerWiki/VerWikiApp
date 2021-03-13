@@ -243,11 +243,3 @@ export function Tree({ jsonData, onNodeClick, onRightClick, hoveredNodeLink }) {
     </React.Fragment>
   );
 }
-
-/**
- * 1. Add links from the Root tree's article to the rest of the nodes within the tree (repopulate_db.py) [DONE]
- * 2. Add links added in step 1 to the node-ID <-> link table (repopulate_db.py) [DONE]
- * 3. Obtain link from the given node when hovering over it (frontend -> backend)
- * 3.5. Preprocess the link and make sure its valid
- * 4. Highlight the node by obtaining given node-id and highlighting (backend -> frontend)
- */
