@@ -125,7 +125,3 @@ def validate_and_retrieve_client() -> MongoClient:
             init collections and data by running repopulate_db.py"
         )
     return client
-
-
-if __name__ == "__main__":
-    pass
