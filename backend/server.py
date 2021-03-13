@@ -61,6 +61,37 @@ def configure_routes(app):
             raise e
         return jsonify({"content": content})
 
+    @app.route("/get-node-id-by-link/<link>", methods=["GET"])
+    def get_node_id_by_link(link: str) -> str:
+        """
+        Gets the node ID of the node associated with the given link
+
+        Args:
+            link (str): The link for which to get the node ID
+
+        Returns:
+            str: The node ID
+        """
+        print("REACHED SERVER FUNCTION")
+        node_id = "placeholder"
+        return node_id
+        try:
+            node_id = db_interface.get_node_id_by_link(link)
+            print(node_id)
+        except KeyError as e:
+            nf = NotFound()
+            nf.description = str(e)
+            print("KEYERROR")
+            return jsonify({"id": node_id})
+            # raise nf
+        except Exception as e:
+            internalSrvErr = InternalServerError()
+            internalSrvErr.description = str(e)
+            print("EXCEPTION")
+            return jsonify({"id": node_id})
+            # raise internalSrvErr
+        return jsonify({"id": node_id})
+
     @app.errorhandler(HTTPException)
     def handle_exception(e):
         """
@@ -97,7 +128,6 @@ def _get_content_from_site(url: str) -> str:
         if len(anchor["href"]) > 0 and anchor["href"][0] == "/":
             anchor["href"] = f"https://cwsl.ca{anchor['href']}"
         anchor["onMouseEnter"] = "console.log('hello world')"
-    print(content)
 
     return str(content)
 
