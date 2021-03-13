@@ -33,3 +33,14 @@ export const InfoWindow = ({ info, linkHoverHandler }) => {
     </div>
   );
 };
+
+/**
+ * if (node being hovered over has depth < MAXDEPTH) {
+ * Idea #1 - instead of highlighting the path from cur node to highlighted node,
+ * just highlight the subtree of the node itself
+ * } else {
+ * Idea #2 - When hovering over a link that is off the tree, just preview the subtree
+ * of the node that is being hovered over, and go to that subtree with animation when clicked
+ * on the said link - Use Mit's code to get back to the previously rendered tree
+ * }
+ */

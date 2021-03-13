@@ -5,6 +5,8 @@ import ResizeObserver from "resize-observer-polyfill";
 import "./Tree.module.css";
 import { usePrevious, sigmoid, autoBox } from "../../utils/utils";
 
+const DIMMED_OPACITY = 0.25;
+
 /**
  * This function takes node-text grouping, and inter-node link grouping and performs the animation
  * of the links between them.
@@ -29,6 +31,33 @@ function animateTree(nodeGroupEnterAndUpdate, enteringAndUpdatingLinks) {
     .duration(500)
     .delay((link) => link.source.depth * 500)
     .attr("stroke-dashoffset", 0);
+}
+
+/**
+ * Function to render the hovered subtree when hovering over a given tree
+ * @param {string} hoveredNodeLink The link of the node being hovered on
+ * @param {Node} node The node to render
+ */
+function renderNodeAndTag(hoveredNodeLink, node) {
+  if (hoveredNodeLink === "") {
+    // Nothing being hovered on, so return full opacity
+    node.data.opacity = 1;
+    return 1;
+  } else if (node.data.url === hoveredNodeLink) {
+    // Node being hovered on, hence add opacity 1 for children to follow
+    node.data.opacity = 1;
+    return 1;
+  } else {
+    if (node.parent !== null && node.parent.data.opacity === 1) {
+      // Node is a child of highlighted node, so highlight and
+      // add opacity 1 for its children to follow
+      node.data.opacity = 1;
+      return 1;
+    }
+    // Unrelated node, so dim opacity
+    node.data.opacity = DIMMED_OPACITY;
+    return DIMMED_OPACITY;
+  }
 }
 
 /**
@@ -111,13 +140,7 @@ function renderTree(
     .attr("fill", (d) => (d.data.numChildren === 0 ? "#b30000" : "#555"))
     .attr("r", 6)
     .attr("opacity", (d) => {
-      if (hoveredNodeLink === "") {
-        return 1;
-      } else if (d.data.url === hoveredNodeLink) {
-        return 1;
-      } else {
-        return 0.25;
-      }
+      return renderNodeAndTag(hoveredNodeLink, d);
     });
 
   // Add labels to the node group
@@ -144,13 +167,7 @@ function renderTree(
       d.x < Math.PI === !d.children ? "start" : "end"
     )
     .attr("opacity", (d) => {
-      if (hoveredNodeLink === "") {
-        return 1;
-      } else if (d.data.url === hoveredNodeLink) {
-        return 1;
-      } else {
-        return 0.25;
-      }
+      return renderNodeAndTag(hoveredNodeLink, d);
     })
     .text((node) => node.data.name + " ");
 
@@ -168,10 +185,16 @@ function renderTree(
     })
     .attr("stroke", "black")
     .attr("fill", "none")
-    .attr("opacity", () => {
-      if (hoveredNodeLink !== "") {
-        return 0.25;
+    .attr("opacity", (link) => {
+      if (link.source.data.opacity === 1) {
+        // If source opaque, make target opaque
+        return 1;
       }
+      if (hoveredNodeLink !== "") {
+        // if unrelated link, make translucent
+        return DIMMED_OPACITY;
+      }
+      // default, return opaque link
       return 1;
     });
   svg.attr("viewBox", autoBox).node();
@@ -251,3 +274,7 @@ export function Tree({ jsonData, onNodeClick, onRightClick, hoveredNodeLink }) {
     </React.Fragment>
   );
 }
+
+/**
+ * RENDER PREVIEW-TREE WHEN HOVERING OVER A LINK THAT IS NOT IN THE PRESENT VIEW [NEXT TICKET]
+ */

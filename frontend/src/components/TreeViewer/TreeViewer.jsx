@@ -139,6 +139,7 @@ export const TreeViewer = ({ data, treeID }) => {
       setHoveredNodeLink("");
       return;
     }
+    // const link =
     setHoveredNodeLink(hoveredElement.getAttribute("href"));
   };
 
