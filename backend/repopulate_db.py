@@ -133,7 +133,7 @@ if __name__ == "__main__":
                                         {"name": "Technology videos"},
                                         {"name": "Health videos"},
                                     ],
-                                    "url": "videos.my-media-website.com",
+                                    "url": "https://cwsl.ca/wiki/doku.php?id=philosophy_of_wisdom_the_hellenistic_era#the_stoics_two_answers_to_the_ills_of_the_hellenistic_ageprocesses_of_our_cognition_and_the_stoic_worldview",
                                     "dependsOn": [
                                         "Video Player",
                                         "Videos API",

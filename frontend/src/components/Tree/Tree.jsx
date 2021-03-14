@@ -273,6 +273,18 @@ export function Tree({
     );
     if (renderedNodesList.length === 0) {
       console.log("RENDER ALTERNATIVE TREE"); // TODO
+
+      /**
+       * Possible steps here:
+       * Search function to check if the hoveredNodeLink does indeed corespond to a node in the tree
+       * If so, then call onNodeClick() on that node in the tree
+       * Ensure that the animation doesn't run over here; will be too slow; should just show the new subtree
+       * When the hovering finishes, ensure to display the previously seen tree, again without hovering
+       * This can be done by calling onNodeClick() on the previously root node
+       *
+       *
+       **/
+
       console.log(hoveredNodeLink);
       // [nodeGroupEnterAndUpdate, enteringAndUpdatingLinks] = renderTree(
       //   dimensions,
