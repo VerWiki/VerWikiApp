@@ -225,7 +225,6 @@ export function Tree({
   onRightClick,
   hoveredNodeLink,
   renderedNodesList,
-  previewData,
 }) {
   const svgRef = useRef();
   const wrapperRef = useRef();
@@ -275,15 +274,15 @@ export function Tree({
     if (renderedNodesList.length === 0) {
       console.log("RENDER ALTERNATIVE TREE"); // TODO
       console.log(hoveredNodeLink);
-      [nodeGroupEnterAndUpdate, enteringAndUpdatingLinks] = renderTree(
-        dimensions,
-        previewData,
-        svgRef,
-        onNodeClick,
-        onRightClick,
-        hoveredNodeLink,
-        renderedNodesList
-      );
+      // [nodeGroupEnterAndUpdate, enteringAndUpdatingLinks] = renderTree(
+      //   dimensions,
+      //   previewData,
+      //   svgRef,
+      //   onNodeClick,
+      //   onRightClick,
+      //   hoveredNodeLink,
+      //   renderedNodesList
+      // );
     }
     if (jsonData !== previouslyRenderedData) {
       animateTree(nodeGroupEnterAndUpdate, enteringAndUpdatingLinks);
@@ -310,9 +309,9 @@ export function Tree({
 /**
  * RENDER PREVIEW-TREE WHEN HOVERING OVER A LINK THAT IS NOT IN THE PRESENT VIEW [NEXT TICKET]
  * 1. how to make the decision of whether to show a preview window or to highlight subtree?
- * - COULD HAVE A LIST OF ALL NODES THAT WERE MADE OPAQUE DURING A HIGHLIGHT, IF THAT NUMBER IS 0 THEN TRIGGER A PREVIEW WINDOW
+ * - COULD HAVE A LIST OF ALL NODES THAT WERE MADE OPAQUE DURING A HIGHLIGHT, IF THAT NUMBER IS 0 THEN TRIGGER A PREVIEW WINDOW [DONE]
  * 2. a good path to use as experiment is WISDOM > FRONT > WEBSITE > VIDEOS
- * 3. if the list of highlighted nodes is empty, trigger a preview window
+ * 3. if the list of highlighted nodes is empty, trigger a preview window [DONE]
  * 4. When triggering the preview window, get the URL of the thing youre hovering over, and call the TrimTree and RenderTree and display
  * 5. When not rendering, render whatever you were rendering before
  */

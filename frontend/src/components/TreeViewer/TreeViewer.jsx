@@ -102,7 +102,7 @@ function toggleInfoBoxVisibility(clickedNodeName, previouslyClickedNodeName) {
 }
 
 export const TreeViewer = ({ data, treeID }) => {
-  console.log(data); // THIS GUY GETS THE WHOLE DATA ON INITIAL RENDER. 
+  // console.log(data); // THIS GUY GETS THE WHOLE DATA ON INITIAL RENDER.
   const [trimmedData, setTrimmedData] = useState({});
   const [nameToNodeMapping, setNameToNodeMapping] = useState({});
   const [nodeInfoContent, setNodeInfoContent] = useState("");
@@ -278,6 +278,19 @@ export const TreeViewer = ({ data, treeID }) => {
     setTrimmedData(extractObjectWithMaxDepth(subTree));
   }, [currentPath, nameToNodeMapping]);
 
+  ////////////////
+  console.log(opaqueNodes.current);
+  // here, we might be able to use a useEffect hook to track the value of opaqueNodes //TODO
+  // when opaqueNodes is [], then:
+  /**
+   * 1. get the node which the link corresponds to
+   * 2. find the parent of that node
+   * 3. pass that subtree through the trim functions etc
+   * 4. set jsonData to that subtree, and send that to tree.
+   */
+  console.log(data);
+  ///////////////
+
   return (
     <div className={styles.nav}>
       <Toolbar>
@@ -325,7 +338,6 @@ export const TreeViewer = ({ data, treeID }) => {
             onRightClick={rightClickHandler}
             hoveredNodeLink={hoveredNodeLink}
             renderedNodesList={opaqueNodes.current}
-            previewData={previewData}
           ></Tree>
         </div>
         <div className="article">
