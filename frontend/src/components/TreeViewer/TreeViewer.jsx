@@ -18,61 +18,85 @@ const FADE_OPACITY = 0.25;
 const FULL_OPACITY = 1;
 
 /**
- * 1. We hover over a link that corresponds to a node within the given tree:
- *     - we highlight the subtree beginning at the node itself
- * 2. We hover over a link that corresponds to a node outside the displayed tree:
- *     - display subtree beginning at the parent
- *
- * step 1 - pass in trimmed data. if found, proceed as normal, make no changes
- * step 2 - if nothing found, then search in data, and then get its parent, and set that as our trimmed data
+ * Recursive function to find the node, and its parent with a given link.
+ * @param subTree: The root of the subtree in which to search.
+ * @param link: The link for which we want to find the corresponding node & parent
+ * @param parent: The parent node of the subTree; null if the subTree is the entire tree
+ * @return : A struct with form {node: Node, parent: Node}. null values if node not found
  */
 
-const searchJsonData = (subtree, link, parent = null) => {
-  if (subtree.url === link) {
-    let result = {
-      node: subtree,
+const findNodeWithLink = (subTree, link, parent = null) => {
+  if (subTree == null || link === "") {
+    return {
+      node: null,
+      parent: null,
+    };
+  }
+  if (subTree.url === link) {
+    return {
+      node: subTree,
       parent: parent,
     };
-    return result;
   }
 
-  for (let i = 0; i < subtree.numChildren; i++) {
-    let result = searchJsonData(subtree.children[i], link, subtree);
-    if (result.node !== undefined && result.parent !== undefined) {
+  for (let i = 0; i < subTree.numChildren; i++) {
+    let result = findNodeWithLink(subTree.children[i], link, subTree);
+    if (result.node !== null) {
       return result;
     }
   }
-
-  return {};
+  return {
+    node: null,
+    parent: null,
+  };
 };
 
-const getSubtree = (
+/**
+ * Function to find the tree to be displayed on next render.
+ * @param {list} currentPath : List of nodes from the tree's root to the displayed root
+ * @param {Object} nameToNodeMapping : Dictionary mapping node IDs to nodes
+ * @param {string} hoveredNodeLink : String representing the link currently being hovered over,
+ * or "" if the user is not currently hovering over any link in the InfoViewer
+ * @param {Object} entireData : Struct with all nodes in the tree
+ * @returns : Object representing the tree to be displayed on next render
+ */
+
+const findVisibleSubtree = (
   currentPath,
   nameToNodeMapping,
   hoveredNodeLink,
   entireData
 ) => {
-  const nodeName = currentPath[currentPath.length - 1];
-  const subTree = extractObjectWithMaxDepth(nameToNodeMapping[nodeName] || {});
-
-  if (hoveredNodeLink !== "") {
-    const found = searchJsonData(subTree, hoveredNodeLink);
-    console.log(found);
-    if (found.node === undefined) {
-      const searchResult = searchJsonData(entireData, hoveredNodeLink);
-      console.log(searchResult);
-      if (searchResult.node === undefined) {
-        console.error(`The link ${hoveredNodeLink} was not found in the tree`);
-      } else {
-        if (searchResult.parent === null) {
-          return extractObjectWithMaxDepth(searchResult.node);
-        } else {
-          return extractObjectWithMaxDepth(searchResult.parent);
-        }
-      }
-    }
+  // Get the visible root from the last element of the path
+  const curRootName = currentPath[currentPath.length - 1];
+  const treeToDisplay = extractObjectWithMaxDepth(
+    nameToNodeMapping[curRootName] || {}
+  );
+  // If the user is not hovering over anything, then no changes to be made
+  if (hoveredNodeLink === "") {
+    return treeToDisplay;
   }
-  return subTree;
+  // Check if the link that the user is hovering over corresponds to an
+  // already visible node
+  const hoveredNodeObject = findNodeWithLink(treeToDisplay, hoveredNodeLink);
+
+  if (hoveredNodeObject.node !== null) {
+    return treeToDisplay;
+  }
+  // If none of the visible nodes corresponds to the link, check the entire tree
+  const searchResult = findNodeWithLink(entireData, hoveredNodeLink);
+
+  if (searchResult.node === null) {
+    //Just show the old tree if the link does not have a corresponding node
+    console.log(`The link ${hoveredNodeLink} was not found in the tree`);
+    return treeToDisplay;
+  } else if (searchResult.parent === null) {
+    // If the link corresponded to the tree root, display a tree starting there
+    return extractObjectWithMaxDepth(searchResult.node);
+  } else {
+    // Else display a tree starting at the parent of the hovered node
+    return extractObjectWithMaxDepth(searchResult.parent);
+  }
 };
 
 /**
@@ -358,7 +382,7 @@ export const TreeViewer = ({ data, treeID }) => {
    */
   useEffect(() => {
     // The last name in the currentPath should be the new root node
-    const subTree = getSubtree(
+    const subTree = findVisibleSubtree(
       currentPath,
       nameToNodeMapping,
       hoveredNodeLink,
@@ -366,14 +390,8 @@ export const TreeViewer = ({ data, treeID }) => {
     );
 
     // Trim the subtree to MAX_DEPTH and set it as the new tree
-    setTrimmedData(
-      addOpacity(
-        subTree,
-        hoveredNodeLink,
-        FADE_OPACITY
-      )
-    );
-  }, [currentPath, nameToNodeMapping, hoveredNodeLink]);
+    setTrimmedData(addOpacity(subTree, hoveredNodeLink, FADE_OPACITY));
+  }, [currentPath, nameToNodeMapping, hoveredNodeLink, data]);
 
   return (
     <div className={styles.nav}>
