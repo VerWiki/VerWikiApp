@@ -15,6 +15,7 @@ import "fontsource-roboto";
 
 const MAX_DEPTH = 2;
 const FADE_OPACITY = 0.25;
+const FULL_OPACITY = 1;
 
 /**
  * Given the original data which has an unbounded number
@@ -41,15 +42,24 @@ function extractObjectWithMaxDepth(obj, depth = MAX_DEPTH) {
 }
 
 /**
- * Adds an opacity rating every time the tree needs to be rendered.
- * @param {*} data The data to traverse to add the opacity
- * @param {*} link The link we are equating to, refers to the link being hovered on
- * @param {*} childOpacity Opacity rating of the child. Checks for being equated to FADE_OPACTIY
+ * Adds an opacity rating to each of the nodes based on where the node corresponding to
+ * the link is found.
+ * If no link is being hovered over, all nodes are fully visible
+ * If a link is being hovered over, then the corresponding node (if it exists) and all
+ * descendents are highlighted, everything else is greyed out
+ * @param {Object} data The data to traverse to add the opacity
+ * @param {string} link The link we are equating to, refers to the link being hovered on
+ * @param {float} currentOpacity Current opacity rating
  */
-const addOpacity = (data, link, childOpacity) => {
-  if (link === "" || data.url === link || childOpacity === 1) {
-    childOpacity = 1;
-  } else if (childOpacity === FADE_OPACITY) {
+const addOpacity = (data, link, currentOpacity) => {
+  if (currentOpacity !== FADE_OPACITY && currentOpacity !== FULL_OPACITY) {
+    console.log("WARNING: invalid passed in opacity...");
+  }
+  let childOpacity;
+  if (link === "" || data.url === link || currentOpacity === FULL_OPACITY) {
+    childOpacity = FULL_OPACITY;
+  } else {
+    /*currentOpacity === FADE_OPACITY*/
     childOpacity = FADE_OPACITY;
   }
   data.opacity = childOpacity;
