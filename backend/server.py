@@ -39,6 +39,7 @@ def configure_routes(app):
             internalSrvErr.description = str(e)
             raise internalSrvErr
 
+    # TODO DELETE THIS, THIS IS DEPRECATED
     @app.route("/get-node-info/<node_id>", methods=["GET"])
     def get_node_info(node_id):
         """

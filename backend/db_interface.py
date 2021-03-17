@@ -56,24 +56,7 @@ def get_tree_by_id(id: int) -> object:
     return output["data"]
 
 
-def get_node_id_by_link(link: str) -> str:
-    """
-    Gets the associated node ID when searching by link.
-    """
-    try:
-        client = validate_and_retrieve_client()
-    except Exception as e:
-        raise e
-    output = client[VERWIKI_DB_NAME][LINKS_TABLE_NAME].find_one({"link": link})
-    client.close()
-    if not output:
-        raise KeyError(f"No node found with link {link}")
-    if "id" not in output:
-        # We should never get this; data should be validated before entering DB!
-        raise TypeError(f"Malformed data in the database for link: {link}")
-    return output["id"]
-
-
+## TODO THIS FUNCTION IS DEPRECATED TO BE REMOVED 
 def get_link_by_node_id(node_id: str) -> str:
     """
     Gets the associated wiki link for the given node ID, and returns it.
