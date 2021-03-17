@@ -52,7 +52,7 @@ const getSubtree = (
   entireData
 ) => {
   const nodeName = currentPath[currentPath.length - 1];
-  const subTree = nameToNodeMapping[nodeName] || {};
+  const subTree = extractObjectWithMaxDepth(nameToNodeMapping[nodeName] || {});
 
   if (hoveredNodeLink !== "") {
     const found = searchJsonData(subTree, hoveredNodeLink);
@@ -64,9 +64,9 @@ const getSubtree = (
         console.error(`The link ${hoveredNodeLink} was not found in the tree`);
       } else {
         if (searchResult.parent === null) {
-          return searchResult.node;
+          return extractObjectWithMaxDepth(searchResult.node);
         } else {
-          return searchResult.parent;
+          return extractObjectWithMaxDepth(searchResult.parent);
         }
       }
     }
@@ -358,7 +358,7 @@ export const TreeViewer = ({ data, treeID }) => {
     // Trim the subtree to MAX_DEPTH and set it as the new tree
     setTrimmedData(
       addOpacity(
-        extractObjectWithMaxDepth(subTree),
+        subTree,
         hoveredNodeLink,
         FADE_OPACITY
       )
