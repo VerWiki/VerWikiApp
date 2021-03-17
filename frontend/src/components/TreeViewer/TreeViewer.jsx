@@ -15,16 +15,18 @@ import "fontsource-roboto";
 
 const MAX_DEPTH = 2;
 const FADE_OPACITY = 0.25;
+const NO_DEPTH_LIMIT = -1;
 
 /**
  * Recursive function to find the node, and its parent with a given link.
  * @param subTree: The root of the subtree in which to search.
  * @param link: The link for which we want to find the corresponding node & parent
+ * @param depth : The depth for which to search for; pass NO_DEPTH_LIMIT for no limit.
  * @param parent: The parent node of the subTree; null if the subTree is the entire tree
  * @return : A struct with form {node: Node, parent: Node}. null values if node not found
  */
 
-const findNodeWithLink = (subTree, link, parent = null) => {
+const findNodeWithLink = (subTree, link, depth, parent = null) => {
   if (subTree == null || link === "") {
     return {
       node: null,
@@ -36,10 +38,20 @@ const findNodeWithLink = (subTree, link, parent = null) => {
       node: subTree,
       parent: parent,
     };
+  } else if (depth === 0) {
+    return {
+      node: null,
+      parent: null,
+    };
   }
 
   for (let i = 0; i < subTree.numChildren; i++) {
-    let result = findNodeWithLink(subTree.children[i], link, subTree);
+    let result = findNodeWithLink(
+      subTree.children[i],
+      link,
+      depth - 1,
+      subTree
+    );
     if (result.node !== null) {
       return result;
     }
@@ -77,13 +89,21 @@ const findVisibleSubtree = (
   }
   // Check if the link that the user is hovering over corresponds to an
   // already visible node
-  const hoveredNodeObject = findNodeWithLink(treeToDisplay, hoveredNodeLink);
+  const hoveredNodeObject = findNodeWithLink(
+    treeToDisplay,
+    hoveredNodeLink,
+    MAX_DEPTH
+  );
 
   if (hoveredNodeObject.node !== null) {
     return treeToDisplay;
   }
   // If none of the visible nodes corresponds to the link, check the entire tree
-  const searchResult = findNodeWithLink(entireData, hoveredNodeLink);
+  const searchResult = findNodeWithLink(
+    entireData,
+    hoveredNodeLink,
+    NO_DEPTH_LIMIT
+  );
 
   if (searchResult.node === null) {
     //Just show the old tree if the link does not have a corresponding node
