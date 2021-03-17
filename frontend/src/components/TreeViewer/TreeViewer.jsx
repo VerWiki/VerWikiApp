@@ -56,10 +56,12 @@ const getSubtree = (
 
   if (hoveredNodeLink !== "") {
     const found = searchJsonData(subTree, hoveredNodeLink);
-    if (found === {}) {
+    console.log(found);
+    if (found.node === undefined) {
       const searchResult = searchJsonData(entireData, hoveredNodeLink);
-      if (searchResult === {}) {
-        console.log("NOT FOUND!!!!!!!");
+      console.log(searchResult);
+      if (searchResult.node === undefined) {
+        console.error(`The link ${hoveredNodeLink} was not found in the tree`);
       } else {
         if (searchResult.parent === null) {
           return searchResult.node;

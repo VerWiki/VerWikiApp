@@ -17,8 +17,8 @@ function animateTree(nodeGroupEnterAndUpdate, enteringAndUpdatingLinks) {
   nodeGroupEnterAndUpdate
     .attr("opacity", 0)
     .transition()
-    .duration(500)
-    .delay((node) => node.depth * 300)
+    .duration(200)
+    .delay((node) => node.depth * 200)
     .attr("opacity", 1);
 
   enteringAndUpdatingLinks
@@ -26,8 +26,8 @@ function animateTree(nodeGroupEnterAndUpdate, enteringAndUpdatingLinks) {
       return this.getTotalLength();
     })
     .transition()
-    .duration(500)
-    .delay((link) => link.source.depth * 500)
+    .duration(200)
+    .delay((link) => link.source.depth * 200)
     .attr("stroke-dashoffset", 0);
 }
 
