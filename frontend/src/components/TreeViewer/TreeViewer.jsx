@@ -163,29 +163,10 @@ export const TreeViewer = ({ data, treeID }) => {
   };
 
   /**
-   * 1. We hover over a link that corresponds to a node within the given tree:
-   *     - we highlight the subtree beginning at the node itself
-   * 2. We hover over a link that corresponds to a node outside the displayed tree:
-   *     - display subtree beginning at the parent
-   */
-
-  /**
-   * Searches the JSON for the given link and
-   * returns the node and its parent
-   * @param {*} subtree
-   * @param {*} link
-   */
-  const searchJsonData = (subtree, link) => {
-    // 1. search trimmedData, and have a flag which tells if the node has been found in current render
-    // 2. if not found, search entire data, and gets parent
-  };
-
-  /**
    * Sets the currently hovered link which eventually triggers a
    * re-render of the tree.
    */
   const linkHoverHandler = (hoveredElement) => {
-    console.log(trimmedData);
     if (hoveredElement === null) {
       setHoveredNodeLink("");
       return;
