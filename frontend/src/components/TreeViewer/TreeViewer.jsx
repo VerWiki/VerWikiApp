@@ -18,6 +18,62 @@ const FADE_OPACITY = 0.25;
 const FULL_OPACITY = 1;
 
 /**
+ * 1. We hover over a link that corresponds to a node within the given tree:
+ *     - we highlight the subtree beginning at the node itself
+ * 2. We hover over a link that corresponds to a node outside the displayed tree:
+ *     - display subtree beginning at the parent
+ *
+ * step 1 - pass in trimmed data. if found, proceed as normal, make no changes
+ * step 2 - if nothing found, then search in data, and then get its parent, and set that as our trimmed data
+ */
+
+const searchJsonData = (subtree, link, parent = null) => {
+  if (subtree.url === link) {
+    let result = {
+      node: subtree,
+      parent: parent,
+    };
+    return result;
+  }
+
+  for (let i = 0; i < subtree.numChildren; i++) {
+    let result = searchJsonData(subtree.children[i], link, subtree);
+    if (result.node !== undefined && result.parent !== undefined) {
+      return result;
+    }
+  }
+
+  return {};
+};
+
+const getSubtree = (
+  currentPath,
+  nameToNodeMapping,
+  hoveredNodeLink,
+  entireData
+) => {
+  const nodeName = currentPath[currentPath.length - 1];
+  const subTree = nameToNodeMapping[nodeName] || {};
+
+  if (hoveredNodeLink !== "") {
+    const found = searchJsonData(subTree, hoveredNodeLink);
+    if (found === {}) {
+      const searchResult = searchJsonData(entireData, hoveredNodeLink);
+      if (searchResult === {}) {
+        console.log("NOT FOUND!!!!!!!");
+      } else {
+        if (searchResult.parent === null) {
+          return searchResult.node;
+        } else {
+          return searchResult.parent;
+        }
+      }
+    }
+  }
+  return subTree;
+};
+
+/**
  * Given the original data which has an unbounded number
  * of levels, this function trims the total depth of the tree
  * to the given depth.
@@ -300,8 +356,12 @@ export const TreeViewer = ({ data, treeID }) => {
    */
   useEffect(() => {
     // The last name in the currentPath should be the new root node
-    const nodeName = currentPath[currentPath.length - 1];
-    const subTree = nameToNodeMapping[nodeName] || {};
+    const subTree = getSubtree(
+      currentPath,
+      nameToNodeMapping,
+      hoveredNodeLink,
+      data
+    );
 
     // Trim the subtree to MAX_DEPTH and set it as the new tree
     setTrimmedData(
