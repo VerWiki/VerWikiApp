@@ -43,19 +43,10 @@ function animateTree(nodeGroupEnterAndUpdate, enteringAndUpdatingLinks) {
  * to take when a node in the tree is clicked
  * @param onRightClick: Function pointer specifying the action
  * to take when a node in the tree is right-clicked
- * @param hoveredNodeLink: String representing the link that the
- * user is currently hovering over
  * @returns SVG groupings of nodes-and-text, and inter-node links
  */
 
-function renderTree(
-  dimensions,
-  jsonData,
-  svgRef,
-  onNodeClick,
-  onRightClick,
-  hoveredNodeLink
-) {
+function renderTree(dimensions, jsonData, svgRef, onNodeClick, onRightClick) {
   const svg = select(svgRef.current);
   const { width, height } = dimensions;
 
@@ -111,13 +102,7 @@ function renderTree(
     .attr("fill", (d) => (d.data.numChildren === 0 ? "#b30000" : "#555"))
     .attr("r", 6)
     .attr("opacity", (d) => {
-      if (hoveredNodeLink === "") {
-        return 1;
-      } else if (d.data.url === hoveredNodeLink) {
-        return 1;
-      } else {
-        return 0.25;
-      }
+      return d.data.opacity;
     });
 
   // Add labels to the node group
@@ -144,13 +129,7 @@ function renderTree(
       d.x < Math.PI === !d.children ? "start" : "end"
     )
     .attr("opacity", (d) => {
-      if (hoveredNodeLink === "") {
-        return 1;
-      } else if (d.data.url === hoveredNodeLink) {
-        return 1;
-      } else {
-        return 0.25;
-      }
+      return d.data.opacity;
     })
     .text((node) => node.data.name + " ");
 
@@ -168,12 +147,7 @@ function renderTree(
     })
     .attr("stroke", "black")
     .attr("fill", "none")
-    .attr("opacity", () => {
-      if (hoveredNodeLink !== "") {
-        return 0.25;
-      }
-      return 1;
-    });
+    .attr("opacity", (link) => (link.source.data.opacity === 1 ? 1 : 0.25));
   svg.attr("viewBox", autoBox).node();
   return [nodeGroupEnterAndUpdate, enteringAndUpdatingLinks];
 }
@@ -183,10 +157,10 @@ function renderTree(
  * @param jsonData: JSON data representing the tree structure
  * @param onNodeClick: Function to execute when one clicks on a node of the tree
  * @param onRightClick: Function to execute when one clicks on a node of the tree
- * @param hoveredNodeLink: Link that the user is currently hovering over, else ""
+ * @param isHovering: Boolean, is true when a link is being hovered over
  * @returns the tree component
  */
-export function Tree({ jsonData, onNodeClick, onRightClick, hoveredNodeLink }) {
+export function Tree({ jsonData, onNodeClick, onRightClick, isHovering }) {
   const svgRef = useRef();
   const wrapperRef = useRef();
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
@@ -228,10 +202,9 @@ export function Tree({ jsonData, onNodeClick, onRightClick, hoveredNodeLink }) {
       jsonData,
       svgRef,
       onNodeClick,
-      onRightClick,
-      hoveredNodeLink
+      onRightClick
     );
-    if (jsonData !== previouslyRenderedData) {
+    if (jsonData.name !== previouslyRenderedData.name) {
       animateTree(nodeGroupEnterAndUpdate, enteringAndUpdatingLinks);
     }
   }, [
@@ -240,7 +213,7 @@ export function Tree({ jsonData, onNodeClick, onRightClick, hoveredNodeLink }) {
     previouslyRenderedData,
     onNodeClick,
     onRightClick,
-    hoveredNodeLink,
+    isHovering,
   ]);
 
   return (

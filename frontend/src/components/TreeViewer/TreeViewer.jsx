@@ -14,6 +14,7 @@ import { HistoryRecorder } from "../../utils/HistoryRecorder";
 import "fontsource-roboto";
 
 const MAX_DEPTH = 2;
+const FADE_OPACITY = 0.25;
 
 /**
  * Given the original data which has an unbounded number
@@ -38,6 +39,27 @@ function extractObjectWithMaxDepth(obj, depth = MAX_DEPTH) {
       : [],
   };
 }
+
+/**
+ * Adds an opacity rating every time the tree needs to be rendered.
+ * @param {*} data The data to traverse to add the opacity
+ * @param {*} link The link we are equating to, refers to the link being hovered on
+ * @param {*} childOpacity Opacity rating of the child. Checks for being equated to FADE_OPACTIY
+ */
+const addOpacity = (data, link, childOpacity) => {
+  if (link === "" || data.url === link || childOpacity === 1) {
+    childOpacity = 1;
+  } else if (childOpacity === FADE_OPACITY) {
+    childOpacity = FADE_OPACITY;
+  }
+  data.opacity = childOpacity;
+  if (data.children) {
+    data.children.forEach((child) => {
+      child = addOpacity(child, link, childOpacity);
+    });
+  }
+  return data;
+};
 
 /**
  * Creates an index so that we can get the reference to
@@ -131,10 +153,29 @@ export const TreeViewer = ({ data, treeID }) => {
   };
 
   /**
+   * 1. We hover over a link that corresponds to a node within the given tree:
+   *     - we highlight the subtree beginning at the node itself
+   * 2. We hover over a link that corresponds to a node outside the displayed tree:
+   *     - display subtree beginning at the parent
+   */
+
+  /**
+   * Searches the JSON for the given link and
+   * returns the node and its parent
+   * @param {*} subtree
+   * @param {*} link
+   */
+  const searchJsonData = (subtree, link) => {
+    // 1. search trimmedData, and have a flag which tells if the node has been found in current render
+    // 2. if not found, search entire data, and gets parent
+  };
+
+  /**
    * Sets the currently hovered link which eventually triggers a
    * re-render of the tree.
    */
   const linkHoverHandler = (hoveredElement) => {
+    console.log(trimmedData);
     if (hoveredElement === null) {
       setHoveredNodeLink("");
       return;
@@ -272,8 +313,14 @@ export const TreeViewer = ({ data, treeID }) => {
     const subTree = nameToNodeMapping[nodeName] || {};
 
     // Trim the subtree to MAX_DEPTH and set it as the new tree
-    setTrimmedData(extractObjectWithMaxDepth(subTree));
-  }, [currentPath, nameToNodeMapping]);
+    setTrimmedData(
+      addOpacity(
+        extractObjectWithMaxDepth(subTree),
+        hoveredNodeLink,
+        FADE_OPACITY
+      )
+    );
+  }, [currentPath, nameToNodeMapping, hoveredNodeLink]);
 
   return (
     <div className={styles.nav}>
@@ -320,7 +367,7 @@ export const TreeViewer = ({ data, treeID }) => {
             jsonData={trimmedData}
             onNodeClick={nodeClickHandler}
             onRightClick={rightClickHandler}
-            hoveredNodeLink={hoveredNodeLink}
+            isHovering={hoveredNodeLink !== ""}
           ></Tree>
         </div>
         <div className="article">
