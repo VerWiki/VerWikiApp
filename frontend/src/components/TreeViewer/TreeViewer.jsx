@@ -175,7 +175,7 @@ const addOpacity = (data, link, currentOpacity) => {
 
 /**
  * Creates an index so that we can get the reference to
- * a particular node given its name, in constant time.
+ * a particular node given its name - in constant time.
  *
  * Note: The name of the node is a key within the particular tree
  *
