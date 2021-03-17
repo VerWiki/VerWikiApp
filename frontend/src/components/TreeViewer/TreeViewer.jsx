@@ -175,7 +175,7 @@ export const TreeViewer = ({ data, treeID }) => {
   };
 
   /**
-   * The function to handle right clicks - opens up a window to show
+   * Function to handle right clicks - opens up a window to show
    * summarized information for a given wiki link.
    */
   const rightClickHandler = (event, clickedNode) => {
