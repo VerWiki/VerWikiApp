@@ -227,8 +227,8 @@ function toggleInfoBoxVisibility(clickedNodeName, previouslyClickedNodeName) {
  * @param {string} name The name of the query-string parameter to get
  * @param {string} url The url from where to parse query string
  */
-const getParameterByName = (name, url = window.location.href) => {
-  name = name.replace(/[\[\]]/g, "\\$&");
+const getParameterByName = (name, url) => {
+  name = name.replace(/[[\]]/g, "\\$&");
   var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
     results = regex.exec(url);
   if (!results) return null;
