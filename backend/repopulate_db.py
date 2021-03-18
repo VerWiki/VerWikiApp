@@ -767,3 +767,389 @@ if __name__ == "__main__":
 
     result = radialTrees.insert_one(tree3)
     print(result.inserted_id)
+
+    tree4 = {
+        "id": 4,
+        "data": {
+            "name": "PSY371",
+            "url": "https://cwsl.ca/wiki/doku.php?id=psy_371_course_thesis_higher_cognitive_processes_as_wisdom",
+            "children": [
+                {
+                    "name": "Psychology of Wisdom",
+                    "children": [
+                        {"name": "Mckee and Barber"},
+                        {"name": "Schwartz and Sharpe"},
+                        {"name": "Ardelt"},
+                        {"name": "Baltes and Staudinger"},
+                        {
+                            "name": "Vervaeke and Ferraro",
+                            "children": [{"name": "Parasitic Processing"}],
+                        },
+                    ],
+                },
+                {
+                    "name": "Wisdom",
+                    "children": [
+                        {"name": "Meaning in Life"},
+                        {
+                            "name": "Self-Transcendence",
+                            "children": [
+                                {"name": "Noesis"},
+                                {
+                                    "name": "Gnosis",
+                                    "children": [
+                                        {"name": "Autobiographical Memory"},
+                                        {"name": "Narrative Practice"},
+                                    ],
+                                },
+                            ],
+                        },
+                        {"name": "Walsh", "children": [{"name": "Wise Perspectives"}]},
+                        {"name": "Flourishing"},
+                        {"name": "Sophrosyne"},
+                        {
+                            "name": "Cognitive Styles",
+                            "children": [
+                                {
+                                    "name": "Active Open-Mindedness",
+                                    "comments": "(Stanovich)",
+                                },
+                                {
+                                    "name": "Mindfulness",
+                                    "comments": "(Vervaeke)",
+                                    "children": [
+                                        {"name": "Metacognitive Insight"},
+                                        {"name": "Mindsight"},
+                                    ],
+                                },
+                            ],
+                        },
+                        {"name": "Wise Reasoning", "comments": "(Grossman and Kross)"},
+                        {
+                            "name": "Transformative Experience",
+                            "children": [{"name": "Proleptic Rationality"}],
+                        },
+                    ],
+                },
+                {
+                    "name": "Self-Regulation",
+                    "children": [
+                        {
+                            "name": "Delay Gratification",
+                            "comments": "(Ayduk and Mischel)",
+                            "children": [{"name": "Dual-Process models"}],
+                        },
+                        {"name": "Temporal Discounting"},
+                        {"name": "Abstract Symbolic Representation"},
+                        {"name": "Baumeister"},
+                    ],
+                },
+                {
+                    "name": "Internalization",
+                    "children": [
+                        {
+                            "name": "Zone of Proximal Development",
+                            "comments": "(Vygotsky)",
+                        },
+                        {
+                            "name": "Learning to Learn",
+                            "children": [
+                                {"name": "Dweck: Mindset Theory"},
+                                {"name": "Learning Theory: S Learning Curve"},
+                            ],
+                        },
+                    ],
+                },
+                {
+                    "name": "Scientific Theory of RR",
+                    "children": [
+                        {"name": "Scientific Class", "comments": "(John Stuart Mill)"},
+                        {
+                            "name": "Fittedness",
+                            "comments": "RR as analogy to Darwinian fittedness",
+                            "children": [
+                                {
+                                    "name": "Theory of Relevance Realization",
+                                    "comments": "(Vervaeke and Lillicrap, Varvaeke and Ferarro 2013)",
+                                },
+                                {
+                                    "name": "Dynamical Systems Theory",
+                                    "comments": "Theory of RR as virtual engine regulating Cognitive Evolution through Fittedness to environment",
+                                },
+                                {
+                                    "name": "Darwin",
+                                    "comments": "Natural Selection as virtual engine, theory of evolution as dynamical system regulating fittedness to environment",
+                                },
+                                {
+                                    "name": "Semantic Level",
+                                    "comments": "Representations presuppose RR",
+                                },
+                                {
+                                    "name": "Syntactic Level",
+                                    "comments": "Compuation presupposes RR",
+                                },
+                                {"name": "Level of RR as Logistical"},
+                                {"name": "2 problem solving machines"},
+                            ],
+                        },
+                        {
+                            "name": "G",
+                            "comments": "General Intelligence",
+                            "children": [
+                                {
+                                    "name": "Working Memory as Relevance filter",
+                                    "comments": "(Hasher)",
+                                }
+                            ],
+                        },
+                        {
+                            "name": "RR&Wisdom",
+                            "children": [{"name": "Metacognitive Insight"}],
+                        },
+                        {
+                            "name": "Rationality",
+                            "comments": "(Stanovich)",
+                            "children": [
+                                {"name": "Rationality vs. Intelligence"},
+                                {"name": "Dysrationalia"},
+                                {
+                                    "name": "Rationality Debate",
+                                    "comments": "(Stanovich and West)",
+                                },
+                            ],
+                        },
+                    ],
+                },
+                {
+                    "name": "Problem Solving",
+                    "url": "https://cwsl.ca/wiki/doku.php?id=operationalizing_problem_solving",
+                    "children": [
+                        {
+                            "name": "Insight Debate",
+                            "url": "https://cwsl.ca/wiki/doku.php?id=theoretical_debate_and_experimental_competition_on_insight",
+                            "children": [
+                                {"name": "Gestalt Paradigm"},
+                                {"name": "Weisberg and Alba", "comments": "(1981)"},
+                                {"name": "Dominowski", "comments": "(1981)"},
+                            ],
+                        },
+                        {
+                            "name": "M&W",
+                            "comments": "Metcalfe and Wiebbe, (1986/1987)",
+                            "children": [
+                                {
+                                    "name": "FOW vs. FOK",
+                                    "comments": "(different curves for Insight/inference problems)",
+                                }
+                            ],
+                        },
+                        {
+                            "name": "H&G",
+                            "comments": "Holyoak and Gick, (1980)",
+                            "children": [
+                                {
+                                    "name": "Transfer of Knowledge",
+                                    "comments": "(Analogical Transfer)",
+                                }
+                            ],
+                        },
+                        {
+                            "name": "K&S",
+                            "comments": "Kaplan and Simon, (1990)",
+                            "children": [
+                                {"name": "Primary/Meta Space"},
+                                {
+                                    "name": "Notice Invariance heuristic",
+                                    "comments": "(used to search for problem formulation in Meta space, return to solve in primary)",
+                                },
+                                {"name": "Mutilated Chessboard Problem"},
+                            ],
+                        },
+                        {
+                            "name": "Schooler",
+                            "comments": "(1993)",
+                            "children": [
+                                {"name": "Verbal Overshadowing"},
+                                {"name": "Individual Differences"},
+                                {
+                                    "name": "Double Dissociation",
+                                    "comments": "Double Dissociation between Insight vs. Inference tasks",
+                                },
+                            ],
+                        },
+                    ],
+                },
+                {
+                    "name": "Problem Formulation",
+                    "url": "https://cwsl.ca/wiki/doku.php?id=machinery_of_attention_construal_and_problem_formulation",
+                    "children": [
+                        {
+                            "name": "Attention",
+                            "children": [
+                                {"name": "Cognitive Unison", "comments": "(Cole)"},
+                                {"name": "Machinery of Construal"},
+                                {"name": "Framing"},
+                                {"name": "Salience Landscape"},
+                                {"name": "Sizing up", "comments": "(Matson)"},
+                            ],
+                        },
+                        {
+                            "name": "Insight Cascade",
+                            "children": [
+                                {"name": "Relies on SOC and EAS"},
+                                {
+                                    "name": "Network Theory",
+                                    "comments": "3 Types of Networks",
+                                },
+                                {"name": "Attentional Scaling"},
+                                {"name": "Phase-Function Fit"},
+                                {"name": "Making Frame", "comments": "(Scaling Up)"},
+                                {
+                                    "name": "Breaking Frame",
+                                    "comments": "(Scaling Down)",
+                                },
+                            ],
+                        },
+                    ],
+                },
+                {
+                    "name": "Cog. Development",
+                    "children": [
+                        {"name": "Exaptation", "children": [{"name": "Embodiment"}]}
+                    ],
+                },
+                {
+                    "name": "Philosophy",
+                    "url": "https://cwsl.ca/wiki/doku.php?id=philosophy_of_wisdom_socrates_and_plato#introduction_to_the_philosophy_of_wisdomthe_conceptual_basis_for_wisdom_as_self-transcendence_and_foolishness_as_self-deception",
+                    "children": [
+                        {
+                            "name": "Socrates",
+                            "url": "https://cwsl.ca/wiki/doku.php?id=philosophy_of_wisdom_socrates_and_plato#introduction_to_the_socratic_framework_of_wisdomthe_3_types_of_explanations_the_naturalistic_philosophers_and_the_sophists",
+                            "children": [
+                                {"name": "Elenchus"},
+                                {
+                                    "name": "Relevance and Truth",
+                                    "comments": "1) Thales; 2) Sophists",
+                                },
+                                {"name": "Harry Frankfurt", "comments": "On Bullshit"},
+                            ],
+                        },
+                        {
+                            "name": "Plato",
+                            "url": "https://cwsl.ca/wiki/doku.php?id=philosophy_of_wisdom_socrates_and_plato#introduction_to_platothe_tripartite_model_of_the_psyche_in_understanding_justice",
+                            "children": [
+                                {
+                                    "name": "Psyche",
+                                    "comments": "1) Inner Conflict; 2) Intrapsychic Order",
+                                },
+                                {"name": "2 Meta Desires"},
+                                {"name": "Logos"},
+                                {"name": "Anagoge", "comments": "Parable of the Cave"},
+                            ],
+                        },
+                        {
+                            "name": "Perspective-Taking",
+                            "children": [
+                                {
+                                    "name": "Antisthenes",
+                                    "url": "https://cwsl.ca/wiki/doku.php?id=philosophy_of_wisdom_socrates_and_plato#understanding_antisthenes_internalizationmeta-cognition_second-order_thinking_and_vygotsky_s_zone_of_proximal_development",
+                                    "comments": "1) Internalization; 2) Perspectives",
+                                }
+                            ],
+                        },
+                        {
+                            "name": "Aristotle",
+                            "url": "https://cwsl.ca/wiki/doku.php?id=philosophy_of_wisdom_aristotle",
+                            "children": [
+                                {"name": "Conformity Theory", "comments": "Essence"},
+                                {
+                                    "name": "4 types of Causation",
+                                    "comments": "1) Mechanical Cause; 2) Formal Cause; 3) Material Cause; 4) Final Cause",
+                                },
+                                {
+                                    "name": "Virtual Engine of Character",
+                                    "comments": "1) Self-Actualization; 2) Hierarchy of Needs",
+                                },
+                                {"name": "Akrasia", "comments": "Weakness of the Will"},
+                            ],
+                        },
+                        {
+                            "name": "Cynics",
+                            "url": "https://cwsl.ca/wiki/doku.php?id=philosophy_of_wisdom_the_hellenistic_era#introduction_to_diogenes_the_cynicthe_clinical_dimension_to_philosophy_in_the_hellenistic_era",
+                        },
+                        {
+                            "name": "Stoicism",
+                            "url": "https://cwsl.ca/wiki/doku.php?id=philosophy_of_wisdom_the_hellenistic_era#introduction_to_stoicismthe_process_of_identification_and_zeno_s_criticism_of_the_cynics",
+                            "children": [
+                                {
+                                    "name": "Processes of Identification",
+                                    "comments": "1) MAR (Massive/Automatic/Reactive); 2) Narrative Identity",
+                                },
+                                {
+                                    "name": "Epictetus",
+                                    "url": "https://cwsl.ca/wiki/doku.php?id=philosophy_of_wisdom_the_hellenistic_era#stoicism_continuedthe_mar_nature_of_identification_the_fatality_of_all_things_and_epictetus_notion_of_perceived_control_over_events",
+                                    "comments": "1) Judgment; 2) Locus of Control",
+                                },
+                                {
+                                    "name": "Stoic worldview",
+                                    "comments": "Logic/Physics/Ethics",
+                                },
+                                {
+                                    "name": "Erich Fromm",
+                                    "url": "https://cwsl.ca/wiki/doku.php?id=philosophy_of_wisdom_the_hellenistic_era#modern_analogues_to_stoicismerich_fromm_modal_confusion_and_identification_with_existential_needs",
+                                    "comments": "Modal Confusion",
+                                },
+                                {
+                                    "name": "Marcus Aurelius",
+                                    "url": "https://cwsl.ca/wiki/doku.php?id=philosophy_of_wisdom_the_hellenistic_era#philosophy_as_a_spiritual_exercisestoicism_and_marcus_aurelius",
+                                    "comments": "Spiritual Exercises",
+                                },
+                            ],
+                        },
+                    ],
+                },
+                {"name": "Meaning-Making"},
+                {"name": "Meaning Crisis"},
+                {
+                    "name": "Second-Order Thinking",
+                    "url": "https://cwsl.ca/wiki/doku.php?id=philosophy_of_wisdom_socrates_and_plato#psychotechnologies_metacognition_and_second_order_thinkingimplications_for_the_machinery_of_meaning-making",
+                    "children": [
+                        {"name": "Psychotechnologies"},
+                        {"name": "Metacognition"},
+                    ],
+                },
+                {
+                    "name": "Knowing",
+                    "url": "https://cwsl.ca/wiki/doku.php?id=philosophy_of_wisdom_socrates_and_plato#antisthenes_internalization_of_socrates_and_the_3_types_of_knowing",
+                    "children": [
+                        {"name": "Propositional Knowing"},
+                        {"name": "Procedural Knowing"},
+                        {"name": "Perspectival Knowing"},
+                        {"name": "Participatory Knowing"},
+                    ],
+                },
+                {
+                    "name": "Self-Organization",
+                    "children": [
+                        {
+                            "name": "Perkins",
+                            "children": [
+                                {"name": "Folly"},
+                                {"name": "Bottom-Up"},
+                                {"name": "Top-Down"},
+                                {"name": "Emergent Activity Switching"},
+                                {"name": "Sources of Folly"},
+                                {"name": "Folk Psychology"},
+                            ],
+                        }
+                    ],
+                },
+                {"name": "Implicit Learning", "comments": "(Reber)"},
+            ],
+        },
+    }
+
+tree4["data"] = Utils.add_child_counts(tree4["data"])
+
+result = radialTrees.insert_one(tree4)
+print(result.inserted_id)
