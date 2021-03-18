@@ -147,6 +147,7 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick, onRightClick) {
     })
     .attr("stroke", "black")
     .attr("fill", "none")
+    //If the parent node is highlighted, also highlight the link
     .attr("opacity", (link) => (link.source.data.opacity === 1 ? 1 : 0.25));
   svg.attr("viewBox", autoBox).node();
   return [nodeGroupEnterAndUpdate, enteringAndUpdatingLinks];
@@ -204,6 +205,7 @@ export function Tree({ jsonData, onNodeClick, onRightClick, isHovering }) {
       onNodeClick,
       onRightClick
     );
+    // Animate only when the tree root changes
     if (jsonData.name !== previouslyRenderedData.name) {
       animateTree(nodeGroupEnterAndUpdate, enteringAndUpdatingLinks);
     }

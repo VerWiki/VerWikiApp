@@ -12,7 +12,7 @@ import NavigateNextRounded from "@material-ui/icons/NavigateNextRounded";
 import HomeRounded from "@material-ui/icons/HomeRounded";
 import { HistoryRecorder } from "../../utils/HistoryRecorder";
 import "fontsource-roboto";
-import { ViewerConfig } from "../../utils/config";
+import { VConf } from "../../utils/config";
 
 /**
  * Recursive function to find the node, and its parent with a given link.
@@ -89,7 +89,7 @@ const findVisibleSubtree = (
   const hoveredNodeObject = findNodeWithLink(
     treeToDisplay,
     hoveredNodeLink,
-    ViewerConfig.MAX_DEPTH
+    VConf.MAX_DEPTH
   );
 
   if (hoveredNodeObject.node !== null) {
@@ -99,7 +99,7 @@ const findVisibleSubtree = (
   const searchResult = findNodeWithLink(
     entireData,
     hoveredNodeLink,
-    ViewerConfig.NO_DEPTH_LIMIT
+    VConf.NO_DEPTH_LIMIT
   );
 
   if (searchResult.node === null) {
@@ -120,7 +120,7 @@ const findVisibleSubtree = (
  * of levels, this function trims the total depth of the tree
  * to the given depth.
  */
-function extractObjectWithMaxDepth(obj, depth = ViewerConfig.MAX_DEPTH) {
+function extractObjectWithMaxDepth(obj, depth = VConf.MAX_DEPTH) {
   if (depth < 0) {
     return null;
   }
@@ -140,16 +140,32 @@ function extractObjectWithMaxDepth(obj, depth = ViewerConfig.MAX_DEPTH) {
 }
 
 /**
- * Adds an opacity rating every time the tree needs to be rendered.
- * @param {*} data The data to traverse to add the opacity
- * @param {*} link The link we are equating to, refers to the link being hovered on
- * @param {*} childOpacity Opacity rating of the child. Checks for being equated to FADE_OPACTIY
+ * Adds an opacity rating to each of the nodes based on where the node corresponding to
+ * the link is found.
+ * If no link is being hovered over, all nodes are fully visible
+ * If a link is being hovered over, then the corresponding node (if it exists) and all
+ * descendents are highlighted, everything else is greyed out
+ * @param {Object} data The data to traverse to add the opacity
+ * @param {string} link The link we are equating to, refers to the link being hovered on
+ * @param {float} currentOpacity Current opacity rating
  */
-const addOpacity = (data, link, childOpacity) => {
-  if (link === "" || data.url === link || childOpacity === 1) {
-    childOpacity = 1;
-  } else if (childOpacity === ViewerConfig.FADE_OPACITY) {
-    childOpacity = ViewerConfig.FADE_OPACITY;
+const addOpacity = (data, link, currentOpacity) => {
+  if (
+    currentOpacity !== VConf.FADE_OPACITY &&
+    currentOpacity !== VConf.FULL_OPACITY
+  ) {
+    console.log("WARNING: invalid passed in opacity...");
+  }
+  let childOpacity;
+  if (
+    link === "" ||
+    data.url === link ||
+    currentOpacity === VConf.FULL_OPACITY
+  ) {
+    childOpacity = VConf.FULL_OPACITY;
+  } else {
+    /*currentOpacity === FADE_OPACITY*/
+    childOpacity = VConf.FADE_OPACITY;
   }
   data.opacity = childOpacity;
   if (data.children) {
@@ -247,7 +263,7 @@ export const TreeViewer = ({ data }) => {
 
   /**
    * This function handles the event where a user clicks a node on the tree
-   * and displays the subtree from that point onwards up to ViewerConfig.MAX_DEPTH.
+   * and displays the subtree from that point onwards up to VConf.MAX_DEPTH.
    */
   const nodeClickHandler = (event, clickedNode) => {
     /**
@@ -278,7 +294,7 @@ export const TreeViewer = ({ data }) => {
   };
 
   /**
-   * The function to handle right clicks - opens up a window to show
+   * Function to handle right clicks - opens up a window to show
    * summarized information for a given wiki link.
    */
   const rightClickHandler = (event, clickedNode) => {
@@ -411,10 +427,8 @@ export const TreeViewer = ({ data }) => {
       data
     );
 
-    // Trim the subtree to ViewerConfig.MAX_DEPTH and set it as the new tree
-    setTrimmedData(
-      addOpacity(subTree, hoveredNodeLink, ViewerConfig.FADE_OPACITY)
-    );
+    // Trim the subtree to VConf.MAX_DEPTH and set it as the new tree
+    setTrimmedData(addOpacity(subTree, hoveredNodeLink, VConf.FADE_OPACITY));
   }, [currentPath, nameToNodeMapping, hoveredNodeLink, data]);
 
   return (
