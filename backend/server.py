@@ -6,6 +6,7 @@ from keybert import KeyBERT
 from time import time
 from bs4 import BeautifulSoup
 import requests
+import logging
 
 
 app = Flask(__name__)
@@ -39,24 +40,16 @@ def configure_routes(app):
             internalSrvErr.description = str(e)
             raise internalSrvErr
 
-    @app.route("/get-node-info/<node_id>", methods=["GET"])
-    def get_node_info(node_id):
+    @app.route("/get-node-info/<node_url>", methods=["GET"])
+    def get_node_info(node_url):
         """
         Gets the associated link from the database, gets the text associated
         with it, and summarizes it.
         """
         try:
-            link = db_interface.get_link_by_node_id(node_id)
-        except KeyError as e:
-            nf = NotFound()
-            nf.description = str(e)
-            raise nf
-        except Exception as e:
-            internalSrvErr = InternalServerError()
-            internalSrvErr.description = str(e)
-            raise internalSrvErr
-        try:
-            content = _get_content_from_site(link)
+            content = _get_content_from_site(
+                f"https://cwsl.ca/wiki/doku.php?id={node_url}"
+            )
         except Exception as e:
             raise e
         return jsonify({"content": content})

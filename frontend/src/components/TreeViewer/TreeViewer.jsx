@@ -225,7 +225,21 @@ function toggleInfoBoxVisibility(clickedNodeName, previouslyClickedNodeName) {
   }
 }
 
-export const TreeViewer = ({ data, treeID }) => {
+/**
+ * Gets the arguments of the query string from a given URL
+ * @param {string} name The name of the query-string parameter to get
+ * @param {string} url The url from where to parse query string
+ */
+const getParameterByName = (name, url = window.location.href) => {
+  name = name.replace(/[\[\]]/g, "\\$&");
+  var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+    results = regex.exec(url);
+  if (!results) return null;
+  if (!results[2]) return "";
+  return decodeURIComponent(results[2].replace(/\+/g, " "));
+};
+
+export const TreeViewer = ({ data }) => {
   const [trimmedData, setTrimmedData] = useState({});
   const [nameToNodeMapping, setNameToNodeMapping] = useState({});
   const [nodeInfoContent, setNodeInfoContent] = useState("");
@@ -277,8 +291,9 @@ export const TreeViewer = ({ data, treeID }) => {
       previouslyClickedNode.current
     );
     previouslyClickedNode.current = clickedNode.data.name;
+    const nodeID = getParameterByName("id", clickedNode.data.url);
     const nodeInfoUrl = replaceSpaceCharacters(
-      `http://localhost:3003/get-node-info/${clickedNode.data.name}-${treeID}`
+      `http://localhost:3003/get-node-info/${nodeID}`
     );
     fetch(nodeInfoUrl)
       .then((res) => {
