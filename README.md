@@ -69,6 +69,12 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
 
+### Frontend Config
+
+Config/constants for the frontend has been centralized to `frontend/src/utils/config.js`, organized per component. Centralizing config/constants makes it easier to access the config from different files, as it eliminates the need to import tons of files just to use constants. Furthermore, different config files can be used in different environments (e.g. locally, in production etc) which makes our application more flexible. Using constants in general makes the codebase more readable and reduces duplication.
+
+When developing in the frontend files, any new hardcoded values should be instead made as constants and be saved in the `frontend/src/utils/config.js` file in the appropriate object. New objects can be made for new components -> make sure to call Object.freeze upon initializing, as this prevents the config properties from being changed from other files.
+
 # Getting started with the backend
 
 The backend in this app runs with Python Flask, and connects to a mongoDB. The following steps should be helpful in the initial set up of the backend on your local machines:
