@@ -56,7 +56,7 @@ def get_tree_by_id(id: int) -> object:
     return output["data"]
 
 
-## TODO THIS FUNCTION IS DEPRECATED TO BE REMOVED 
+## TODO THIS FUNCTION IS DEPRECATED TO BE REMOVED
 def get_link_by_node_id(node_id: str) -> str:
     """
     Gets the associated wiki link for the given node ID, and returns it.
