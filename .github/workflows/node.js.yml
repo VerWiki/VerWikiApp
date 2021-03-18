@@ -3,11 +3,10 @@
 
 name: Node.js CI
 
+# Allows the pipeline to run on all pushes and PRs
 on:
   push:
-    branches: [develop]
   pull_request:
-    branches: [develop]
 
 jobs:
   build:

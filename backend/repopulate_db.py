@@ -3,7 +3,7 @@
 # production.
 
 from pymongo import MongoClient
-from db_interface import VERWIKI_DB_NAME, TREES_TABLE_NAME, LINKS_TABLE_NAME, Utils
+from db_interface import VERWIKI_DB_NAME, TREES_TABLE_NAME, Utils
 
 if __name__ == "__main__":
 
@@ -11,12 +11,8 @@ if __name__ == "__main__":
     # Select the radialTrees collection (Similar to a table in SQL)
     radialTrees = client[VERWIKI_DB_NAME][TREES_TABLE_NAME]
 
-    # select the nodeLinks collection
-    nodeLinks = client[VERWIKI_DB_NAME][LINKS_TABLE_NAME]
-
     # Clear out all the old data
     deleted_data = radialTrees.delete_many({})
-    deleted_links = nodeLinks.delete_many({})
 
     # Sample Tree for local development
     tree1 = {
@@ -26,16 +22,8 @@ if __name__ == "__main__":
 
     tree1["data"] = Utils.add_child_counts(tree1["data"])
 
-    # Sample link for local development
-    link1 = {
-        "id": "Root-1",
-        "link": "https://cwsl.ca/wiki/doku.php?id=philosophy_of_wisdom_socrates_and_plato#psychotechnologies_metacognition_and_second_order_thinkingimplications_for_the_machinery_of_meaning-making",
-    }
-
     # Insert a tree
     result = radialTrees.insert_one(tree1)
-    print(result.inserted_id)
-    result = nodeLinks.insert_one(link1)
     print(result.inserted_id)
 
     # The JSON for the tree found here: https://marmelab.com/ArchitectureTree/
@@ -398,29 +386,6 @@ if __name__ == "__main__":
     result = radialTrees.insert_one(tree2)
     print(result.inserted_id)
 
-    # Sample link for local development
-    link2 = {
-        "id": "Wisdom-2",
-        "link": "https://cwsl.ca/wiki/doku.php?id=philosophy_of_wisdom_socrates_and_plato#psychotechnologies_metacognition_and_second_order_thinkingimplications_for_the_machinery_of_meaning-making",
-    }
-    link3 = {
-        "id": "Rationality-2",
-        "link": "https://cwsl.ca/wiki/doku.php?id=rationality_thinking_dispositions_and_cognitive_styles#rationality_thinking_dispositions_and_levels_of_analysis_in_cognitive_science",
-    }
-    link4 = {
-        "id": "Self-Regulation-2",
-        "link": "https://cwsl.ca/wiki/doku.php?id=self_regulation#ayduk_and_mischelfoolishness_and_self_regulation",
-    }
-    link5 = {
-        "id": "Insight-2",
-        "link": "https://cwsl.ca/wiki/doku.php?id=theoretical_debate_and_experimental_competition_on_insight#theoretical_debate_and_experimental_competition_on_insight",
-    }
-
-    result = nodeLinks.insert_one(link2)
-    result = nodeLinks.insert_one(link3)
-    result = nodeLinks.insert_one(link4)
-    result = nodeLinks.insert_one(link5)
-    print(result.inserted_id)
     # The JSON for the tree found here: https://observablehq.com/@d3/radial-tidy-tree
     tree3 = {
         "id": 3,
