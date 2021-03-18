@@ -3,6 +3,7 @@
 
 name: Backend CI
 
+# Allows the pipeline to run on all pushes and PRs
 on:
   push:
   pull_request:
