@@ -4,20 +4,7 @@ import { select, hierarchy, tree, linkRadial, ascending } from "d3";
 import ResizeObserver from "resize-observer-polyfill";
 import "./Tree.module.css";
 import { usePrevious, sigmoid, autoBox } from "../../utils/utils";
-import { VConf } from "../../utils/config";
-
-const ANIMATE_TIME = 200; //How long the animation effect lasts
-const RADIUS_SCALER = 1 / 2.5; //Multiplicative factor; how much to scale radius relative to min(container.width, container.height)
-const NODE_ROTATE_FACTOR = 180; //How much to rotate the nodes
-const LABEL_ROTATE_OFFSET = 0; //Offset of label in relation to node
-const LABEL_HEIGHT_OFFSET = -15; //Height of the label in relation to the "dot"
-const LEAF_COLOUR = "#b30000"; //Colour of leaf nodes
-const NODE_COLOUR = "#555"; //Colour of non-leaf nodes
-const NODE_SIZE = 6; //How large the node "dot" is
-const MIN_FONT_SIZE = 8; //Smallest font size. Note - font size may be scaled up when the browser window gets larger
-const MAX_FONT_SIZE = 17; // Largest font size. Note - font size may be scaled down when the browser window gets smaller
-const NODE_LABEL_SPACING = 7; //How far the node "dot" and its label are
-const SIBLING_SPACING = 1.0; //Spacing of sibling nodes (this can be a decimal)
+import { VConf, TreeConf } from "../../utils/config";
 
 /**
  * This function takes node-text grouping, and inter-node link grouping and performs the animation
@@ -31,8 +18,8 @@ function animateTree(nodeGroupEnterAndUpdate, enteringAndUpdatingLinks) {
   nodeGroupEnterAndUpdate
     .attr("opacity", 0)
     .transition()
-    .duration(ANIMATE_TIME)
-    .delay((node) => node.depth * ANIMATE_TIME)
+    .duration(TreeConf.ANIMATE_TIME)
+    .delay((node) => node.depth * TreeConf.ANIMATE_TIME)
     .attr("opacity", VConf.FULL_OPACITY);
 
   enteringAndUpdatingLinks
@@ -40,8 +27,8 @@ function animateTree(nodeGroupEnterAndUpdate, enteringAndUpdatingLinks) {
       return this.getTotalLength();
     })
     .transition()
-    .duration(ANIMATE_TIME)
-    .delay((link) => link.source.depth * ANIMATE_TIME)
+    .duration(TreeConf.ANIMATE_TIME)
+    .delay((link) => link.source.depth * TreeConf.ANIMATE_TIME)
     .attr("stroke-dashoffset", 0);
 }
 
@@ -64,7 +51,7 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick, onRightClick) {
   const svg = select(svgRef.current);
   const { width, height } = dimensions;
 
-  const radius = Math.min(width, height) * RADIUS_SCALER;
+  const radius = Math.min(width, height) * TreeConf.RADIUS_SCALER;
 
   // Transform hierarchical data
   const root = hierarchy(jsonData).sort((a, b) =>
@@ -73,7 +60,7 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick, onRightClick) {
   const treeLayout = tree()
     .size([2 * Math.PI, radius])
     .separation(
-      (a, b) => (a.parent === b.parent ? SIBLING_SPACING : 1) / a.depth
+      (a, b) => (a.parent === b.parent ? TreeConf.SIBLING_SPACING : 1) / a.depth
     );
 
   // Creates the links between nodes
@@ -109,12 +96,14 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick, onRightClick) {
     .attr(
       "transform",
       (d) => `
-        rotate(${(d.x * NODE_ROTATE_FACTOR) / Math.PI - 90})
+        rotate(${(d.x * TreeConf.NODE_ROTATE_FACTOR) / Math.PI - 90})
         translate(${d.y},0)
       `
     )
-    .attr("fill", (d) => (d.data.numChildren === 0 ? LEAF_COLOUR : NODE_COLOUR))
-    .attr("r", NODE_SIZE)
+    .attr("fill", (d) =>
+      d.data.numChildren === 0 ? TreeConf.LEAF_COLOUR : TreeConf.NODE_COLOUR
+    )
+    .attr("r", TreeConf.NODE_SIZE)
     .attr("opacity", (d) => {
       return d.data.opacity;
     });
@@ -124,14 +113,17 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick, onRightClick) {
     .append("text")
     .merge(nodeGroup.select("text"))
     .attr("text-anchor", "middle")
-    .attr("font-size", Math.max(MIN_FONT_SIZE, sigmoid(width) * MAX_FONT_SIZE))
-    .attr("y", LABEL_HEIGHT_OFFSET)
+    .attr(
+      "font-size",
+      Math.max(TreeConf.MIN_FONT_SIZE, sigmoid(width) * TreeConf.MAX_FONT_SIZE)
+    )
+    .attr("y", TreeConf.LABEL_HEIGHT_OFFSET)
     .attr(
       "transform",
       (d) => `
-        rotate(${(d.x * NODE_ROTATE_FACTOR) / Math.PI - 90}) 
-        translate(${d.y}, ${LABEL_ROTATE_OFFSET}) 
-        rotate(${d.x >= Math.PI ? NODE_ROTATE_FACTOR : 0})
+        rotate(${(d.x * TreeConf.NODE_ROTATE_FACTOR) / Math.PI - 90}) 
+        translate(${d.y}, ${TreeConf.LABEL_ROTATE_OFFSET}) 
+        rotate(${d.x >= Math.PI ? TreeConf.NODE_ROTATE_FACTOR : 0})
       `
     )
     .attr("dy", "1.00em")
@@ -140,8 +132,8 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick, onRightClick) {
     // left side; at even numbered depths on the right side hence the if statament
     .attr("x", (d) =>
       d.x < Math.PI === !d.children
-        ? NODE_LABEL_SPACING
-        : -1 * NODE_LABEL_SPACING
+        ? TreeConf.LABEL_NODE_SPACING
+        : -1 * TreeConf.LABEL_NODE_SPACING
     )
     .attr("text-anchor", (d) =>
       d.x < Math.PI === !d.children ? "start" : "end"
