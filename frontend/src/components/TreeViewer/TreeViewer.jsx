@@ -12,7 +12,7 @@ import NavigateNextRounded from "@material-ui/icons/NavigateNextRounded";
 import HomeRounded from "@material-ui/icons/HomeRounded";
 import { HistoryRecorder } from "../../utils/HistoryRecorder";
 import "fontsource-roboto";
-import { Config } from "../../utils/config";
+import { ViewerConfig } from "../../utils/config";
 
 /**
  * Recursive function to find the node, and its parent with a given link.
@@ -89,7 +89,7 @@ const findVisibleSubtree = (
   const hoveredNodeObject = findNodeWithLink(
     treeToDisplay,
     hoveredNodeLink,
-    Config.MAX_DEPTH
+    ViewerConfig.MAX_DEPTH
   );
 
   if (hoveredNodeObject.node !== null) {
@@ -99,7 +99,7 @@ const findVisibleSubtree = (
   const searchResult = findNodeWithLink(
     entireData,
     hoveredNodeLink,
-    Config.NO_DEPTH_LIMIT
+    ViewerConfig.NO_DEPTH_LIMIT
   );
 
   if (searchResult.node === null) {
@@ -120,7 +120,7 @@ const findVisibleSubtree = (
  * of levels, this function trims the total depth of the tree
  * to the given depth.
  */
-function extractObjectWithMaxDepth(obj, depth = Config.MAX_DEPTH) {
+function extractObjectWithMaxDepth(obj, depth = ViewerConfig.MAX_DEPTH) {
   if (depth < 0) {
     return null;
   }
@@ -148,8 +148,8 @@ function extractObjectWithMaxDepth(obj, depth = Config.MAX_DEPTH) {
 const addOpacity = (data, link, childOpacity) => {
   if (link === "" || data.url === link || childOpacity === 1) {
     childOpacity = 1;
-  } else if (childOpacity === Config.FADE_OPACITY) {
-    childOpacity = Config.FADE_OPACITY;
+  } else if (childOpacity === ViewerConfig.FADE_OPACITY) {
+    childOpacity = ViewerConfig.FADE_OPACITY;
   }
   data.opacity = childOpacity;
   if (data.children) {
@@ -247,7 +247,7 @@ export const TreeViewer = ({ data }) => {
 
   /**
    * This function handles the event where a user clicks a node on the tree
-   * and displays the subtree from that point onwards up to Config.MAX_DEPTH.
+   * and displays the subtree from that point onwards up to ViewerConfig.MAX_DEPTH.
    */
   const nodeClickHandler = (event, clickedNode) => {
     /**
@@ -411,8 +411,10 @@ export const TreeViewer = ({ data }) => {
       data
     );
 
-    // Trim the subtree to Config.MAX_DEPTH and set it as the new tree
-    setTrimmedData(addOpacity(subTree, hoveredNodeLink, Config.FADE_OPACITY));
+    // Trim the subtree to ViewerConfig.MAX_DEPTH and set it as the new tree
+    setTrimmedData(
+      addOpacity(subTree, hoveredNodeLink, ViewerConfig.FADE_OPACITY)
+    );
   }, [currentPath, nameToNodeMapping, hoveredNodeLink, data]);
 
   return (
