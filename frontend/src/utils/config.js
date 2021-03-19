@@ -1,6 +1,7 @@
 // Config values for the entire application. Ensure to document each constant!
+// See README.md for more details.
 
-//TreeViewer.jsx Config
+//TreeViewer.jsx config
 export const VConf = Object.freeze({
   MAX_DEPTH: 2, //The maximum depth of nodes to be visible to the viewer in the tree
   FADE_OPACITY: 0.25, //The opacity of the faded nodes when the user hovers over a link in the infoViewer
