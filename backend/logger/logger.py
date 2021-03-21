@@ -66,7 +66,7 @@ class Logger(metaclass=Singleton):
         Parameters:
         level (int) : The new level of the logger
         """
-        if isinstace(level, int) and level > -1 and level < 3:
+        if isinstance(level, int) and level > -1 and level < 3:
             self.level = level
         else:
             raise Exception("The level must be an integer between 0-2 inclusive.")

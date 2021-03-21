@@ -26,7 +26,7 @@ yarn-error.log*
 .eslintcache
 
 # python
-*/__pycache__
+*/__pycache__*
 backend-coverage.txt
 node_modules
 
