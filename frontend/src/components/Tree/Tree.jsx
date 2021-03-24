@@ -108,11 +108,11 @@ function renderTree(
         translate(${d.y},0)
       `
     )
-    .attr("fill", (d) => {
+    .attr("fill", (treeNode) => {
       // Separate color if a node is being viewed by the user
-      if (d.data.name === curViewingNodeID) {
+      if (treeNode.data.name === curViewingNodeID) {
         return "#377bfa";
-      } else if (d.data.numChildren === 0) {
+      } else if (treeNode.data.numChildren === 0) {
         return "#b30000";
       }
       return "#555";
