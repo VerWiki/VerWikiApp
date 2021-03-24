@@ -114,18 +114,16 @@ function renderTree(
         return "#377bfa";
       } else if (d.data.numChildren === 0) {
         return "#b30000";
-      } else {
-        return "#555";
       }
+      return "#555";
     })
-    .attr("r", (d) => {
-      // Makes node bigger to help differentiate which node 
+    .attr("r", (treeNode) => {
+      // Makes node bigger to help differentiate which node
       // is being looked at
-      if (d.data.name === curViewingNodeID) {
+      if (treeNode.data.name === curViewingNodeID) {
         return 10;
-      } else {
-        return 7;
       }
+      return 7;
     });
 
   // Add labels to the node group
@@ -152,16 +150,14 @@ function renderTree(
       let distance = 8;
       if (d.x < Math.PI === !d.children) {
         return distance;
-      } else {
-        return -1 * distance;
       }
+      return -1 * distance;
     })
     .attr("text-anchor", (d) => {
       if (d.x < Math.PI === !d.children) {
         return "start";
-      } else {
-        return "end";
       }
+      return "end";
     })
     .text((node) => ` ${node.data.name} `);
 
