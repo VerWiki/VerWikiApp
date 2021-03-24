@@ -113,10 +113,9 @@ const findVisibleSubtree = (
   } else if (searchResult.parent === null) {
     // If the link corresponded to the tree root, display a tree starting there
     return extractObjectWithMaxDepth(searchResult.node);
-  } else {
-    // Else display a tree starting at the parent of the hovered node
-    return extractObjectWithMaxDepth(searchResult.parent);
   }
+  // Else display a tree starting at the parent of the hovered node
+  return extractObjectWithMaxDepth(searchResult.parent);
 };
 
 /**
