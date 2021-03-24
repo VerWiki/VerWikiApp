@@ -154,7 +154,8 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick, onRightClick) {
 }
 
 /**
- *
+ * The tree component; returns the component that actually renders the radial
+ * tree.
  * @param jsonData: JSON data representing the tree structure
  * @param onNodeClick: Function to execute when one clicks on a node of the tree
  * @param onRightClick: Function to execute when one clicks on a node of the tree
