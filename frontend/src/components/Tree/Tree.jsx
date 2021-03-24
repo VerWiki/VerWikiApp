@@ -115,9 +115,8 @@ function renderTree(
         return 1;
       } else if (d.data.url === hoveredNodeLink) {
         return 1;
-      } else {
-        return 0.25;
       }
+      return 0.25;
     });
 
   // Add labels to the node group
@@ -148,9 +147,8 @@ function renderTree(
         return 1;
       } else if (d.data.url === hoveredNodeLink) {
         return 1;
-      } else {
-        return 0.25;
       }
+      return 0.25;
     })
     .text((node) => node.data.name + " ");
 
