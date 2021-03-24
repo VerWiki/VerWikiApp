@@ -42,7 +42,7 @@ function extractObjectWithMaxDepth(obj, depth = MAX_DEPTH) {
 }
 
 /**
- * Adds an opacity rating to each of the nodes based on where the node corresponding to
+ * Updates the opacity rating on each of the nodes based on where the node corresponding to
  * the link is found.
  * If no link is being hovered over, all nodes are fully visible
  * If a link is being hovered over, then the corresponding node (if it exists) and all
@@ -51,7 +51,7 @@ function extractObjectWithMaxDepth(obj, depth = MAX_DEPTH) {
  * @param {string} link The link we are equating to, refers to the link being hovered on
  * @param {float} currentOpacity Current opacity rating
  */
-const addOpacity = (data, link, currentOpacity) => {
+const setOpacity = (data, link, currentOpacity) => {
   if (currentOpacity !== FADE_OPACITY && currentOpacity !== FULL_OPACITY) {
     console.log("WARNING: invalid passed in opacity...");
   }
@@ -65,7 +65,7 @@ const addOpacity = (data, link, currentOpacity) => {
   data.opacity = childOpacity;
   if (data.children) {
     data.children.forEach((child) => {
-      child = addOpacity(child, link, childOpacity);
+      child = setOpacity(child, link, childOpacity);
     });
   }
   return data;
@@ -305,7 +305,7 @@ export const TreeViewer = ({ data, treeID }) => {
 
     // Trim the subtree to MAX_DEPTH and set it as the new tree
     setTrimmedData(
-      addOpacity(
+      setOpacity(
         extractObjectWithMaxDepth(subTree),
         hoveredNodeLink,
         FADE_OPACITY
