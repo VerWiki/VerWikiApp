@@ -74,41 +74,42 @@ function pathToAncestor(currNode, ancestorNodeName, history = []) {
  * @param clickedNodeName: The name of the node that was just clicked
  * TODO: Change the param to an ID when we integrate that feature
  */
-function toggleInfoBoxVisibility(clickedNodeName, previouslyClickedNodeName) {
+function toggleInfoBoxVisibility(clickedNodeName, curViewingNodeName) {
   const articleDiv = document.getElementsByClassName("article")[0];
   const treeDiv = document.getElementById("course-tree");
+  let nodeViewingAfterToggle;
 
-  if (
-    articleDiv.classList.contains("span-1-of-2") &&
-    previouslyClickedNodeName === clickedNodeName
-  ) {
+  if (curViewingNodeName === clickedNodeName) {
     // Already displaying and the user clicked on the same node again
     articleDiv.classList.remove("col");
     articleDiv.classList.remove("span-1-of-2");
     treeDiv.classList.remove("col");
     treeDiv.classList.remove("span-1-of-2");
+    nodeViewingAfterToggle = null;
   } else {
     //Not yet displaying
     articleDiv.classList.add("col");
     articleDiv.classList.add("span-1-of-2");
     treeDiv.classList.add("col");
     treeDiv.classList.add("span-1-of-2");
+    nodeViewingAfterToggle = clickedNodeName;
 
     //Set the height of the textbox equal to the height of the
     //treeDiv
     const treeHeightpx = treeDiv.offsetHeight.toString().concat("px");
     articleDiv.style.height = treeHeightpx;
   }
+  return nodeViewingAfterToggle;
 }
 
 export const TreeViewer = ({ data, treeID }) => {
   const [trimmedData, setTrimmedData] = useState({});
   const [nameToNodeMapping, setNameToNodeMapping] = useState({});
   const [nodeInfoContent, setNodeInfoContent] = useState("");
-  const previouslyClickedNode = useRef("");
   const [currentPath, setCurrentPath] = useState([]);
   const [historyRecorder, setHistoryRecorder] = useState();
   const [hoveredNodeLink, setHoveredNodeLink] = useState("");
+  const curViewingNode = useRef(null);
 
   /**
    * This function handles the event where a user clicks a node on the tree
@@ -148,11 +149,10 @@ export const TreeViewer = ({ data, treeID }) => {
    */
   const rightClickHandler = (event, clickedNode) => {
     event.preventDefault();
-    toggleInfoBoxVisibility(
+    curViewingNode.current = toggleInfoBoxVisibility(
       clickedNode.data.name,
-      previouslyClickedNode.current
+      curViewingNode.current
     );
-    previouslyClickedNode.current = clickedNode.data.name;
     const nodeInfoUrl = replaceSpaceCharacters(
       `http://localhost:3003/get-node-info/${clickedNode.data.name}-${treeID}`
     );
@@ -321,6 +321,7 @@ export const TreeViewer = ({ data, treeID }) => {
             onNodeClick={nodeClickHandler}
             onRightClick={rightClickHandler}
             hoveredNodeLink={hoveredNodeLink}
+            curViewingNodeID={curViewingNode.current}
           ></Tree>
         </div>
         <div className="article">
