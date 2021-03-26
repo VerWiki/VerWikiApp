@@ -43,6 +43,8 @@ function animateTree(nodeGroupEnterAndUpdate, enteringAndUpdatingLinks) {
  * to take when a node in the tree is clicked
  * @param onRightClick: Function pointer specifying the action
  * to take when a node in the tree is right-clicked
+ * @param hoveredNodeLink: String representing the link that the
+ * user is currently hovering over
  * @param curViewingNodeID: A node that is currently being viewed
  * (if any)
  * @returns SVG groupings of nodes-and-text, and inter-node links
@@ -54,6 +56,7 @@ function renderTree(
   svgRef,
   onNodeClick,
   onRightClick,
+  hoveredNodeLink,
   curViewingNodeID
 ) {
   const svg = select(svgRef.current);
@@ -108,6 +111,14 @@ function renderTree(
         translate(${d.y},0)
       `
     )
+    .attr("opacity", (d) => {
+      if (hoveredNodeLink === "") {
+        return 1;
+      } else if (d.data.url === hoveredNodeLink) {
+        return 1;
+      }
+      return 0.25;
+    })
     .attr("fill", (treeNode) => {
       // Separate color if a node is being viewed by the user
       if (treeNode.data.name === curViewingNodeID) {
@@ -144,6 +155,15 @@ function renderTree(
     })
     .attr("dy", "0.90em")
     .attr("dx", "0.0em")
+    .attr("opacity", (d) => {
+      if (hoveredNodeLink === "") {
+        return 1;
+      } else if (d.data.url === hoveredNodeLink) {
+        return 1;
+      }
+      return 0.25;
+    })
+    .text((node) => node.data.name + " ")
     // Adds spacing between the node and the label; At even numbered depths, the label is on the
     // left side; at even numbered depths on the right side hence the if statament
     .attr("x", (d) => {
@@ -158,8 +178,7 @@ function renderTree(
         return "start";
       }
       return "end";
-    })
-    .text((node) => ` ${node.data.name} `);
+    });
 
   // Add links between nodes
   const enteringAndUpdatingLinks = svg
@@ -175,16 +194,30 @@ function renderTree(
     })
     .attr("stroke", "black")
     .attr("fill", "none")
-    .attr("opacity", 1);
+    .attr("opacity", () => {
+      if (hoveredNodeLink !== "") {
+        return 0.25;
+      }
+      return 1;
+    });
   svg.attr("viewBox", autoBox).node();
   return [nodeGroupEnterAndUpdate, enteringAndUpdatingLinks];
 }
 
+/**
+ *
+ * @param jsonData: JSON data representing the tree structure
+ * @param onNodeClick: Function to execute when one clicks on a node of the tree
+ * @param onRightClick: Function to execute when one clicks on a node of the tree
+ * @param hoveredNodeLink: Link that the user is currently hovering over, else ""
+ * @returns the tree component
+ */
 export function Tree({
   jsonData,
   onNodeClick,
   onRightClick,
   curViewingNodeID,
+  hoveredNodeLink,
 }) {
   const svgRef = useRef();
   const wrapperRef = useRef();
@@ -227,6 +260,7 @@ export function Tree({
       svgRef,
       onNodeClick,
       onRightClick,
+      hoveredNodeLink,
       curViewingNodeID
     );
     if (jsonData !== previouslyRenderedData) {
@@ -238,6 +272,7 @@ export function Tree({
     previouslyRenderedData,
     onNodeClick,
     onRightClick,
+    hoveredNodeLink,
     curViewingNodeID,
   ]);
 

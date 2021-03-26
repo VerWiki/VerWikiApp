@@ -30,6 +30,7 @@ function extractObjectWithMaxDepth(obj, depth = MAX_DEPTH) {
   return {
     name: obj.name,
     numChildren: obj.numChildren,
+    url: obj.url,
     children: obj.children
       ? obj.children
           .map((node) => extractObjectWithMaxDepth(node, depth - 1))
@@ -107,6 +108,7 @@ export const TreeViewer = ({ data, treeID }) => {
   const [nodeInfoContent, setNodeInfoContent] = useState("");
   const [currentPath, setCurrentPath] = useState([]);
   const [historyRecorder, setHistoryRecorder] = useState();
+  const [hoveredNodeLink, setHoveredNodeLink] = useState("");
   const curViewingNode = useRef(null);
 
   /**
@@ -127,6 +129,18 @@ export const TreeViewer = ({ data, treeID }) => {
       path.reverse(); // We want ancestor -> clicked node
       historyRecorder.resetPath([...currentPath, ...path]);
     }
+  };
+
+  /**
+   * Sets the currently hovered link which eventually triggers a
+   * re-render of the tree.
+   */
+  const linkHoverHandler = (hoveredElement) => {
+    if (hoveredElement === null) {
+      setHoveredNodeLink("");
+      return;
+    }
+    setHoveredNodeLink(hoveredElement.getAttribute("href"));
   };
 
   /**
@@ -306,12 +320,16 @@ export const TreeViewer = ({ data, treeID }) => {
             jsonData={trimmedData}
             onNodeClick={nodeClickHandler}
             onRightClick={rightClickHandler}
+            hoveredNodeLink={hoveredNodeLink}
             curViewingNodeID={curViewingNode.current}
           ></Tree>
         </div>
         <div className="article">
           <p>
-            <InfoWindow info={nodeInfoContent.content} />
+            <InfoWindow
+              info={nodeInfoContent.content}
+              linkHoverHandler={linkHoverHandler}
+            ></InfoWindow>
           </p>
         </div>
       </div>
