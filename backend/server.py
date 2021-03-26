@@ -55,7 +55,10 @@ def configure_routes(app):
             internalSrvErr = InternalServerError()
             internalSrvErr.description = str(e)
             raise internalSrvErr
-        content = _get_content_from_site(link)
+        try:
+            content = _get_content_from_site(link)
+        except Exception as e:
+            raise e
         return jsonify({"content": content})
 
     @app.errorhandler(HTTPException)
@@ -72,11 +75,29 @@ def configure_routes(app):
         return response
 
 
-def _get_content_from_site(url):
+def _get_content_from_site(url: str) -> str:
     page = requests.get(url)
+    if not page.ok:
+        raise NotFound("No additional information available for the topic - 404")
     soup = BeautifulSoup(page.content, "html.parser")
-    content = soup.find_all(["h1", "h2", "p"])
-    return "\n".join([c.text for c in content])
+
+    # dokuwiki__content is assumed to have the main content of the article
+    content = soup.find("div", {"id": "dokuwiki__content"})
+    if content is None:
+        raise InternalServerError("Error when showing article preview")
+
+    # Remove the pageID from the displayed article
+    page_id = content.find("div", {"class": "pageId"})
+    if page_id is not None:
+        page_id.decompose()
+
+    anchors = content.findAll("a", {"href": True})
+    for anchor in anchors:
+        # Prepend https://cwsl.ca to all links which were previously local links
+        if len(anchor["href"]) > 0 and anchor["href"][0] == "/":
+            anchor["href"] = f"https://cwsl.ca{anchor['href']}"
+
+    return str(content)
 
 
 if __name__ == "__main__":
