@@ -155,8 +155,6 @@ function renderTree(
     })
     .attr("dy", "0.90em")
     .attr("dx", "0.0em")
-    // Adds spacing between the node and the label; At even numbered depths, the label is on the
-    // left side; at even numbered depths on the right side hence the if statament
     .attr("opacity", (d) => {
       if (hoveredNodeLink === "") {
         return 1;
@@ -166,6 +164,8 @@ function renderTree(
       return 0.25;
     })
     .text((node) => node.data.name + " ")
+    // Adds spacing between the node and the label; At even numbered depths, the label is on the
+    // left side; at even numbered depths on the right side hence the if statament
     .attr("x", (d) => {
       let distance = 8;
       if (d.x < Math.PI === !d.children) {
