@@ -23,6 +23,8 @@ export const TreeConf = Object.freeze({
   NODE_ROTATE_FACTOR: 180, //How much to rotate the nodes
   LEAF_COLOUR: "#b30000", //Colour of leaf nodes
   NODE_COLOUR: "#555", //Colour of non-leaf nodes
-  NODE_SIZE: 6, //How large the node "dot" is
+  VIEWING_NODE_COLOUR: "#377bfa", //Colour of a node whose article we are viewing
+  NODE_SIZE: 7, //How large the node "dot" is
+  VIEWING_NODE_SIZE: 10, //How large the node "dot" is when we are viewing the related article
   SIBLING_SPACING: 1.0, //Spacing of sibling nodes (this can be a decimal)
 });
