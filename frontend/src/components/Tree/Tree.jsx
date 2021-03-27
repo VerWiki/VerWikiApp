@@ -198,7 +198,6 @@ function renderTree(
  * @param jsonData: JSON data representing the tree structure
  * @param onNodeClick: Function to execute when one clicks on a node of the tree
  * @param onRightClick: Function to execute when one clicks on a node of the tree
- * @param isHovering: Boolean, is true when a link is being hovered over
  * @param curViewingNodeID: String, a node that is currently being viewed (if any)
  * @returns the tree component
  */
@@ -206,7 +205,6 @@ export function Tree({
   jsonData,
   onNodeClick,
   onRightClick,
-  isHovering,
   curViewingNodeID,
 }) {
   const svgRef = useRef();
@@ -262,7 +260,6 @@ export function Tree({
     previouslyRenderedData,
     onNodeClick,
     onRightClick,
-    isHovering,
     curViewingNodeID,
   ]);
 

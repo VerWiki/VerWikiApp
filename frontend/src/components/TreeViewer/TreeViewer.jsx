@@ -210,19 +210,21 @@ function pathToAncestor(currNode, ancestorNodeName, history = []) {
  * box to the right of the screen.
  * @param clickedNodeName: The name of the node that was just clicked
  * TODO: Change the param to an ID when we integrate that feature
+ * @param curViewingNodeID: The ID of the node whose article is currently
+ * being viewed in the infoViewer; "" if nothing currently viewed
  */
-function toggleInfoBoxVisibility(clickedNodeName, curViewingNodeName) {
+function toggleInfoBoxVisibility(clickedNodeName, curViewingNodeID) {
   const articleDiv = document.getElementsByClassName("article")[0];
   const treeDiv = document.getElementById("course-tree");
   let nodeViewingAfterToggle;
 
-  if (curViewingNodeName === clickedNodeName) {
+  if (curViewingNodeID === clickedNodeName) {
     // Already displaying and the user clicked on the same node again
     articleDiv.classList.remove("col");
     articleDiv.classList.remove("span-1-of-2");
     treeDiv.classList.remove("col");
     treeDiv.classList.remove("span-1-of-2");
-    nodeViewingAfterToggle = null;
+    nodeViewingAfterToggle = "";
   } else {
     //Not yet displaying
     articleDiv.classList.add("col");
@@ -260,7 +262,7 @@ export const TreeViewer = ({ data }) => {
   const [currentPath, setCurrentPath] = useState([]);
   const [historyRecorder, setHistoryRecorder] = useState();
   const [hoveredNodeLink, setHoveredNodeLink] = useState("");
-  const curViewingNode = useRef(null);
+  const curViewingNodeID = useRef("");
 
   /**
    * This function handles the event where a user clicks a node on the tree
@@ -300,9 +302,9 @@ export const TreeViewer = ({ data }) => {
    */
   const rightClickHandler = (event, clickedNode) => {
     event.preventDefault();
-    curViewingNode.current = toggleInfoBoxVisibility(
+    curViewingNodeID.current = toggleInfoBoxVisibility(
       clickedNode.data.name,
-      curViewingNode.current
+      curViewingNodeID.current
     );
     //previouslyClickedNode.current = clickedNode.data.name;
     const nodeID = getParameterByName("id", clickedNode.data.url);
@@ -477,8 +479,7 @@ export const TreeViewer = ({ data }) => {
             jsonData={trimmedData}
             onNodeClick={nodeClickHandler}
             onRightClick={rightClickHandler}
-            isHovering={hoveredNodeLink !== ""}
-            curViewingNodeID={curViewingNode.current}
+            curViewingNodeID={curViewingNodeID.current}
           ></Tree>
         </div>
         <div className="article">
