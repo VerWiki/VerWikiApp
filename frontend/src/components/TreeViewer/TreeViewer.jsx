@@ -14,6 +14,8 @@ import { HistoryRecorder } from "../../utils/HistoryRecorder";
 import "fontsource-roboto";
 
 const MAX_DEPTH = 2;
+const FADE_OPACITY = 0.25;
+const FULL_OPACITY = 1;
 
 /**
  * Given the original data which has an unbounded number
@@ -38,6 +40,36 @@ function extractObjectWithMaxDepth(obj, depth = MAX_DEPTH) {
       : [],
   };
 }
+
+/**
+ * Updates the opacity rating on each of the nodes based on where the node corresponding to
+ * the link is found.
+ * If no link is being hovered over, all nodes are fully visible
+ * If a link is being hovered over, then the corresponding node (if it exists) and all
+ * descendents are highlighted, everything else is greyed out
+ * @param {Object} data The data to traverse to add the opacity
+ * @param {string} link The link we are equating to, refers to the link being hovered on
+ * @param {float} currentOpacity Current opacity rating
+ */
+const setOpacity = (data, link, currentOpacity) => {
+  if (currentOpacity !== FADE_OPACITY && currentOpacity !== FULL_OPACITY) {
+    console.log("WARNING: invalid passed in opacity...");
+  }
+  let childOpacity;
+  if (link === "" || data.url === link || currentOpacity === FULL_OPACITY) {
+    childOpacity = FULL_OPACITY;
+  } else {
+    /*currentOpacity === FADE_OPACITY*/
+    childOpacity = FADE_OPACITY;
+  }
+  data.opacity = childOpacity;
+  if (data.children) {
+    data.children.forEach((child) => {
+      child = setOpacity(child, link, childOpacity);
+    });
+  }
+  return data;
+};
 
 /**
  * Creates an index so that we can get the reference to
@@ -144,7 +176,7 @@ export const TreeViewer = ({ data, treeID }) => {
   };
 
   /**
-   * The function to handle right clicks - opens up a window to show
+   * Function to handle right clicks - opens up a window to show
    * summarized information for a given wiki link.
    */
   const rightClickHandler = (event, clickedNode) => {
@@ -272,8 +304,14 @@ export const TreeViewer = ({ data, treeID }) => {
     const subTree = nameToNodeMapping[nodeName] || {};
 
     // Trim the subtree to MAX_DEPTH and set it as the new tree
-    setTrimmedData(extractObjectWithMaxDepth(subTree));
-  }, [currentPath, nameToNodeMapping]);
+    setTrimmedData(
+      setOpacity(
+        extractObjectWithMaxDepth(subTree),
+        hoveredNodeLink,
+        FADE_OPACITY
+      )
+    );
+  }, [currentPath, nameToNodeMapping, hoveredNodeLink]);
 
   return (
     <div className={styles.nav}>
@@ -320,7 +358,7 @@ export const TreeViewer = ({ data, treeID }) => {
             jsonData={trimmedData}
             onNodeClick={nodeClickHandler}
             onRightClick={rightClickHandler}
-            hoveredNodeLink={hoveredNodeLink}
+            isHovering={hoveredNodeLink !== ""}
             curViewingNodeID={curViewingNode.current}
           ></Tree>
         </div>
