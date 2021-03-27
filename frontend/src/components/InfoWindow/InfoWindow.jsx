@@ -10,8 +10,9 @@ import DOMPurify from "dompurify";
 
 export const InfoWindow = ({ info, linkHoverHandler }) => {
   const highlightRelatedNode = (tag) => {
-    const tagName = tag.target.tagName;
-    if (tagName === "A") {
+    const elementType = tag.target.tagName;
+    //Check if we hovered over a link (as opposed to plain text etc)
+    if (elementType === "A") {
       const link = tag.target.getAttribute("href");
       if (!link.startsWith("#")) {
         // Link to a webpage

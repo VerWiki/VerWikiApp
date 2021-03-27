@@ -143,7 +143,7 @@ function extractObjectWithMaxDepth(obj, depth = MAX_DEPTH) {
 }
 
 /**
- * Adds an opacity rating to each of the nodes based on where the node corresponding to
+ * Updates the opacity rating on each of the nodes based on where the node corresponding to
  * the link is found.
  * If no link is being hovered over, all nodes are fully visible
  * If a link is being hovered over, then the corresponding node (if it exists) and all
@@ -152,7 +152,7 @@ function extractObjectWithMaxDepth(obj, depth = MAX_DEPTH) {
  * @param {string} link The link we are equating to, refers to the link being hovered on
  * @param {float} currentOpacity Current opacity rating
  */
-const addOpacity = (data, link, currentOpacity) => {
+const setOpacity = (data, link, currentOpacity) => {
   if (currentOpacity !== FADE_OPACITY && currentOpacity !== FULL_OPACITY) {
     console.log("WARNING: invalid passed in opacity...");
   }
@@ -166,7 +166,7 @@ const addOpacity = (data, link, currentOpacity) => {
   data.opacity = childOpacity;
   if (data.children) {
     data.children.forEach((child) => {
-      child = addOpacity(child, link, childOpacity);
+      child = setOpacity(child, link, childOpacity);
     });
   }
   return data;
@@ -207,41 +207,42 @@ function pathToAncestor(currNode, ancestorNodeName, history = []) {
  * @param clickedNodeName: The name of the node that was just clicked
  * TODO: Change the param to an ID when we integrate that feature
  */
-function toggleInfoBoxVisibility(clickedNodeName, previouslyClickedNodeName) {
+function toggleInfoBoxVisibility(clickedNodeName, curViewingNodeName) {
   const articleDiv = document.getElementsByClassName("article")[0];
   const treeDiv = document.getElementById("course-tree");
+  let nodeViewingAfterToggle;
 
-  if (
-    articleDiv.classList.contains("span-1-of-2") &&
-    previouslyClickedNodeName === clickedNodeName
-  ) {
+  if (curViewingNodeName === clickedNodeName) {
     // Already displaying and the user clicked on the same node again
     articleDiv.classList.remove("col");
     articleDiv.classList.remove("span-1-of-2");
     treeDiv.classList.remove("col");
     treeDiv.classList.remove("span-1-of-2");
+    nodeViewingAfterToggle = null;
   } else {
     //Not yet displaying
     articleDiv.classList.add("col");
     articleDiv.classList.add("span-1-of-2");
     treeDiv.classList.add("col");
     treeDiv.classList.add("span-1-of-2");
+    nodeViewingAfterToggle = clickedNodeName;
 
     //Set the height of the textbox equal to the height of the
     //treeDiv
     const treeHeightpx = treeDiv.offsetHeight.toString().concat("px");
     articleDiv.style.height = treeHeightpx;
   }
+  return nodeViewingAfterToggle;
 }
 
 export const TreeViewer = ({ data, treeID }) => {
   const [trimmedData, setTrimmedData] = useState({});
   const [nameToNodeMapping, setNameToNodeMapping] = useState({});
   const [nodeInfoContent, setNodeInfoContent] = useState("");
-  const previouslyClickedNode = useRef("");
   const [currentPath, setCurrentPath] = useState([]);
   const [historyRecorder, setHistoryRecorder] = useState();
   const [hoveredNodeLink, setHoveredNodeLink] = useState("");
+  const curViewingNode = useRef(null);
 
   /**
    * This function handles the event where a user clicks a node on the tree
@@ -281,11 +282,10 @@ export const TreeViewer = ({ data, treeID }) => {
    */
   const rightClickHandler = (event, clickedNode) => {
     event.preventDefault();
-    toggleInfoBoxVisibility(
+    curViewingNode.current = toggleInfoBoxVisibility(
       clickedNode.data.name,
-      previouslyClickedNode.current
+      curViewingNode.current
     );
-    previouslyClickedNode.current = clickedNode.data.name;
     const nodeInfoUrl = replaceSpaceCharacters(
       `http://localhost:3003/get-node-info/${clickedNode.data.name}-${treeID}`
     );
@@ -409,7 +409,7 @@ export const TreeViewer = ({ data, treeID }) => {
     );
 
     // Trim the subtree to MAX_DEPTH and set it as the new tree
-    setTrimmedData(addOpacity(subTree, hoveredNodeLink, FADE_OPACITY));
+    setTrimmedData(setOpacity(subTree, hoveredNodeLink, FADE_OPACITY));
   }, [currentPath, nameToNodeMapping, hoveredNodeLink, data]);
 
   return (
@@ -458,6 +458,7 @@ export const TreeViewer = ({ data, treeID }) => {
             onNodeClick={nodeClickHandler}
             onRightClick={rightClickHandler}
             isHovering={hoveredNodeLink !== ""}
+            curViewingNodeID={curViewingNode.current}
           ></Tree>
         </div>
         <div className="article">

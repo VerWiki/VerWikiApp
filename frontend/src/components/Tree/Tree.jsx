@@ -43,10 +43,19 @@ function animateTree(nodeGroupEnterAndUpdate, enteringAndUpdatingLinks) {
  * to take when a node in the tree is clicked
  * @param onRightClick: Function pointer specifying the action
  * to take when a node in the tree is right-clicked
+ * @param curViewingNodeID: A node that is currently being viewed
+ * (if any)
  * @returns SVG groupings of nodes-and-text, and inter-node links
  */
 
-function renderTree(dimensions, jsonData, svgRef, onNodeClick, onRightClick) {
+function renderTree(
+  dimensions,
+  jsonData,
+  svgRef,
+  onNodeClick,
+  onRightClick,
+  curViewingNodeID
+) {
   const svg = select(svgRef.current);
   const { width, height } = dimensions;
 
@@ -99,10 +108,25 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick, onRightClick) {
         translate(${d.y},0)
       `
     )
-    .attr("fill", (d) => (d.data.numChildren === 0 ? "#b30000" : "#555"))
-    .attr("r", 6)
     .attr("opacity", (d) => {
       return d.data.opacity;
+    })
+    .attr("fill", (treeNode) => {
+      // Separate color if a node is being viewed by the user
+      if (treeNode.data.name === curViewingNodeID) {
+        return "#377bfa";
+      } else if (treeNode.data.numChildren === 0) {
+        return "#b30000";
+      }
+      return "#555";
+    })
+    .attr("r", (treeNode) => {
+      // Makes node bigger to help differentiate which node
+      // is being looked at
+      if (treeNode.data.name === curViewingNodeID) {
+        return 10;
+      }
+      return 7;
     });
 
   // Add labels to the node group
@@ -111,27 +135,37 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick, onRightClick) {
     .merge(nodeGroup.select("text"))
     .attr("text-anchor", "middle")
     .attr("font-size", Math.max(6, sigmoid(width) * 17))
-    .attr("y", -15)
-    .attr(
-      "transform",
-      (d) => `
-        rotate(${(d.x * 180) / Math.PI - 90}) 
-        translate(${d.y},0) 
-        rotate(${d.x >= Math.PI ? 180 : 0})
-      `
-    )
+    .attr("y", (d) => {
+      return -20;
+    })
+    .attr("transform", (d) => {
+      return `
+          rotate(${(d.x * 180) / Math.PI - 90})
+          translate(${d.y},${d.x})
+          rotate(${d.x >= Math.PI ? 180 : 0})
+        `;
+    })
     .attr("dy", "0.90em")
     .attr("dx", "0.0em")
-    // Adds spacing between the node and the label; At even numbered depths, the label is on the
-    // left side; at even numbered depths on the right side hence the if statament
-    .attr("x", (d) => (d.x < Math.PI === !d.children ? 6 : -6))
-    .attr("text-anchor", (d) =>
-      d.x < Math.PI === !d.children ? "start" : "end"
-    )
+    .text((node) => node.data.name + " ")
     .attr("opacity", (d) => {
       return d.data.opacity;
     })
-    .text((node) => node.data.name + " ");
+    // Adds spacing between the node and the label; At even numbered depths, the label is on the
+    // left side; at even numbered depths on the right side hence the if statament
+    .attr("x", (d) => {
+      let distance = 8;
+      if (d.x < Math.PI === !d.children) {
+        return distance;
+      }
+      return -1 * distance;
+    })
+    .attr("text-anchor", (d) => {
+      if (d.x < Math.PI === !d.children) {
+        return "start";
+      }
+      return "end";
+    });
 
   // Add links between nodes
   const enteringAndUpdatingLinks = svg
@@ -149,23 +183,31 @@ function renderTree(dimensions, jsonData, svgRef, onNodeClick, onRightClick) {
     .attr("fill", "none")
     //If the parent node is highlighted, also highlight the link
     .attr("opacity", (link) => (link.source.data.opacity === 1 ? 1 : 0.25));
+
   svg.attr("viewBox", autoBox).node();
   return [nodeGroupEnterAndUpdate, enteringAndUpdatingLinks];
 }
 
 /**
- *
+ * The tree component; returns the component that actually renders the radial
+ * tree.
  * @param jsonData: JSON data representing the tree structure
  * @param onNodeClick: Function to execute when one clicks on a node of the tree
  * @param onRightClick: Function to execute when one clicks on a node of the tree
  * @param isHovering: Boolean, is true when a link is being hovered over
+ * @param curViewingNodeID: String, a node that is currently being viewed (if any)
  * @returns the tree component
  */
-export function Tree({ jsonData, onNodeClick, onRightClick, isHovering }) {
+export function Tree({
+  jsonData,
+  onNodeClick,
+  onRightClick,
+  isHovering,
+  curViewingNodeID,
+}) {
   const svgRef = useRef();
   const wrapperRef = useRef();
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
-
   // We save data to see if it changed
   const previouslyRenderedData = usePrevious(jsonData);
 
@@ -203,7 +245,8 @@ export function Tree({ jsonData, onNodeClick, onRightClick, isHovering }) {
       jsonData,
       svgRef,
       onNodeClick,
-      onRightClick
+      onRightClick,
+      curViewingNodeID
     );
     // Animate only when the tree root changes
     if (jsonData.name !== previouslyRenderedData.name) {
@@ -216,6 +259,7 @@ export function Tree({ jsonData, onNodeClick, onRightClick, isHovering }) {
     onNodeClick,
     onRightClick,
     isHovering,
+    curViewingNodeID,
   ]);
 
   return (
