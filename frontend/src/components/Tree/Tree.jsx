@@ -148,11 +148,11 @@ function renderTree(
     .attr("dy", "0.90em")
     .attr("dx", "0.0em")
     .text((node) => node.data.name + " ")
-    // Adds spacing between the node and the label; At even numbered depths, the label is on the
-    // left side; at even numbered depths on the right side hence the if statament
     .attr("opacity", (d) => {
       return d.data.opacity;
     })
+    // Adds spacing between the node and the label; At even numbered depths, the label is on the
+    // left side; at even numbered depths on the right side hence the if statament
     .attr("x", (d) => {
       let distance = 8;
       if (d.x < Math.PI === !d.children) {
@@ -195,6 +195,7 @@ function renderTree(
  * @param onNodeClick: Function to execute when one clicks on a node of the tree
  * @param onRightClick: Function to execute when one clicks on a node of the tree
  * @param isHovering: Boolean, is true when a link is being hovered over
+ * @param curViewingNodeID: String, a node that is currently being viewed (if any)
  * @returns the tree component
  */
 export function Tree({
