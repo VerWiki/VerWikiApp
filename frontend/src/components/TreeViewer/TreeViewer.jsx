@@ -16,6 +16,107 @@ import "fontsource-roboto";
 const MAX_DEPTH = 2;
 const FADE_OPACITY = 0.25;
 const FULL_OPACITY = 1;
+const NO_DEPTH_LIMIT = -1;
+
+/**
+ * Recursive function to find the node, and its parent with a given link.
+ * @param subTree: The root of the subtree in which to search.
+ * @param link: The link for which we want to find the corresponding node & parent
+ * @param depth : The depth for which to search for; pass NO_DEPTH_LIMIT for no limit.
+ * @param parent: The parent node of the subTree; null if the subTree is the entire tree
+ * @return : A struct with form {node: Node, parent: Node}. null values if node not found
+ */
+
+const findNodeWithLink = (subTree, link, depth, parent = null) => {
+  if (subTree == null || link === "") {
+    return {
+      node: null,
+      parent: null,
+    };
+  }
+  if (subTree.url === link) {
+    return {
+      node: subTree,
+      parent: parent,
+    };
+  } else if (depth === 0) {
+    return {
+      node: null,
+      parent: null,
+    };
+  }
+
+  for (let i = 0; i < subTree.numChildren; i++) {
+    let result = findNodeWithLink(
+      subTree.children[i],
+      link,
+      depth - 1,
+      subTree
+    );
+    if (result.node !== null) {
+      return result;
+    }
+  }
+  return {
+    node: null,
+    parent: null,
+  };
+};
+
+/**
+ * Function to find the tree to be displayed on next render.
+ * @param {list} currentPath : List of nodes from the tree's root to the displayed root
+ * @param {Object} nameToNodeMapping : Dictionary mapping node IDs to nodes
+ * @param {string} hoveredNodeLink : String representing the link currently being hovered over,
+ * or "" if the user is not currently hovering over any link in the InfoViewer
+ * @param {Object} entireData : Struct with all nodes in the tree
+ * @returns : Object representing the tree to be displayed on next render
+ */
+
+const findVisibleSubtree = (
+  currentPath,
+  nameToNodeMapping,
+  hoveredNodeLink,
+  entireData
+) => {
+  // Get the visible root from the last element of the path
+  const curRootName = currentPath[currentPath.length - 1];
+  const treeToDisplay = extractObjectWithMaxDepth(
+    nameToNodeMapping[curRootName] || {}
+  );
+  // If the user is not hovering over anything, then no changes to be made
+  if (hoveredNodeLink === "") {
+    return treeToDisplay;
+  }
+  // Check if the link that the user is hovering over corresponds to an
+  // already visible node
+  const hoveredNodeObject = findNodeWithLink(
+    treeToDisplay,
+    hoveredNodeLink,
+    MAX_DEPTH
+  );
+
+  if (hoveredNodeObject.node !== null) {
+    return treeToDisplay;
+  }
+  // If none of the visible nodes corresponds to the link, check the entire tree
+  const searchResult = findNodeWithLink(
+    entireData,
+    hoveredNodeLink,
+    NO_DEPTH_LIMIT
+  );
+
+  if (searchResult.node === null) {
+    //Just show the old tree if the link does not have a corresponding node
+    console.log(`The link ${hoveredNodeLink} was not found in the tree`);
+    return treeToDisplay;
+  } else if (searchResult.parent === null) {
+    // If the link corresponded to the tree root, display a tree starting there
+    return extractObjectWithMaxDepth(searchResult.node);
+  }
+  // Else display a tree starting at the parent of the hovered node
+  return extractObjectWithMaxDepth(searchResult.parent);
+};
 
 /**
  * Given the original data which has an unbounded number
@@ -73,7 +174,7 @@ const setOpacity = (data, link, currentOpacity) => {
 
 /**
  * Creates an index so that we can get the reference to
- * a particular node given its name, in constant time.
+ * a particular node given its name - in constant time.
  *
  * Note: The name of the node is a key within the particular tree
  *
@@ -300,18 +401,16 @@ export const TreeViewer = ({ data, treeID }) => {
    */
   useEffect(() => {
     // The last name in the currentPath should be the new root node
-    const nodeName = currentPath[currentPath.length - 1];
-    const subTree = nameToNodeMapping[nodeName] || {};
+    const subTree = findVisibleSubtree(
+      currentPath,
+      nameToNodeMapping,
+      hoveredNodeLink,
+      data
+    );
 
     // Trim the subtree to MAX_DEPTH and set it as the new tree
-    setTrimmedData(
-      setOpacity(
-        extractObjectWithMaxDepth(subTree),
-        hoveredNodeLink,
-        FADE_OPACITY
-      )
-    );
-  }, [currentPath, nameToNodeMapping, hoveredNodeLink]);
+    setTrimmedData(setOpacity(subTree, hoveredNodeLink, FADE_OPACITY));
+  }, [currentPath, nameToNodeMapping, hoveredNodeLink, data]);
 
   return (
     <div className={styles.nav}>
