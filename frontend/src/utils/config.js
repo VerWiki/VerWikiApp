@@ -21,7 +21,7 @@ export const TreeConf = Object.freeze({
   LABEL_NODE_SPACING: 7, //How far the node "dot" and its label are
 
   NODE_ROTATE_FACTOR: 180, //How much to rotate the nodes
-  LEAF_COLOUR: "#b30000", //Colour of leaf nodes
+  LEAF_COLOUR: "#d2d2e0", //Colour of leaf nodes
   NODE_COLOUR: "#555", //Colour of non-leaf nodes
   VIEWING_NODE_COLOUR: "#377bfa", //Colour of a node whose article we are viewing
   NODE_SIZE: 7, //How large the node "dot" is
