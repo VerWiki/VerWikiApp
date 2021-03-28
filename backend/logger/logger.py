@@ -7,10 +7,11 @@ import os
 from inspect import stack, getframeinfo
 
 
-class Level(enum.Enum):
+class Level(enum.IntEnum):
     debug = 0
     warning = 1
     error = 2
+    info = 3
 
 
 class Logger(metaclass=Singleton):
@@ -18,7 +19,7 @@ class Logger(metaclass=Singleton):
     Main class for logging functionalities.
     """
 
-    def __init__(self, file_name="session", level=0):
+    def __init__(self, file_name="session", level=Level.debug):
         self.level = level
         file_handler = FileHandler(file_name)
         self.writer = file_handler.get_write_handle()
@@ -29,7 +30,7 @@ class Logger(metaclass=Singleton):
         Parameters:
         message (str) : The message you want to output.
         """
-        if self.level > 0:
+        if self.level > Level.debug:
             return
         frameinfo = getframeinfo(stack()[1][0])
         self.writer.write(
@@ -42,7 +43,7 @@ class Logger(metaclass=Singleton):
         Parameters:
         message (str) : The message you want to output.
         """
-        if self.level > 1:
+        if self.level > Level.warning:
             return
         frameinfo = getframeinfo(stack()[1][0])
         self.writer.write(
@@ -58,6 +59,17 @@ class Logger(metaclass=Singleton):
         frameinfo = getframeinfo(stack()[1][0])
         self.writer.write(
             f"({str(datetime.now().time())}) ERROR:   {frameinfo.filename}:{str(frameinfo.lineno)} : {message}\n"
+        )
+
+    def info(self, message):
+        """Write an error message to the file using the writer
+
+        Parameters:
+        message (str) : The message you want to output.
+        """
+        frameinfo = getframeinfo(stack()[1][0])
+        self.writer.write(
+            f"({str(datetime.now().time())}) INFO:   {frameinfo.filename}:{str(frameinfo.lineno)} : {message}\n"
         )
 
     def set_level(self, level):
