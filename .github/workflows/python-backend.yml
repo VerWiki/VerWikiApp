@@ -3,10 +3,9 @@
 
 name: Backend CI
 
-# Allows the pipeline to run on all pushes and PRs
+# Allows the pipeline to run on all pushes
 on:
   push:
-  pull_request:
 
 jobs:
   build:
