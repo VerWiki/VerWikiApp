@@ -347,7 +347,19 @@ export const TreeViewer = ({ data }) => {
    * It goes back one level in the tree.
    */
   const backClickHandler = () => {
-    historyRecorder.goBackward();
+    const previouslyVisitedNodeName = historyRecorder.goBackward();
+    if (previouslyVisitedNodeName === "") {
+      console.log("ERROR BACK CLICK HANDLER");
+      return;
+    }
+    const previouslyVisitedNode = nameToNodeMapping[previouslyVisitedNodeName];
+    if (previouslyVisitedNode === null) {
+      console.log("ERROR MAPPING THE PREVIOUSLY RENDERED NODE");
+      return;
+    }
+    console.log(previouslyVisitedNode);
+    const newPath = pathToAncestor(previouslyVisitedNode, "");
+    setCurrentPath(newPath);
   };
 
   /**
