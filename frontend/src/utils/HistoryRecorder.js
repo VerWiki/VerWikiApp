@@ -27,8 +27,15 @@ export class HistoryRecorder {
     this.onChange([...this.backwardHistory]);
   }
 
-  addBackwardHistory(path) {
-    this.backwardHistory = [...path];
+  addBackwardHistory(nodeName) {
+    console.log("This dot backward history before is ", this.backwardHistory);
+    if (
+      this.backwardHistory.length === 0 ||
+      this.backwardHistory[this.backwardHistory.length - 1] !== nodeName
+    ) {
+      this.backwardHistory.push(nodeName);
+    }
+    console.log("This dot backward history after is ", this.backwardHistory);
     this.forwardHistory = [];
   }
 

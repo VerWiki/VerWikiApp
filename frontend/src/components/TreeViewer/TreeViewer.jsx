@@ -279,7 +279,7 @@ export const TreeViewer = ({ data }) => {
         currentPath[currentPath.length - 1]
       );
       path.reverse(); // We want ancestor -> clicked node
-      historyRecorder.addBackwardHistory([...currentPath, ...path]);
+      historyRecorder.addBackwardHistory(currentPath[currentPath.length - 1]);
       setCurrentPath([...currentPath, ...path]);
     }
   };
