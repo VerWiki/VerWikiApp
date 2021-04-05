@@ -14,7 +14,7 @@ export class HistoryRecorder {
    * we can't go back any further.
    */
   canGoBackward() {
-    return this.backwardHistory.length >= 2;
+    return this.backwardHistory.length >= 1;
   }
 
   canGoForward() {

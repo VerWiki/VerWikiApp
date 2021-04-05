@@ -346,7 +346,9 @@ export const TreeViewer = ({ data }) => {
    * This function is triggered when the back button is clicked.
    * It goes back one level in the tree.
    */
-  const backClickHandler = () => historyRecorder.goBackward();
+  const backClickHandler = () => {
+    historyRecorder.goBackward();
+  };
 
   /**
    * This function is triggered when the forward button is clicked.
