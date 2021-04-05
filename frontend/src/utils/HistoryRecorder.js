@@ -27,6 +27,11 @@ export class HistoryRecorder {
     this.onChange([...this.backwardHistory]);
   }
 
+  addBackwardHistory(path) {
+    this.backwardHistory = [...path];
+    this.forwardHistory = [];
+  }
+
   /**
    * If nodeName is passed as a parameter, go back up to that node.
    */
