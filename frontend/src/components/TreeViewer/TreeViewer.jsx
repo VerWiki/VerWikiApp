@@ -182,11 +182,12 @@ const setOpacity = (data, link, currentOpacity) => {
  * Note: The name of the node is a key within the particular tree
  *
  */
-function createNameToNodeMapping(currNode, mapping = {}) {
+function createNameToNodeMapping(currNode, mapping = {}, parent = null) {
+  currNode.parent = parent;
   mapping[currNode.name] = currNode;
   if (currNode.children) {
     currNode.children.forEach((child) =>
-      createNameToNodeMapping(child, mapping)
+      createNameToNodeMapping(child, mapping, currNode)
     );
   }
   return mapping;
@@ -199,6 +200,17 @@ function pathToAncestor(currNode, ancestorNodeName, history = []) {
   if (currNode && currNode.data.name !== ancestorNodeName) {
     history.push(currNode.data.name);
     pathToAncestor(currNode.parent, ancestorNodeName, history);
+  }
+
+  return history;
+}
+
+function pathToAncestorTwo(currNode, ancestorNodeName, history = []) {
+  console.log("The currNode in pathToAncestor is");
+  console.log(currNode);
+  if (currNode && currNode.name !== ancestorNodeName) {
+    history.push(currNode.name);
+    pathToAncestorTwo(currNode.parent, ancestorNodeName, history);
   }
 
   return history;
@@ -357,8 +369,9 @@ export const TreeViewer = ({ data }) => {
       console.log("ERROR MAPPING THE PREVIOUSLY RENDERED NODE");
       return;
     }
-    console.log(previouslyVisitedNode);
-    const newPath = pathToAncestor(previouslyVisitedNode, "");
+    const newPath = pathToAncestorTwo(previouslyVisitedNode, "");
+    newPath.reverse();
+    console.log("The new path is ", newPath);
     setCurrentPath(newPath);
   };
 
