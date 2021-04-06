@@ -28,7 +28,6 @@ export class HistoryRecorder {
   }
 
   addBackwardHistory(nodeName) {
-    console.log("This dot backward history before is ", this.backwardHistory);
     if (
       this.backwardHistory.length === 0 ||
       this.backwardHistory[this.backwardHistory.length - 1] !== nodeName
@@ -46,7 +45,10 @@ export class HistoryRecorder {
     if (!this.canGoBackward()) return "";
 
     let previouslyVisitedNode;
-
+    console.log(
+      "This dot backward history when about to go back is ",
+      this.backwardHistory
+    );
     do {
       // Pop the last node from the current path and add
       // it to the forwardHistory

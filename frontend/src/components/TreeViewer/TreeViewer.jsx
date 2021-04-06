@@ -206,8 +206,6 @@ function pathToAncestor(currNode, ancestorNodeName, history = []) {
 }
 
 function pathToAncestorTwo(currNode, ancestorNodeName, history = []) {
-  console.log("The currNode in pathToAncestor is");
-  console.log(currNode);
   if (currNode && currNode.name !== ancestorNodeName) {
     history.push(currNode.name);
     pathToAncestorTwo(currNode.parent, ancestorNodeName, history);
@@ -346,8 +344,18 @@ export const TreeViewer = ({ data }) => {
   /* This function handles the event where a user clicks a name in the
    * NodePathHistory component.
    */
-  const nodeNameClickHandler = (nodeName) =>
-    historyRecorder.goBackward(nodeName);
+  const nodeNameClickHandler = (nodeName) => {
+    //historyRecorder.goBackward(nodeName);
+    historyRecorder.addBackwardHistory(currentPath[currentPath.length - 1]);
+    const clickedNode = nameToNodeMapping[nodeName];
+    if (clickedNode == null) {
+      console.log("ERROR node name not in mapping");
+    }
+    const newPath = pathToAncestorTwo(clickedNode, "");
+    newPath.reverse();
+    console.log("The new path is ", newPath);
+    setCurrentPath(newPath);
+  };
 
   /**
    * This function is triggered when the home button is clicked.
