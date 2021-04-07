@@ -366,24 +366,26 @@ export const TreeViewer = ({ data }) => {
    * This function is triggered when the home button is clicked.
    */
   const homeClickHandler = () => {
-    const rootName = historyRecorder.goBackward(
-      currentPath[currentPath.length - 1],
-      ""
-    );
-    //log(rootName);
-    if (rootName === "") {
-      console.log("ERROR HOME CLICK HANDLER");
-      return;
-    }
-    const rootNode = nameToNodeMapping[rootName];
-    if (rootNode === null) {
-      console.log("ERROR MAPPING THE PREVIOUSLY RENDERED NODE");
-      return;
-    }
-    const newPath = pathToAncestorTwo(rootNode, "");
-    newPath.reverse();
-    console.log("The new path is ", newPath);
-    setCurrentPath(newPath);
+    // const rootName = historyRecorder.goBackward(
+    //   currentPath[currentPath.length - 1],
+    //   ""
+    // );
+    // //log(rootName);
+    // if (rootName === "") {
+    //   console.log("ERROR HOME CLICK HANDLER");
+    //   return;
+    // }
+    // const rootNode = nameToNodeMapping[rootName];
+    // if (rootNode === null) {
+    //   console.log("ERROR MAPPING THE PREVIOUSLY RENDERED NODE");
+    //   return;
+    // }
+    // const newPath = pathToAncestorTwo(rootNode, "");
+    // newPath.reverse();
+    // console.log("The new path is ", newPath);
+    historyRecorder.addBackwardHistory(currentPath[currentPath.length - 1]);
+    setCurrentPath([currentPath[0]]);
+    //setCurrentPath(newPath);
   };
 
   /**
