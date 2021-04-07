@@ -41,7 +41,7 @@ export class HistoryRecorder {
   /**
    * If nodeName is passed as a parameter, go back up to that node.
    */
-  goBackward(nodeName = null) {
+  goBackward(currentRoot, nodeName = null) {
     if (!this.canGoBackward()) return "";
 
     let previouslyVisitedNode;
@@ -53,7 +53,7 @@ export class HistoryRecorder {
       // Pop the last node from the current path and add
       // it to the forwardHistory
       previouslyVisitedNode = this.backwardHistory.pop();
-      this.forwardHistory.push(previouslyVisitedNode);
+      this.forwardHistory.push(currentRoot);
     } while (
       // Go back more than once only if they passed this argument to the function
       nodeName !== null &&
@@ -65,10 +65,13 @@ export class HistoryRecorder {
     //this.onChange([...this.backwardHistory]);
   }
 
-  goForward() {
-    if (!this.canGoForward()) return;
-    this.backwardHistory.push(this.forwardHistory.pop());
-    this.onChange([...this.backwardHistory]);
+  goForward(currentRoot) {
+    if (!this.canGoForward()) return "";
+    this.backwardHistory.push(currentRoot);
+    const forwardNodeName = this.forwardHistory.pop();
+    //this.backwardHistory.push(this.forwardHistory.pop());
+    return forwardNodeName;
+    //this.onChange([...this.backwardHistory]);
   }
 
   /* Traverse from currNode to the ancestor node called ancestorNodeName

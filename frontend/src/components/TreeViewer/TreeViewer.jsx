@@ -14,6 +14,8 @@ import { HistoryRecorder } from "../../utils/HistoryRecorder";
 import "fontsource-roboto";
 import { VConf } from "../../utils/config";
 
+const log = console.log;
+
 /**
  * Recursive function to find the node, and its parent with a given link.
  * @param subTree: The root of the subtree in which to search.
@@ -360,14 +362,17 @@ export const TreeViewer = ({ data }) => {
   /**
    * This function is triggered when the home button is clicked.
    */
-  const homeClickHandler = () => historyRecorder.goBackward("");
+  const homeClickHandler = () =>
+    historyRecorder.goBackward(currentPath[currentPath.length - 1], "");
 
   /**
    * This function is triggered when the back button is clicked.
    * It goes back one level in the tree.
    */
   const backClickHandler = () => {
-    const previouslyVisitedNodeName = historyRecorder.goBackward();
+    const previouslyVisitedNodeName = historyRecorder.goBackward(
+      currentPath[currentPath.length - 1]
+    );
     if (previouslyVisitedNodeName === "") {
       console.log("ERROR BACK CLICK HANDLER");
       return;
@@ -387,7 +392,25 @@ export const TreeViewer = ({ data }) => {
    * This function is triggered when the forward button is clicked.
    * It goes forward one level in the tree, if that exists.
    */
-  const forwardClickHandler = () => historyRecorder.goForward();
+  const forwardClickHandler = () => {
+    const forwardNodeName = historyRecorder.goForward(
+      currentPath[currentPath.length - 1]
+    );
+    if (forwardNodeName === "") {
+      console.log("ERROR FORWARD CLICK HANDLER");
+      return;
+    }
+    const forwardNode = nameToNodeMapping[forwardNodeName];
+    if (forwardNode === null) {
+      console.log("ERROR MAPPING THE FORWARD RENDERED NODE");
+      return;
+    }
+    log("The forward node name is ", forwardNodeName);
+    const newPath = pathToAncestorTwo(forwardNode, "");
+    newPath.reverse();
+    console.log("The new path after going forward is ", newPath);
+    setCurrentPath(newPath);
+  };
 
   /**
    * This function is triggered when an edit is made
