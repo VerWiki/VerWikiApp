@@ -383,6 +383,9 @@ export const TreeViewer = ({ data }) => {
     // const newPath = pathToAncestorTwo(rootNode, "");
     // newPath.reverse();
     // console.log("The new path is ", newPath);
+    if (currentPath[currentPath.length - 1] === currentPath[0]) {
+      return;
+    }
     historyRecorder.addBackwardHistory(currentPath[currentPath.length - 1]);
     setCurrentPath([currentPath[0]]);
     //setCurrentPath(newPath);
