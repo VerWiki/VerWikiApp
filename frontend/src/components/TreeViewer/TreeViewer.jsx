@@ -285,6 +285,9 @@ export const TreeViewer = ({ data }) => {
      * to determine all the nodes in between, and append those to the
      * current path.
      */
+    if (clickedNode.data.name === currentPath[currentPath.length - 1]) {
+      return;
+    }
     if (clickedNode.data.numChildren > 0) {
       const path = pathToAncestor(
         clickedNode,
@@ -362,8 +365,26 @@ export const TreeViewer = ({ data }) => {
   /**
    * This function is triggered when the home button is clicked.
    */
-  const homeClickHandler = () =>
-    historyRecorder.goBackward(currentPath[currentPath.length - 1], "");
+  const homeClickHandler = () => {
+    const rootName = historyRecorder.goBackward(
+      currentPath[currentPath.length - 1],
+      ""
+    );
+    //log(rootName);
+    if (rootName === "") {
+      console.log("ERROR HOME CLICK HANDLER");
+      return;
+    }
+    const rootNode = nameToNodeMapping[rootName];
+    if (rootNode === null) {
+      console.log("ERROR MAPPING THE PREVIOUSLY RENDERED NODE");
+      return;
+    }
+    const newPath = pathToAncestorTwo(rootNode, "");
+    newPath.reverse();
+    console.log("The new path is ", newPath);
+    setCurrentPath(newPath);
+  };
 
   /**
    * This function is triggered when the back button is clicked.
