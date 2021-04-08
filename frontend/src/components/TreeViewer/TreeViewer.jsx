@@ -222,7 +222,7 @@ function pathToAncestor(
  * if no parent found
  * @param {string} nodeName : Name of the node whose parent to find
  * @param {dict} nameToNodeMapping : Map of node names to node objects
- * @return {struct} representing the parent of nodeName
+ * @return {Node} representing the parent of nodeName
  */
 function getParent(nodeName, nameToNodeMapping) {
   const node = nameToNodeMapping[nodeName];
@@ -290,7 +290,7 @@ const getParameterByName = (name, url) => {
 /**
  * Provides the name of the root in the VISIBLE subtree
  * @param {List[string]} currentPath : The list of nodes in the current path
- * @returns string representing the name of the current root in the VISIBLE subtree
+ * @returns {string} representing the name of the current root in the VISIBLE subtree
  */
 function getCurrentRootName(currentPath) {
   if (currentPath == null || currentPath.length === 0) {
@@ -606,3 +606,9 @@ export const TreeViewer = ({ data }) => {
     </div>
   );
 };
+
+// TODOS:
+// fix manual edit path feature
+// validatePath to movee inside nodepathhistory?
+// errorChecking
+// constant for ancestor being the root?

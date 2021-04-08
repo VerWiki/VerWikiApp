@@ -1,3 +1,4 @@
+// A class to keep track of previously visited nodes
 export class HistoryRecorder {
   constructor() {
     this.backwardHistory = [];
