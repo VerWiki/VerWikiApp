@@ -475,15 +475,9 @@ export const TreeViewer = ({ data }) => {
 
   /**
    * This function is triggered when an edit is made
-   * to the current path.
+   * to the current path. TODO FIX THIS
    */
   const pathChangeHandler = (newPath) => historyRecorder.resetPath(newPath);
-
-  /**
-   * This function is triggered whenever a change is made
-   * to historyRecorder.
-   */
-  const historyChangeHandler = (path) => setCurrentPath(path);
 
   /**
    * Recursive function that traverses the
@@ -532,7 +526,7 @@ export const TreeViewer = ({ data }) => {
   useEffect(() => {
     setNameToNodeMapping(createNameToNodeMapping(data));
     setCurrentPath([data.name]);
-    setHistoryRecorder(new HistoryRecorder(historyChangeHandler));
+    setHistoryRecorder(new HistoryRecorder());
   }, [data]);
 
   /**
