@@ -78,7 +78,7 @@ const findVisibleSubtree = (
   entireData
 ) => {
   // Get the visible root from the last element of the path
-  const curRootName = currentPath[currentPath.length - 1];
+  const curRootName = getCurrentRootName(currentPath);
   const treeToDisplay = extractObjectWithMaxDepth(
     nameToNodeMapping[curRootName] || {}
   );
@@ -296,6 +296,32 @@ const getParameterByName = (name, url) => {
   return decodeURIComponent(results[2].replace(/\+/g, " "));
 };
 
+/**
+ * Provides the name of the root in the VISIBLE subtree
+ * @param {List[string]} currentPath : The list of nodes in the current path
+ * @returns string representing the name of the current root in the VISIBLE subtree
+ */
+function getCurrentRootName(currentPath) {
+  if (currentPath == null || currentPath.length === 0) {
+    log("Error invalid current path passed in");
+    return null;
+  }
+  return currentPath[currentPath.length - 1];
+}
+
+/**
+ * Provides the name of the root of the ENTIRE tre
+ * @param {List[string]} currentPath The list of nodes in the current path
+ * @returns string representing the name of the current root in the ENTIRE tree
+ */
+function getAbsoluteRootName(currentPath) {
+  if (currentPath == null || currentPath.length === 0) {
+    log("Error invalid current path passed in");
+    return null;
+  }
+  return currentPath[0];
+}
+
 export const TreeViewer = ({ data }) => {
   const [trimmedData, setTrimmedData] = useState({});
   const [nameToNodeMapping, setNameToNodeMapping] = useState({});
@@ -315,16 +341,13 @@ export const TreeViewer = ({ data }) => {
      * to determine all the nodes in between, and append those to the
      * current path.
      */
-    if (clickedNode.data.name === currentPath[currentPath.length - 1]) {
+    if (clickedNode.data.name === getCurrentRootName(currentPath)) {
       return;
     }
     if (clickedNode.data.numChildren > 0) {
-      const path = pathToAncestor(
-        clickedNode,
-        currentPath[currentPath.length - 1]
-      );
+      const path = pathToAncestor(clickedNode, getCurrentRootName(currentPath));
       path.reverse(); // We want ancestor -> clicked node
-      historyRecorder.addBackwardHistory(currentPath[currentPath.length - 1]);
+      historyRecorder.addBackwardHistory(getCurrentRootName(currentPath));
       setCurrentPath([...currentPath, ...path]);
     }
   };
@@ -381,7 +404,7 @@ export const TreeViewer = ({ data }) => {
    */
   const nodeNameClickHandler = (nodeName) => {
     //historyRecorder.goBackward(nodeName);
-    historyRecorder.addBackwardHistory(currentPath[currentPath.length - 1]);
+    historyRecorder.addBackwardHistory(getCurrentRootName(currentPath));
     const clickedNode = nameToNodeMapping[nodeName];
     if (clickedNode == null) {
       console.log("ERROR node name not in mapping");
@@ -413,11 +436,11 @@ export const TreeViewer = ({ data }) => {
     // const newPath = pathToAncestorTwo(rootNode, "");
     // newPath.reverse();
     // console.log("The new path is ", newPath);
-    if (currentPath[currentPath.length - 1] === currentPath[0]) {
+    if (getCurrentRootName(currentPath) === getAbsoluteRootName(currentPath)) {
       return;
     }
-    historyRecorder.addBackwardHistory(currentPath[currentPath.length - 1]);
-    setCurrentPath([currentPath[0]]);
+    historyRecorder.addBackwardHistory(getCurrentRootName(currentPath));
+    setCurrentPath([getAbsoluteRootName(currentPath)]);
     //setCurrentPath(newPath);
   };
 
@@ -427,7 +450,7 @@ export const TreeViewer = ({ data }) => {
    */
   const backClickHandler = () => {
     const previouslyVisitedNodeName = historyRecorder.goBackward(
-      currentPath[currentPath.length - 1]
+      getCurrentRootName(currentPath)
     );
     if (previouslyVisitedNodeName === "") {
       console.log("ERROR BACK CLICK HANDLER");
@@ -454,7 +477,7 @@ export const TreeViewer = ({ data }) => {
    */
   const forwardClickHandler = () => {
     const forwardNodeName = historyRecorder.goForward(
-      currentPath[currentPath.length - 1]
+      getCurrentRootName(currentPath)
     );
     if (forwardNodeName === "") {
       console.log("ERROR FORWARD CLICK HANDLER");
