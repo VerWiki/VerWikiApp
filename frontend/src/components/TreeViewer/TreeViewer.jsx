@@ -198,16 +198,7 @@ function createNameToNodeMapping(currNode, mapping = {}, parent = "") {
 /* Traverse from currNode to the ancestor node called ancestorNodeName
  *  and collect all the node names along the path.
  */
-function pathToAncestor(currNode, ancestorNodeName, history = []) {
-  if (currNode && currNode.data.name !== ancestorNodeName) {
-    history.push(currNode.data.name);
-    pathToAncestor(currNode.parent, ancestorNodeName, history);
-  }
-
-  return history;
-}
-
-function pathToAncestorTwo(
+function pathToAncestor(
   currNode,
   ancestorNodeName,
   nameToNodeMapping,
@@ -215,7 +206,7 @@ function pathToAncestorTwo(
 ) {
   if (currNode && currNode.name !== ancestorNodeName) {
     history.push(currNode.name);
-    pathToAncestorTwo(
+    pathToAncestor(
       getParent(currNode.name, nameToNodeMapping),
       ancestorNodeName,
       nameToNodeMapping,
@@ -347,7 +338,7 @@ export const TreeViewer = ({ data }) => {
     if (clickedNode.data.numChildren > 0) {
       // Get the node from the name to node mapping which has consistent structure
       const clickedNodeFromMapping = nameToNodeMapping[clickedNode.data.name];
-      const path = pathToAncestorTwo(
+      const path = pathToAncestor(
         clickedNodeFromMapping,
         getCurrentRootName(currentPath),
         nameToNodeMapping
@@ -415,7 +406,7 @@ export const TreeViewer = ({ data }) => {
     if (clickedNode == null) {
       console.log("ERROR node name not in mapping");
     }
-    const newPath = pathToAncestorTwo(clickedNode, "", nameToNodeMapping);
+    const newPath = pathToAncestor(clickedNode, "", nameToNodeMapping);
     newPath.reverse();
     console.log("The new path is ", newPath);
     setCurrentPath(newPath);
@@ -439,7 +430,7 @@ export const TreeViewer = ({ data }) => {
     //   console.log("ERROR MAPPING THE PREVIOUSLY RENDERED NODE");
     //   return;
     // }
-    // const newPath = pathToAncestorTwo(rootNode, "");
+    // const newPath = pathToAncestor(rootNode, "");
     // newPath.reverse();
     // console.log("The new path is ", newPath);
     if (getCurrentRootName(currentPath) === getAbsoluteRootName(currentPath)) {
@@ -467,7 +458,7 @@ export const TreeViewer = ({ data }) => {
       console.log("ERROR MAPPING THE PREVIOUSLY RENDERED NODE");
       return;
     }
-    const newPath = pathToAncestorTwo(
+    const newPath = pathToAncestor(
       previouslyVisitedNode,
       "",
       nameToNodeMapping
@@ -495,7 +486,7 @@ export const TreeViewer = ({ data }) => {
       return;
     }
     log("The forward node name is ", forwardNodeName);
-    const newPath = pathToAncestorTwo(forwardNode, "", nameToNodeMapping);
+    const newPath = pathToAncestor(forwardNode, "", nameToNodeMapping);
     newPath.reverse();
     console.log("The new path after going forward is ", newPath);
     setCurrentPath(newPath);
