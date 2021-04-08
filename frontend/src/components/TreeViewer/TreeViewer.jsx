@@ -407,7 +407,6 @@ export const TreeViewer = ({ data }) => {
    * NodePathHistory component.
    */
   const nodeNameClickHandler = (nodeName) => {
-    //historyRecorder.goBackward(nodeName);
     historyRecorder.addBackwardHistory(getCurrentRootName(currentPath));
     const clickedNode = nameToNodeMapping[nodeName];
     if (clickedNode == null) {
@@ -423,9 +422,12 @@ export const TreeViewer = ({ data }) => {
     if (getCurrentRootName(currentPath) === getAbsoluteRootName(currentPath)) {
       return;
     }
-    historyRecorder.addBackwardHistory(getCurrentRootName(currentPath));
-    setCurrentPath([getAbsoluteRootName(currentPath)]);
-    //setCurrentPath(newPath);
+    const absoluteRoot = nameToNodeMapping[getAbsoluteRootName(currentPath)];
+    if (absoluteRoot == null) {
+      log("ERROR cannot find absolute root");
+      return;
+    }
+    setNewVisibleRoot(absoluteRoot);
   };
 
   /**
