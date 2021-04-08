@@ -345,7 +345,13 @@ export const TreeViewer = ({ data }) => {
       return;
     }
     if (clickedNode.data.numChildren > 0) {
-      const path = pathToAncestor(clickedNode, getCurrentRootName(currentPath));
+      // Get the node from the name to node mapping which has consistent structure
+      const clickedNodeFromMapping = nameToNodeMapping[clickedNode.data.name];
+      const path = pathToAncestorTwo(
+        clickedNodeFromMapping,
+        getCurrentRootName(currentPath),
+        nameToNodeMapping
+      );
       path.reverse(); // We want ancestor -> clicked node
       historyRecorder.addBackwardHistory(getCurrentRootName(currentPath));
       setCurrentPath([...currentPath, ...path]);
