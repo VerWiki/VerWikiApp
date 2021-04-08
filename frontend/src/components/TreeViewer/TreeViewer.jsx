@@ -413,10 +413,7 @@ export const TreeViewer = ({ data }) => {
     if (clickedNode == null) {
       console.log("ERROR node name not in mapping");
     }
-    const newPath = pathToAncestor(clickedNode, "", nameToNodeMapping);
-    newPath.reverse();
-    console.log("The new path is ", newPath);
-    setCurrentPath(newPath);
+    setNewVisibleRoot(clickedNode);
   };
 
   /**
