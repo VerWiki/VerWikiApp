@@ -117,7 +117,7 @@ const findVisibleSubtree = (
 };
 
 /**
- * Given the original data which has an unbounded number
+ * Given the original tree data which has an unbounded number
  * of levels, this function trims the total depth of the tree
  * to the given depth.
  */
@@ -184,12 +184,12 @@ const setOpacity = (data, link, currentOpacity) => {
  * Note: The name of the node is a key within the particular tree
  *
  */
-function createNameToNodeMapping(currNode, mapping = {}, parent = null) {
+function createNameToNodeMapping(currNode, mapping = {}, parent = "") {
   currNode.parent = parent;
   mapping[currNode.name] = currNode;
   if (currNode.children) {
     currNode.children.forEach((child) =>
-      createNameToNodeMapping(child, mapping, currNode)
+      createNameToNodeMapping(child, mapping, currNode.name)
     );
   }
   return mapping;
@@ -207,13 +207,43 @@ function pathToAncestor(currNode, ancestorNodeName, history = []) {
   return history;
 }
 
-function pathToAncestorTwo(currNode, ancestorNodeName, history = []) {
+function pathToAncestorTwo(
+  currNode,
+  ancestorNodeName,
+  nameToNodeMapping,
+  history = []
+) {
   if (currNode && currNode.name !== ancestorNodeName) {
     history.push(currNode.name);
-    pathToAncestorTwo(currNode.parent, ancestorNodeName, history);
+    pathToAncestorTwo(
+      getParent(currNode.name, nameToNodeMapping),
+      ancestorNodeName,
+      nameToNodeMapping,
+      history
+    );
   }
 
   return history;
+}
+
+/**
+ * Provides the parent object, given the name of the current node else null
+ * if no parent found
+ * @param {string} nodeName : Name of the node whose parent to find
+ * @param {dict} nameToNodeMapping : Map of node names to node objects
+ * @return {struct} representing the parent of nodeName
+ */
+function getParent(nodeName, nameToNodeMapping) {
+  const node = nameToNodeMapping[nodeName];
+  if (node == null) {
+    log("ERROR node not found in mapping: getParent function");
+    return null;
+  }
+  const nodeParentName = node.parent;
+  if (nodeParentName == null) {
+    return null;
+  }
+  return nameToNodeMapping[nodeParentName];
 }
 
 /**
@@ -356,7 +386,7 @@ export const TreeViewer = ({ data }) => {
     if (clickedNode == null) {
       console.log("ERROR node name not in mapping");
     }
-    const newPath = pathToAncestorTwo(clickedNode, "");
+    const newPath = pathToAncestorTwo(clickedNode, "", nameToNodeMapping);
     newPath.reverse();
     console.log("The new path is ", newPath);
     setCurrentPath(newPath);
@@ -408,7 +438,11 @@ export const TreeViewer = ({ data }) => {
       console.log("ERROR MAPPING THE PREVIOUSLY RENDERED NODE");
       return;
     }
-    const newPath = pathToAncestorTwo(previouslyVisitedNode, "");
+    const newPath = pathToAncestorTwo(
+      previouslyVisitedNode,
+      "",
+      nameToNodeMapping
+    );
     newPath.reverse();
     console.log("The new path is ", newPath);
     setCurrentPath(newPath);
@@ -432,7 +466,7 @@ export const TreeViewer = ({ data }) => {
       return;
     }
     log("The forward node name is ", forwardNodeName);
-    const newPath = pathToAncestorTwo(forwardNode, "");
+    const newPath = pathToAncestorTwo(forwardNode, "", nameToNodeMapping);
     newPath.reverse();
     console.log("The new path after going forward is ", newPath);
     setCurrentPath(newPath);
