@@ -328,11 +328,14 @@ export const TreeViewer = ({ data }) => {
    * The path resetting eventually triggers a rerender, with newRoot being the new
    * visible root.
    * @param {Node} newRoot The node which is to be the new visible root
+   * @param {bool} addHistory Whether to add to history or not; default true
    */
-  const setNewVisibleRoot = (newRoot) => {
+  const setNewVisibleRoot = (newRoot, addHistory = true) => {
     const path = pathToAncestor(newRoot, "", nameToNodeMapping);
     path.reverse(); // We want ancestor -> clicked node
-    historyRecorder.addBackwardHistory(getCurrentRootName(currentPath));
+    if (addHistory) {
+      historyRecorder.addBackwardHistory(getCurrentRootName(currentPath));
+    }
     setCurrentPath(path);
   };
 
@@ -447,14 +450,7 @@ export const TreeViewer = ({ data }) => {
       console.log("ERROR MAPPING THE PREVIOUSLY RENDERED NODE");
       return;
     }
-    const newPath = pathToAncestor(
-      previouslyVisitedNode,
-      "",
-      nameToNodeMapping
-    );
-    newPath.reverse();
-    console.log("The new path is ", newPath);
-    setCurrentPath(newPath);
+    setNewVisibleRoot(previouslyVisitedNode, false);
   };
 
   /**
