@@ -611,4 +611,5 @@ export const TreeViewer = ({ data }) => {
 // fix manual edit path feature
 // validatePath to movee inside nodepathhistory?
 // errorChecking
-// constant for ancestor being the root?
+// organize code; this file is way too big
+// constant for ancestor being the root
