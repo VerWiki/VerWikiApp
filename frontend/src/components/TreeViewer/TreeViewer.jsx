@@ -470,11 +470,7 @@ export const TreeViewer = ({ data }) => {
       console.log("ERROR MAPPING THE FORWARD RENDERED NODE");
       return;
     }
-    log("The forward node name is ", forwardNodeName);
-    const newPath = pathToAncestor(forwardNode, "", nameToNodeMapping);
-    newPath.reverse();
-    console.log("The new path after going forward is ", newPath);
-    setCurrentPath(newPath);
+    setNewVisibleRoot(forwardNode, false);
   };
 
   /**
