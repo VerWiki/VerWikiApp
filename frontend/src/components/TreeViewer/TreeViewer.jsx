@@ -323,6 +323,20 @@ export const TreeViewer = ({ data }) => {
   const curViewingNodeID = useRef("");
 
   /**
+   * Given a node, this function resets the path to indicate that the node will
+   * now be the new root of the visible tree.
+   * The path resetting eventually triggers a rerender, with newRoot being the new
+   * visible root.
+   * @param {Node} newRoot The node which is to be the new visible root
+   */
+  const setNewVisibleRoot = (newRoot) => {
+    const path = pathToAncestor(newRoot, "", nameToNodeMapping);
+    path.reverse(); // We want ancestor -> clicked node
+    historyRecorder.addBackwardHistory(getCurrentRootName(currentPath));
+    setCurrentPath(path);
+  };
+
+  /**
    * This function handles the event where a user clicks a node on the tree
    * and displays the subtree from that point onwards up to VConf.MAX_DEPTH.
    */
@@ -338,14 +352,7 @@ export const TreeViewer = ({ data }) => {
     if (clickedNode.data.numChildren > 0) {
       // Get the node from the name to node mapping which has consistent structure
       const clickedNodeFromMapping = nameToNodeMapping[clickedNode.data.name];
-      const path = pathToAncestor(
-        clickedNodeFromMapping,
-        getCurrentRootName(currentPath),
-        nameToNodeMapping
-      );
-      path.reverse(); // We want ancestor -> clicked node
-      historyRecorder.addBackwardHistory(getCurrentRootName(currentPath));
-      setCurrentPath([...currentPath, ...path]);
+      setNewVisibleRoot(clickedNodeFromMapping);
     }
   };
 
@@ -416,23 +423,6 @@ export const TreeViewer = ({ data }) => {
    * This function is triggered when the home button is clicked.
    */
   const homeClickHandler = () => {
-    // const rootName = historyRecorder.goBackward(
-    //   currentPath[currentPath.length - 1],
-    //   ""
-    // );
-    // //log(rootName);
-    // if (rootName === "") {
-    //   console.log("ERROR HOME CLICK HANDLER");
-    //   return;
-    // }
-    // const rootNode = nameToNodeMapping[rootName];
-    // if (rootNode === null) {
-    //   console.log("ERROR MAPPING THE PREVIOUSLY RENDERED NODE");
-    //   return;
-    // }
-    // const newPath = pathToAncestor(rootNode, "");
-    // newPath.reverse();
-    // console.log("The new path is ", newPath);
     if (getCurrentRootName(currentPath) === getAbsoluteRootName(currentPath)) {
       return;
     }
