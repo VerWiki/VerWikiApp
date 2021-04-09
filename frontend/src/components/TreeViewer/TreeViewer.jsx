@@ -397,7 +397,6 @@ export const TreeViewer = ({ data }) => {
    * NodePathHistory component.
    */
   const nodeNameClickHandler = (nodeName) => {
-    historyRecorder.addBackwardHistory(getCurrentRootName(currentPath));
     const clickedNode = nameToNodeMapping[nodeName];
     if (clickedNode == null) {
       log("nodeNameClickHandler: node name not in mapping", Logger.LEVEL_ERROR);
@@ -411,7 +410,7 @@ export const TreeViewer = ({ data }) => {
    */
   const homeClickHandler = () => {
     if (getCurrentRootName(currentPath) === getAbsoluteRootName(currentPath)) {
-      return;
+      return; //No action taken if we are already at the root/home
     }
     const absoluteRoot = nameToNodeMapping[getAbsoluteRootName(currentPath)];
     if (absoluteRoot == null) {
