@@ -200,16 +200,16 @@ function createNameToNodeMapping(currNode, mapping = {}, parent = "") {
  */
 function pathToAncestor(
   currNode,
-  ancestorNodeName,
   nameToNodeMapping,
+  ancestorNodeName = VConf.COMPLETE_PATH,
   history = []
 ) {
   if (currNode && currNode.name !== ancestorNodeName) {
     history.push(currNode.name);
     pathToAncestor(
       getParent(currNode.name, nameToNodeMapping),
-      ancestorNodeName,
       nameToNodeMapping,
+      ancestorNodeName,
       history
     );
   }
@@ -331,7 +331,7 @@ export const TreeViewer = ({ data }) => {
    * @param {bool} addHistory Whether to add to history or not; default true
    */
   const setNewVisibleRoot = (newRoot, addHistory = true) => {
-    const path = pathToAncestor(newRoot, "", nameToNodeMapping);
+    const path = pathToAncestor(newRoot, nameToNodeMapping);
     path.reverse(); // We want ancestor -> clicked node
     if (addHistory) {
       historyRecorder.addBackwardHistory(getCurrentRootName(currentPath));
@@ -620,8 +620,6 @@ export const TreeViewer = ({ data }) => {
 };
 
 // TODOS:
-// validatePath to movee inside nodepathhistory?
-// errorChecking
+// validatePath to move inside nodepathhistory?
 // organize code; this file is way too big
-// constant for ancestor being the root
 // Logging toggle?

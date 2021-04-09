@@ -7,6 +7,7 @@ export const VConf = Object.freeze({
   FADE_OPACITY: 0.25, //The opacity of the faded nodes when the user hovers over a link in the infoViewer
   FULL_OPACITY: 1.0, //The opacity of the fully visible nodes
   NO_DEPTH_LIMIT: -1, //Constant to disable depth limit when searching for a node with particular link
+  COMPLETE_PATH: "", //Constant passed in to PathToAncestor which signals it to find the entire path from current node to global root
 });
 
 //Tree.jsx config
