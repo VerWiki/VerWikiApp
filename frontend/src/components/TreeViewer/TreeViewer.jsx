@@ -2,7 +2,11 @@ import React, { useState, useEffect, useRef } from "react";
 import styles from "./TreeViewer.module.css";
 import { Tree } from "../Tree/Tree";
 import { InfoWindow } from "../../components/InfoWindow/InfoWindow";
-import { replaceSpaceCharacters, log } from "../../utils/utils";
+import {
+  replaceSpaceCharacters,
+  log,
+  getParameterByName,
+} from "../../utils/utils";
 import { NodePathHistory } from "../NodePathHistory/NodePathHistory";
 import { Toolbar } from "../Toolbar/Toolbar";
 import Button from "@material-ui/core/Button";
@@ -276,20 +280,6 @@ function toggleInfoBoxVisibility(clickedNodeName, curViewingNodeID) {
   }
   return nodeViewingAfterToggle;
 }
-
-/**
- * Gets the arguments of the query string from a given URL
- * @param {string} name The name of the query-string parameter to get
- * @param {string} url The url from where to parse query string
- */
-const getParameterByName = (name, url) => {
-  name = name.replace(/[[\]]/g, "\\$&");
-  var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-    results = regex.exec(url);
-  if (!results) return null;
-  if (!results[2]) return "";
-  return decodeURIComponent(results[2].replace(/\+/g, " "));
-};
 
 /**
  * Provides the name of the root in the VISIBLE subtree

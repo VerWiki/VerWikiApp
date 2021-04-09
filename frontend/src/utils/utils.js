@@ -58,3 +58,17 @@ export function autoBox() {
   const { x, y, width, height } = this.getBBox();
   return [x, y, width, height];
 }
+
+/**
+ * Gets the arguments of the query string from a given URL
+ * @param {string} name The name of the query-string parameter to get
+ * @param {string} url The url from where to parse query string
+ */
+export const getParameterByName = (name, url) => {
+  name = name.replace(/[[\]]/g, "\\$&");
+  var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+    results = regex.exec(url);
+  if (!results) return null;
+  if (!results[2]) return "";
+  return decodeURIComponent(results[2].replace(/\+/g, " "));
+};
