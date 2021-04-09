@@ -106,7 +106,7 @@ const findVisibleSubtree = (
 
   if (searchResult.node === null) {
     //Just show the old tree if the link does not have a corresponding node
-    console.log(`The link ${hoveredNodeLink} was not found in the tree`);
+    log(`The link ${hoveredNodeLink} was not found in the tree`);
     return treeToDisplay;
   } else if (searchResult.parent === null) {
     // If the link corresponded to the tree root, display a tree starting there
@@ -155,7 +155,7 @@ const setOpacity = (data, link, currentOpacity) => {
     currentOpacity !== VConf.FADE_OPACITY &&
     currentOpacity !== VConf.FULL_OPACITY
   ) {
-    console.log("WARNING: invalid passed in opacity...");
+    log("WARNING: invalid passed in opacity...");
   }
   let childOpacity;
   if (
@@ -360,18 +360,6 @@ export const TreeViewer = ({ data }) => {
   };
 
   /**
-   * Sets the currently hovered link which eventually triggers a
-   * re-render of the tree.
-   */
-  const linkHoverHandler = (hoveredElement) => {
-    if (hoveredElement === null) {
-      setHoveredNodeLink("");
-      return;
-    }
-    setHoveredNodeLink(hoveredElement.getAttribute("href"));
-  };
-
-  /**
    * Function to handle right clicks - opens up a window to show
    * summarized information for a given wiki link.
    */
@@ -381,7 +369,6 @@ export const TreeViewer = ({ data }) => {
       clickedNode.data.name,
       curViewingNodeID.current
     );
-    //previouslyClickedNode.current = clickedNode.data.name;
     const nodeID = getParameterByName("id", clickedNode.data.url);
     const nodeInfoUrl = replaceSpaceCharacters(
       `http://localhost:3003/get-node-info/${nodeID}`
@@ -413,7 +400,7 @@ export const TreeViewer = ({ data }) => {
     historyRecorder.addBackwardHistory(getCurrentRootName(currentPath));
     const clickedNode = nameToNodeMapping[nodeName];
     if (clickedNode == null) {
-      console.log("ERROR node name not in mapping");
+      log("ERROR node name not in mapping");
     }
     setNewVisibleRoot(clickedNode);
   };
@@ -442,12 +429,12 @@ export const TreeViewer = ({ data }) => {
       getCurrentRootName(currentPath)
     );
     if (previouslyVisitedNodeName === "") {
-      console.log("ERROR BACK CLICK HANDLER");
+      log("ERROR BACK CLICK HANDLER");
       return;
     }
     const previouslyVisitedNode = nameToNodeMapping[previouslyVisitedNodeName];
     if (previouslyVisitedNode === null) {
-      console.log("ERROR MAPPING THE PREVIOUSLY RENDERED NODE");
+      log("ERROR MAPPING THE PREVIOUSLY RENDERED NODE");
       return;
     }
     setNewVisibleRoot(previouslyVisitedNode, false);
@@ -462,15 +449,27 @@ export const TreeViewer = ({ data }) => {
       getCurrentRootName(currentPath)
     );
     if (forwardNodeName === "") {
-      console.log("ERROR FORWARD CLICK HANDLER");
+      log("ERROR FORWARD CLICK HANDLER");
       return;
     }
     const forwardNode = nameToNodeMapping[forwardNodeName];
     if (forwardNode === null) {
-      console.log("ERROR MAPPING THE FORWARD RENDERED NODE");
+      log("ERROR MAPPING THE FORWARD RENDERED NODE");
       return;
     }
     setNewVisibleRoot(forwardNode, false);
+  };
+
+  /**
+   * Sets the currently hovered link which eventually triggers a
+   * re-render of the tree.
+   */
+  const linkHoverHandler = (hoveredElement) => {
+    if (hoveredElement === null) {
+      setHoveredNodeLink("");
+      return;
+    }
+    setHoveredNodeLink(hoveredElement.getAttribute("href"));
   };
 
   /**
