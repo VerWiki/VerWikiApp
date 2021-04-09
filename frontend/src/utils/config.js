@@ -29,3 +29,14 @@ export const TreeConf = Object.freeze({
   VIEWING_NODE_SIZE: 10, //How large the node "dot" is when we are viewing the related article
   SIBLING_SPACING: 1.0, //Spacing of sibling nodes (this can be a decimal)
 });
+
+//Logger config
+export const Logger = Object.freeze({
+  LOG_LEVEL: 4, //The current log level of the logger; displays all logs less than or equal to the level -> e.g. if 2, then display
+  // LEVEL_WARNING and LEVEL_ERROR logs
+  LEVEL_SILENT: 0, //The lowest log level; no logs shown; logs should not be assigned to this level
+  LEVEL_ERROR: 1, //Error logs only - logs describing errors that directly interfere with the user's experience
+  LEVEL_WARNING: 2, //warning-level logs; logs that indicate an issue but do not immediately cause issues for the user
+  LEVEL_INFO: 3, //General information logs
+  LEVEL_DEBUG: 4, //Logs for debugging purposes
+});
