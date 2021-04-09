@@ -200,8 +200,16 @@ function createNameToNodeMapping(currNode, mapping = {}, parent = "") {
   return mapping;
 }
 
-/* Traverse from currNode to the ancestor node called ancestorNodeName
- *  and collect all the node names along the path.
+/**
+ * Traverse from currNode to the ancestor node called ancestorNodeName
+ * and collect all the node names along the path.
+ * @param {Node} currNode : The node to start from
+ * @param {dict} nameToNodeMapping : A mapping of node names to nodes
+ * @param {*} ancestorNodeName : The node to stop the path at; if not given,
+ * finds the complete path to the root
+ * @param {*} history : The nodes in the path found so far. Used only in recursive
+ * call
+ * @returns {List{string}} representing list of names from currNode to ancestorNode
  */
 function pathToAncestor(
   currNode,
