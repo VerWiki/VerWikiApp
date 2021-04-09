@@ -294,7 +294,7 @@ const getParameterByName = (name, url) => {
  */
 function getCurrentRootName(currentPath) {
   if (currentPath == null || currentPath.length === 0) {
-    log("Error invalid current path passed in");
+    log("ERROR invalid current path passed in");
     return null;
   }
   return currentPath[currentPath.length - 1];
@@ -475,9 +475,21 @@ export const TreeViewer = ({ data }) => {
 
   /**
    * This function is triggered when an edit is made
-   * to the current path. TODO FIX THIS
+   * to the current path.
    */
-  const pathChangeHandler = (newPath) => historyRecorder.resetPath(newPath);
+  const pathChangeHandler = (newPath) => {
+    if (newPath == null || newPath.length === 0) {
+      log("ERROR invalid path passed in");
+      return;
+    }
+    let newRootName = newPath[newPath.length - 1];
+    const newRoot = nameToNodeMapping[newRootName];
+    if (newRoot == null) {
+      log("ERROR invalid path given");
+      return;
+    }
+    setNewVisibleRoot(newRoot);
+  };
 
   /**
    * Recursive function that traverses the
@@ -608,8 +620,8 @@ export const TreeViewer = ({ data }) => {
 };
 
 // TODOS:
-// fix manual edit path feature
 // validatePath to movee inside nodepathhistory?
 // errorChecking
 // organize code; this file is way too big
 // constant for ancestor being the root
+// Logging toggle?
