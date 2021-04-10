@@ -72,10 +72,11 @@ def _get_content_from_site(url: str) -> str:
     page = requests.get(url)
     if not page.ok:
         raise NotFound("No additional information available for the topic - 404")
-    soup = BeautifulSoup(page.content, "html.parser")
 
     # dokuwiki__content is assumed to have the main content of the article
-    content = soup.find("div", {"id": "dokuwiki__content"})
+    content = BeautifulSoup(page.content, "html.parser").find(
+        "div", {"id": "dokuwiki__content"}
+    )
     if content is None:
         raise InternalServerError("Error when showing article preview")
 

@@ -127,6 +127,21 @@ class TestGetNodeInfo:
         with pytest.raises(NotFound):
             server._get_content_from_site(url)
 
+    @patch("server.requests")
+    @patch("server.BeautifulSoup")
+    def test_get_content_from_site_internal_server_error(self, mock_bs, mock_req):
+        app = Flask(__name__)
+        client = app.test_client()
+        server.configure_routes(app)
+        url = "/get-node-info/leafs"
+
+        mock_page = mock_req.get(url)
+        mock_page.ok = True
+
+        mock_bs.side_effect = InternalServerError()
+        with pytest.raises(InternalServerError):
+            server._get_content_from_site(url)
+
     def test_get_node_info_exists(self):
         app = Flask(__name__)
         client = app.test_client()
@@ -141,19 +156,3 @@ class TestGetNodeInfo:
         response = client.get(url)
         assert response.status_code == 200
         assert response.json == {"content": "mock_get_content_from_site_return_value"}
-
-    @patch("server.requests")
-    @patch("server.BeautifulSoup")
-    def test_get_content_from_site_internal_server_error(self, mock_bs, mock_req):
-        app = Flask(__name__)
-        client = app.test_client()
-        server.configure_routes(app)
-        url = "/get-node-info/leafs"
-
-        page = MockPage(True)
-        mock_req.get.return_value = page
-
-        mock_bs(page.content, "html.parser").find.return_value = None
-        server._get_content_from_site(url)
-
-        assert 0 == 1
