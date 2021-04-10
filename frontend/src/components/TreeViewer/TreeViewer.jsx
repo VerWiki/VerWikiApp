@@ -273,7 +273,21 @@ export const TreeViewer = ({ data, treeID }) => {
       setHoveredNodeLink("");
       return;
     }
-    setHoveredNodeLink(hoveredElement.getAttribute("href"));
+    const link = hoveredElement.getAttribute("href");
+    const hashIndex = link.indexOf("#");
+    if (hashIndex > -1) {
+      // Link contains a hash, take link up to that
+      const subLink = link.substr(0, hashIndex);
+      setHoveredNodeLink(subLink);
+    } else {
+      setHoveredNodeLink(link);
+    }
+  };
+
+  const linkClickHandler = (hoveredElement) => {
+    if (hoveredElement !== null) {
+      console.log(hoveredElement.getAttribute("href"));
+    }
   };
 
   /**
@@ -466,6 +480,7 @@ export const TreeViewer = ({ data, treeID }) => {
             <InfoWindow
               info={nodeInfoContent.content}
               linkHoverHandler={linkHoverHandler}
+              linkClickHandler={linkClickHandler}
             ></InfoWindow>
           </p>
         </div>

@@ -8,7 +8,21 @@ import DOMPurify from "dompurify";
  * sanitization is done to the incoming htmlInfo using DOMPurify
  */
 
-export const InfoWindow = ({ info, linkHoverHandler }) => {
+export const InfoWindow = ({ info, linkHoverHandler, linkClickHandler }) => {
+  const goToRelatedNode = (tag) => {
+    const elementType = tag.target.tagName;
+    //Check if we hovered over a link (as opposed to plain text etc)
+    if (elementType === "A") {
+      const link = tag.target.getAttribute("href");
+      if (!link.startsWith("#")) {
+        // Link to a webpage
+        linkClickHandler(tag.target);
+      }
+    } else {
+      linkClickHandler(null);
+    }
+  };
+
   const highlightRelatedNode = (tag) => {
     const elementType = tag.target.tagName;
     //Check if we hovered over a link (as opposed to plain text etc)
@@ -30,6 +44,10 @@ export const InfoWindow = ({ info, linkHoverHandler }) => {
         id="infoWindowDiv"
         dangerouslySetInnerHTML={{ __html: safeHTML }}
         onMouseOver={highlightRelatedNode}
+        onClick={(e) => {
+          e.preventDefault();
+          goToRelatedNode(e);
+        }}
       ></div>
     </div>
   );
