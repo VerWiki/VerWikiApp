@@ -57,10 +57,7 @@ export class HistoryRecorder {
    */
   goForward(currentRootName) {
     if (!this.canGoForward()) return "";
-    if (
-      this.backwardHistory.length === 0 ||
-      this.backwardHistory[this.backwardHistory.length - 1] !== currentRootName
-    ) {
+    if (this.backwardHistory.length === 0) {
       this.backwardHistory.push(currentRootName);
     }
     const forwardNodeName = this.forwardHistory.pop();

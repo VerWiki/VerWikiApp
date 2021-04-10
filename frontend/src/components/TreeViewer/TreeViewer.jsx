@@ -306,7 +306,7 @@ function getCurrentRootName(currentPath) {
 }
 
 /**
- * Provides the name of the root of the ENTIRE tre
+ * Provides the name of the root of the ENTIRE tree
  * @param {List[string]} currentPath The list of nodes in the current path
  * @returns string representing the name of the current root in the ENTIRE tree
  */
