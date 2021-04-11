@@ -201,33 +201,33 @@ function createNameToNodeMapping(currNode, mapping = {}, parent = "") {
 }
 
 /**
- * Traverse from currNode to the ancestor node called ancestorNodeName
+ * Traverse from node to the ancestor node called ancestorNodeName
  * and collect all the node names along the path.
- * @param {Node} currNode : The node to start from
+ * @param {Node} node : The node to start from
  * @param {dict} nameToNodeMapping : A mapping of node names to nodes
  * @param {*} ancestorNodeName : The node to stop the path at; if not given,
  * finds the complete path to the root
- * @param {*} history : The nodes in the path found so far. Used only in recursive
- * call
  * @returns {List{string}} representing list of names from currNode to ancestorNode
  */
-function pathToAncestor(
-  currNode,
-  nameToNodeMapping,
-  ancestorNodeName = VConf.COMPLETE_PATH,
-  history = []
-) {
-  if (currNode && currNode.name !== ancestorNodeName) {
-    history.push(currNode.name);
-    pathToAncestor(
-      getParent(currNode.name, nameToNodeMapping),
-      nameToNodeMapping,
-      ancestorNodeName,
-      history
-    );
-  }
 
-  return history;
+function pathToAncestor(node, nameToNodeMapping, ancestorNodeName) {
+  if (node == null || node.name == null) {
+    log(
+      "pathToAncestor: null node provided, or node without name",
+      Logger.LEVEL_WARNING
+    );
+    return [];
+  }
+  const currentPath = [];
+  currentPath.push(node.name);
+  while (
+    node.name !== ancestorNodeName &&
+    getParent(node.name, nameToNodeMapping)
+  ) {
+    node = getParent(node.name, nameToNodeMapping);
+    currentPath.push(node.name);
+  }
+  return currentPath;
 }
 
 /**
