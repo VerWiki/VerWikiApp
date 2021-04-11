@@ -363,6 +363,13 @@ export const TreeViewer = ({ data }) => {
     if (clickedNode.data.numChildren > 0) {
       // Get the node from the name to node mapping which has consistent structure
       const clickedNodeFromMapping = nameToNodeMapping[clickedNode.data.name];
+      if (clickedNodeFromMapping == null) {
+        log(
+          "nodeClickHandler: clicked node not found in mapping",
+          Logger.LEVEL_ERROR
+        );
+        return;
+      }
       setNewVisibleRoot(clickedNodeFromMapping);
     }
   };
@@ -495,7 +502,7 @@ export const TreeViewer = ({ data }) => {
       log("pathChangeHandler: invalid path passed in", Logger.LEVEL_WARNING);
       return;
     }
-    let newRootName = newPath[newPath.length - 1];
+    let newRootName = getCurrentRootName(newPath);
     const newRoot = nameToNodeMapping[newRootName];
     if (newRoot == null) {
       log("pathChangeHandler: invalid path given", Logger.LEVEL_WARNING);
