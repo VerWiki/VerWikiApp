@@ -211,13 +211,14 @@ function createNameToNodeMapping(currNode, mapping = {}, parent = "") {
  */
 
 function pathToAncestor(node, nameToNodeMapping, ancestorNodeName) {
-  if (node == null || node.name == null) {
+  if (node == null || !node.name || node.name === "") {
     log(
       "pathToAncestor: null node provided, or node without name",
       Logger.LEVEL_WARNING
     );
     return [];
   }
+  log(node.whatever);
   const currentPath = [node.name];
   while (
     node.name !== ancestorNodeName &&
