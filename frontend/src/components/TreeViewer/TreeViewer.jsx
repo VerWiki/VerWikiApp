@@ -517,9 +517,30 @@ export const TreeViewer = ({ data }) => {
    * in the path do exist in the right place. If the case is
    * incorrect for any words, then the path parameter is
    * updated.
+   * @param {list[string]} path List of elements that will make up the new
+   * path
+   * @param {int} index specifies the current element in the path to check,
+   * this is a recursive parameter
+   * @param {tree} json The structure representing the tree; default to data
+   * @returns {list[bool, bool]} 2 element list indicating whether the path
+   * is valid or if it was changed (for linting purposes)
    */
+
   const validatePath = (path, index = 0, json = { children: [data] }) => {
     if (index >= path.length) return [true, false];
+    if (index === path.length - 1) {
+      // Check that the user does not want to make a leaf be the new
+      // center of the tree
+      const newProposedRootName = path[index];
+      const newProposedRoot = nameToNodeMapping[newProposedRootName];
+      if (
+        newProposedRoot != null &&
+        (newProposedRoot.children == null ||
+          newProposedRoot.children.length === 0)
+      ) {
+        return [false, false];
+      }
+    }
 
     /**
      * Check if node exists in the json's children array.
