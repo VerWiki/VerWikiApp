@@ -218,8 +218,7 @@ function pathToAncestor(node, nameToNodeMapping, ancestorNodeName) {
     );
     return [];
   }
-  const currentPath = [];
-  currentPath.push(node.name);
+  const currentPath = [node.name];
   while (
     node.name !== ancestorNodeName &&
     getParent(node.name, nameToNodeMapping)
