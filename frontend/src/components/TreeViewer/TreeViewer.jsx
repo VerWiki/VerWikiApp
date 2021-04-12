@@ -347,7 +347,7 @@ export const TreeViewer = ({ data }) => {
       // Get the node from the name to node mapping which has consistent structure
       const clickedNodeFromMapping = nameToNodeMapping[clickedNode.data.name];
       if (clickedNodeFromMapping == null) {
-        Logger.err("nodeClickHandler: clicked node not found in mapping");
+        Logger.error("nodeClickHandler: clicked node not found in mapping");
         return;
       }
       setNewVisibleRoot(clickedNodeFromMapping);
