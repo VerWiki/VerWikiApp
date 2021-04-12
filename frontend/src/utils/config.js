@@ -7,6 +7,7 @@ export const VConf = Object.freeze({
   FADE_OPACITY: 0.25, //The opacity of the faded nodes when the user hovers over a link in the infoViewer
   FULL_OPACITY: 1.0, //The opacity of the fully visible nodes
   NO_DEPTH_LIMIT: -1, //Constant to disable depth limit when searching for a node with particular link
+  COMPLETE_PATH: "", //Constant passed in to PathToAncestor which signals it to find the entire path from current node to global root
 });
 
 //Tree.jsx config
@@ -27,4 +28,15 @@ export const TreeConf = Object.freeze({
   NODE_SIZE: 7, //How large the node "dot" is
   VIEWING_NODE_SIZE: 10, //How large the node "dot" is when we are viewing the related article
   SIBLING_SPACING: 1.0, //Spacing of sibling nodes (this can be a decimal)
+});
+
+//Logger.js config
+export const LoggerConf = Object.freeze({
+  LOG_LEVEL: 4, //The current log level of the logger; displays all logs less than or equal to the level -> e.g. if 2, then display
+  // LEVEL_WARNING and LEVEL_ERROR logs
+  LEVEL_SILENT: 0, //The lowest log level; no logs shown; logs should not be assigned to this level
+  LEVEL_ERROR: 1, //Error logs only - logs describing errors that directly interfere with the user's experience
+  LEVEL_WARNING: 2, //warning-level logs; logs that indicate an issue but do not immediately cause issues for the user
+  LEVEL_INFO: 3, //General information logs
+  LEVEL_DEBUG: 4, //Logs for debugging purposes
 });
