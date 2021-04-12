@@ -2,11 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import styles from "./TreeViewer.module.css";
 import { Tree } from "../Tree/Tree";
 import { InfoWindow } from "../../components/InfoWindow/InfoWindow";
-import {
-  replaceSpaceCharacters,
-  log,
-  getParameterByName,
-} from "../../utils/utils";
+import { replaceSpaceCharacters, getParameterByName } from "../../utils/utils";
 import { NodePathHistory } from "../NodePathHistory/NodePathHistory";
 import { Toolbar } from "../Toolbar/Toolbar";
 import Button from "@material-ui/core/Button";
@@ -16,7 +12,8 @@ import NavigateNextRounded from "@material-ui/icons/NavigateNextRounded";
 import HomeRounded from "@material-ui/icons/HomeRounded";
 import { HistoryRecorder } from "../../utils/HistoryRecorder";
 import "fontsource-roboto";
-import { VConf, Logger } from "../../utils/config";
+import { VConf } from "../../utils/config";
+import { Logger } from "../../utils/Logger";
 
 /**
  * Recursive function to find the node, and its parent with a given link.
@@ -108,9 +105,8 @@ const findVisibleSubtree = (
 
   if (searchResult.node === null) {
     //Just show the old tree if the link does not have a corresponding node
-    log(
-      `findVisibleSubtree: The link ${hoveredNodeLink} was not found in the tree`,
-      Logger.LEVEL_DEBUG
+    Logger.debug(
+      `findVisibleSubtree: The link ${hoveredNodeLink} was not found in the tree`
     );
     return treeToDisplay;
   } else if (searchResult.parent === null) {
@@ -160,7 +156,7 @@ const setOpacity = (data, link, currentOpacity) => {
     currentOpacity !== VConf.FADE_OPACITY &&
     currentOpacity !== VConf.FULL_OPACITY
   ) {
-    log("setOpacity: invalid passed in opacity...", Logger.LEVEL_WARNING);
+    Logger.warn("setOpacity: invalid passed in opacity...");
   }
   let childOpacity;
   if (
@@ -212,10 +208,7 @@ function createNameToNodeMapping(currNode, mapping = {}, parent = "") {
 
 function pathToAncestor(node, nameToNodeMapping, ancestorNodeName) {
   if (node == null || !node.name || node.name === "") {
-    log(
-      "pathToAncestor: null node provided, or node without name",
-      Logger.LEVEL_WARNING
-    );
+    Logger.warn("pathToAncestor: null node provided, or node without name");
     return [];
   }
   const currentPath = [node.name];
@@ -239,10 +232,7 @@ function pathToAncestor(node, nameToNodeMapping, ancestorNodeName) {
 function getParent(nodeName, nameToNodeMapping) {
   const node = nameToNodeMapping[nodeName];
   if (node == null) {
-    log(
-      "getParent: node not found in mapping: getParent function",
-      Logger.LEVEL_ERROR
-    );
+    Logger.error("getParent: node not found in mapping: getParent function");
     return null;
   }
   const nodeParentName = node.parent;
@@ -295,10 +285,7 @@ function toggleInfoBoxVisibility(clickedNodeName, curViewingNodeID) {
  */
 function getCurrentRootName(currentPath) {
   if (currentPath == null || currentPath.length === 0) {
-    log(
-      "getCurrentRootName: invalid current path passed in",
-      Logger.LEVEL_WARNING
-    );
+    Logger.warn("getCurrentRootName: invalid current path passed in");
     return null;
   }
   return currentPath[currentPath.length - 1];
@@ -311,10 +298,7 @@ function getCurrentRootName(currentPath) {
  */
 function getAbsoluteRootName(currentPath) {
   if (currentPath == null || currentPath.length === 0) {
-    log(
-      "getAbsoluteRootName: invalid current path passed in",
-      Logger.LEVEL_ERROR
-    );
+    Logger.error("getAbsoluteRootName: invalid current path passed in");
     return null;
   }
   return currentPath[0];
@@ -363,10 +347,7 @@ export const TreeViewer = ({ data }) => {
       // Get the node from the name to node mapping which has consistent structure
       const clickedNodeFromMapping = nameToNodeMapping[clickedNode.data.name];
       if (clickedNodeFromMapping == null) {
-        log(
-          "nodeClickHandler: clicked node not found in mapping",
-          Logger.LEVEL_ERROR
-        );
+        Logger.err("nodeClickHandler: clicked node not found in mapping");
         return;
       }
       setNewVisibleRoot(clickedNodeFromMapping);
@@ -413,7 +394,7 @@ export const TreeViewer = ({ data }) => {
   const nodeNameClickHandler = (nodeName) => {
     const clickedNode = nameToNodeMapping[nodeName];
     if (clickedNode == null) {
-      log("nodeNameClickHandler: node name not in mapping", Logger.LEVEL_ERROR);
+      Logger.error("nodeNameClickHandler: node name not in mapping");
       return;
     }
     setNewVisibleRoot(clickedNode);
@@ -428,7 +409,7 @@ export const TreeViewer = ({ data }) => {
     }
     const absoluteRoot = nameToNodeMapping[getAbsoluteRootName(currentPath)];
     if (absoluteRoot == null) {
-      log("homeClickHandler: cannot find absolute root", Logger.LEVEL_ERROR);
+      Logger.error("homeClickHandler: cannot find absolute root");
       return;
     }
     setNewVisibleRoot(absoluteRoot);
@@ -443,14 +424,13 @@ export const TreeViewer = ({ data }) => {
       getCurrentRootName(currentPath)
     );
     if (previouslyVisitedNodeName === "") {
-      log("backClickHandler: no previously visted node", Logger.LEVEL_WARNING);
+      Logger.warn("backClickHandler: no previously visted node");
       return;
     }
     const previouslyVisitedNode = nameToNodeMapping[previouslyVisitedNodeName];
     if (previouslyVisitedNode === null) {
-      log(
-        "backClickHandler: error finding the previously visited node given name",
-        Logger.LEVEL_WARNING
+      Logger.warn(
+        "backClickHandler: error finding the previously visited node given name"
       );
       return;
     }
@@ -466,14 +446,13 @@ export const TreeViewer = ({ data }) => {
       getCurrentRootName(currentPath)
     );
     if (forwardNodeName === "") {
-      log("forwardClickHandler: no forward node", Logger.LEVEL_WARNING);
+      Logger.warn("forwardClickHandler: no forward node");
       return;
     }
     const forwardNode = nameToNodeMapping[forwardNodeName];
     if (forwardNode === null) {
-      log(
-        "forwardClickHandler: error finding the forward node given name",
-        Logger.LEVEL_WARNING
+      Logger.warn(
+        "forwardClickHandler: error finding the forward node given name"
       );
       return;
     }
@@ -498,13 +477,13 @@ export const TreeViewer = ({ data }) => {
    */
   const pathChangeHandler = (newPath) => {
     if (newPath == null || newPath.length === 0) {
-      log("pathChangeHandler: invalid path passed in", Logger.LEVEL_WARNING);
+      Logger.warn("pathChangeHandler: invalid path passed in");
       return;
     }
     let newRootName = getCurrentRootName(newPath);
     const newRoot = nameToNodeMapping[newRootName];
     if (newRoot == null) {
-      log("pathChangeHandler: invalid path given", Logger.LEVEL_WARNING);
+      Logger.warn("pathChangeHandler: invalid path given");
       return;
     }
     setNewVisibleRoot(newRoot);

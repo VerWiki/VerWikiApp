@@ -30,8 +30,8 @@ export const TreeConf = Object.freeze({
   SIBLING_SPACING: 1.0, //Spacing of sibling nodes (this can be a decimal)
 });
 
-//Logger config
-export const Logger = Object.freeze({
+//Logger.js config
+export const LoggerConf = Object.freeze({
   LOG_LEVEL: 4, //The current log level of the logger; displays all logs less than or equal to the level -> e.g. if 2, then display
   // LEVEL_WARNING and LEVEL_ERROR logs
   LEVEL_SILENT: 0, //The lowest log level; no logs shown; logs should not be assigned to this level
