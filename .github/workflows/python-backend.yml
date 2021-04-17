@@ -3,11 +3,9 @@
 
 name: Backend CI
 
+# Allows the pipeline to run on all pushes
 on:
   push:
-    branches: [develop]
-  pull_request:
-    branches: [develop]
 
 jobs:
   build:
@@ -24,7 +22,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      
+
       - name: Setup Miniconda
         uses: conda-incubator/setup-miniconda@v2.0.1
         with:
@@ -41,14 +39,14 @@ jobs:
         uses: jpetrucciani/black-check@20.8b1
         with:
           path: backend
-      
+
       - name: Duplicate Code Detection
         run: |
           git clone https://github.com/VerWiki/duplicate-code-detection-tool.git
           pip install nltk gensim
           python -m nltk.downloader punkt 
           python3 -W ignore duplicate-code-detection-tool/duplicate_code_detection.py -d backend -t 20 -i tests
-          
+
       - name: Testing Backend
         run: |
           export PYTHONPATH=$PYTHONPATH:`pwd`/backend
