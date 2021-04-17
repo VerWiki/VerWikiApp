@@ -4,6 +4,7 @@ import { Navigation } from "../../components/Navigation/Navigation";
 import { TreeViewer } from "../../components/TreeViewer/TreeViewer";
 import { useParams } from "react-router-dom";
 import { courseData } from "../../model/courseData";
+import { ServConf } from "../../utils/config";
 
 export const CoursePage = () => {
   const { courseId } = useParams();
@@ -12,7 +13,7 @@ export const CoursePage = () => {
   const [treeObj, setTreeObj] = useState({});
 
   useEffect(() => {
-    fetch(`http://localhost:3003/get-tree-by-id/${courseId}`)
+    fetch(`http://${ServConf.HOST}:${ServConf.PORT}/get-tree-by-id/${courseId}`)
       .then((res) => {
         return res.json();
       })
