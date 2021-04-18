@@ -501,12 +501,17 @@ export const TreeViewer = ({ data }) => {
     if (hashIndex > -1) {
       clickedLink = clickedLink.substring(0, hashIndex);
     }
-    //Find corresponding node and parent
-    //set the path to the parent (pthtoAncestorNode())
-    //OnRightClcikc() of node itself
     console.log(clickedLink);
     const searchResult = findNodeWithLink(data, clickedLink);
-    //TODO ERROR CHECKING
+    if (searchResult.parent == null && searchResult.node == null) {
+      //external link TODO -> make it open in a new tab
+      e.invokeDefault();
+      return;
+    } else if (searchResult.parent == null) {
+      // The link refers to the root node which has no parent
+      setNewVisibleRoot(searchResult.node);
+      return;
+    }
     console.log(searchResult);
     setNewVisibleRoot(searchResult.parent);
 
