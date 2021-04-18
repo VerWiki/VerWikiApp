@@ -8,7 +8,7 @@ import DOMPurify from "dompurify";
  * sanitization is done to the incoming htmlInfo using DOMPurify
  */
 
-export const InfoWindow = ({ info, linkHoverHandler }) => {
+export const InfoWindow = ({ info, linkHoverHandler, linkClickHandler }) => {
   const highlightRelatedNode = (tag) => {
     const elementType = tag.target.tagName;
     //Check if we hovered over a link (as opposed to plain text etc)
@@ -30,6 +30,7 @@ export const InfoWindow = ({ info, linkHoverHandler }) => {
         id="infoWindowDiv"
         dangerouslySetInnerHTML={{ __html: safeHTML }}
         onMouseOver={highlightRelatedNode}
+        onClick={linkClickHandler}
       ></div>
     </div>
   );

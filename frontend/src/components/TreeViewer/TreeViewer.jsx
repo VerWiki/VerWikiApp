@@ -25,7 +25,7 @@ import { Logger } from "../../utils/Logger";
  */
 
 const findNodeWithLink = (subTree, link, depth, parent = null) => {
-  if (subTree == null || link === "") {
+  if (subTree == null || link === "" || link === undefined) {
     return {
       node: null,
       parent: null,
@@ -327,6 +327,7 @@ export const TreeViewer = ({ data }) => {
     if (addHistory) {
       historyRecorder.addBackwardHistory(getCurrentRootName(currentPath));
     }
+    console.log("The new path is ", path);
     setCurrentPath(path);
   };
 
@@ -360,11 +361,22 @@ export const TreeViewer = ({ data }) => {
    */
   const rightClickHandler = (event, clickedNode) => {
     event.preventDefault();
+    let clickedNodeFromMapping = clickedNode;
+    //console.log(clickedNode.data.name);
+    if (clickedNode.data) {
+      console.log("clicekdnode.data");
+      clickedNodeFromMapping = nameToNodeMapping[clickedNode.data.name];
+      if (clickedNodeFromMapping === undefined) {
+        console.log(clickedNodeFromMapping);
+        Logger.error("rightClickHandler: clicked node not found in mapping");
+        return;
+      }
+    }
     curViewingNodeID.current = toggleInfoBoxVisibility(
-      clickedNode.data.name,
+      clickedNodeFromMapping.name,
       curViewingNodeID.current
     );
-    const nodeID = getParameterByName("id", clickedNode.data.url);
+    const nodeID = getParameterByName("id", clickedNodeFromMapping.url);
     const nodeInfoUrl = replaceSpaceCharacters(
       `http://localhost:3003/get-node-info/${nodeID}`
     );
@@ -381,7 +393,7 @@ export const TreeViewer = ({ data }) => {
       .catch((err) => {
         const defaultInfo = {
           content: "No additional information available for the topic ".concat(
-            clickedNode.data.name
+            clickedNodeFromMapping.name
           ),
         };
         setNodeInfoContent(defaultInfo);
@@ -469,12 +481,36 @@ export const TreeViewer = ({ data }) => {
       return;
     }
     const link = hoveredElement.getAttribute("href");
+    console.log(link);
     const hashIndex = link.indexOf("#");
     if (hashIndex > -1) {
       setHoveredNodeLink(link.substring(0, hashIndex));
     } else {
       setHoveredNodeLink(link);
     }
+  };
+
+  /**
+   *
+   * @param {string} clickedLink
+   */
+  const linkClickHandler = (e) => {
+    e.preventDefault();
+    let clickedLink = e.target.getAttribute("href");
+    const hashIndex = clickedLink.indexOf("#");
+    if (hashIndex > -1) {
+      clickedLink = clickedLink.substring(0, hashIndex);
+    }
+    //Find corresponding node and parent
+    //set the path to the parent (pthtoAncestorNode())
+    //OnRightClcikc() of node itself
+    console.log(clickedLink);
+    const searchResult = findNodeWithLink(data, clickedLink);
+    //TODO ERROR CHECKING
+    console.log(searchResult);
+    setNewVisibleRoot(searchResult.parent);
+
+    rightClickHandler(new Event(""), searchResult.node);
   };
 
   /**
@@ -636,6 +672,7 @@ export const TreeViewer = ({ data }) => {
             <InfoWindow
               info={nodeInfoContent.content}
               linkHoverHandler={linkHoverHandler}
+              linkClickHandler={linkClickHandler}
             ></InfoWindow>
           </p>
         </div>
