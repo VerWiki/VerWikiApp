@@ -322,6 +322,14 @@ export const TreeViewer = ({ data }) => {
    * @param {bool} addHistory Whether to add to history or not; default true
    */
   const setNewVisibleRoot = (newRoot, addHistory = true) => {
+    if (newRoot.name == null || newRoot.name === undefined) {
+      Logger.warn("setNewVisibleRoot: Node has no name");
+      return;
+    }
+    if (newRoot.name === getCurrentRootName(currentPath)) {
+      //We are already at the new root
+      return;
+    }
     const path = pathToAncestor(newRoot, nameToNodeMapping);
     path.reverse(); // We want ancestor -> clicked node
     if (addHistory) {
@@ -509,11 +517,19 @@ export const TreeViewer = ({ data }) => {
       return;
     } else if (searchResult.parent == null) {
       // The link refers to the root node which has no parent
+      if (searchResult.node.name === getCurrentRootName(currentPath)) {
+        //We are already at the new root
+        return;
+      }
       setNewVisibleRoot(searchResult.node);
       rightClickHandler(new Event(""), searchResult.node);
       return;
     }
     console.log(searchResult);
+    if (searchResult.node.name === getCurrentRootName(currentPath)) {
+      //We are already at the new root
+      return;
+    }
     setNewVisibleRoot(searchResult.parent);
 
     rightClickHandler(new Event(""), searchResult.node);
