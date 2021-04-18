@@ -510,6 +510,7 @@ export const TreeViewer = ({ data }) => {
     } else if (searchResult.parent == null) {
       // The link refers to the root node which has no parent
       setNewVisibleRoot(searchResult.node);
+      rightClickHandler(new Event(""), searchResult.node);
       return;
     }
     console.log(searchResult);
