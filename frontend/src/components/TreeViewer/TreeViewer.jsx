@@ -468,7 +468,13 @@ export const TreeViewer = ({ data }) => {
       setHoveredNodeLink("");
       return;
     }
-    setHoveredNodeLink(hoveredElement.getAttribute("href"));
+    const link = hoveredElement.getAttribute("href");
+    const hashIndex = link.indexOf("#");
+    if (hashIndex > -1) {
+      setHoveredNodeLink(link.substring(0, hashIndex));
+    } else {
+      setHoveredNodeLink(link);
+    }
   };
 
   /**
