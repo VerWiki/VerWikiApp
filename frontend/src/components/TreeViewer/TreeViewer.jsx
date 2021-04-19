@@ -266,7 +266,6 @@ function toggleInfoBoxVisibility(
     if (stayOpen) {
       return clickedNodeName;
     }
-    Logger.debug("Case 1");
     articleDiv.classList.remove("col");
     articleDiv.classList.remove("span-1-of-2");
     treeDiv.classList.remove("col");
@@ -537,14 +536,12 @@ export const TreeViewer = ({ data }) => {
         Logger.debug(
           "linkClickHandler: New root not set as we are already at new root, or error occurred"
         );
-        return;
       }
     } else {
       if (!setNewVisibleRoot(searchResult.parent)) {
         Logger.debug(
           "linkClickHandler: New root not set as we are already at new root, or error occurred"
         );
-        return;
       }
     }
     //simulate a right click on the new node to be viewed in the infoViewer

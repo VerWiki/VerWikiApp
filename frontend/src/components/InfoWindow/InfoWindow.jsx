@@ -9,17 +9,28 @@ import DOMPurify from "dompurify";
  */
 
 export const InfoWindow = ({ info, linkHoverHandler, linkClickHandler }) => {
-  const highlightRelatedNode = (tag) => {
-    const elementType = tag.target.tagName;
+  const highlightRelatedNode = (e) => {
+    const elementType = e.target.tagName;
     //Check if we hovered over a link (as opposed to plain text etc)
     if (elementType === "A") {
-      const link = tag.target.getAttribute("href");
+      const link = e.target.getAttribute("href");
       if (!link.startsWith("#")) {
         // Link to a webpage
-        linkHoverHandler(tag.target);
+        linkHoverHandler(e.target);
       }
     } else {
       linkHoverHandler(null);
+    }
+  };
+  const clickInfoViewerHandler = (e) => {
+    const elementType = e.target.tagName;
+    //Check if we clicked a link (as opposed to plain text etc)
+    if (elementType === "A") {
+      const link = e.target.getAttribute("href");
+      if (!link.startsWith("#")) {
+        // Link to a webpage
+        linkClickHandler(e);
+      }
     }
   };
   const safeHTML = DOMPurify.sanitize(info);
@@ -30,7 +41,7 @@ export const InfoWindow = ({ info, linkHoverHandler, linkClickHandler }) => {
         id="infoWindowDiv"
         dangerouslySetInnerHTML={{ __html: safeHTML }}
         onMouseOver={highlightRelatedNode}
-        onClick={linkClickHandler}
+        onClick={clickInfoViewerHandler}
       ></div>
     </div>
   );
