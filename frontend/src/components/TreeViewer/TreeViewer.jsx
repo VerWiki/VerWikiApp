@@ -245,18 +245,28 @@ function getParent(nodeName, nameToNodeMapping) {
 /**
  * toggleInfoBoxVisibility determines whether to hide or show the text
  * box to the right of the screen.
- * @param clickedNodeName: The name of the node that was just clicked
+ * @param {string} clickedNodeName: The name of the node that was just clicked
  * TODO: Change the param to an ID when we integrate that feature
- * @param curViewingNodeID: The ID of the node whose article is currently
+ * @param {string} curViewingNodeID: The ID of the node whose article is currently
  * being viewed in the infoViewer; "" if nothing currently viewed
+ * @param {bool} stayOpen: Whether to stay open if the infoViewer is already open;
+ * defaults to false
  */
-function toggleInfoBoxVisibility(clickedNodeName, curViewingNodeID) {
+function toggleInfoBoxVisibility(
+  clickedNodeName,
+  curViewingNodeID,
+  stayOpen = false
+) {
   const articleDiv = document.getElementsByClassName("article")[0];
   const treeDiv = document.getElementById("course-tree");
   let nodeViewingAfterToggle;
 
   if (curViewingNodeID === clickedNodeName) {
     // Already displaying and the user clicked on the same node again
+    if (stayOpen) {
+      return clickedNodeName;
+    }
+    Logger.debug("Case 1");
     articleDiv.classList.remove("col");
     articleDiv.classList.remove("span-1-of-2");
     treeDiv.classList.remove("col");
@@ -368,8 +378,12 @@ export const TreeViewer = ({ data }) => {
   /**
    * Function to handle right clicks - opens up a window to show
    * summarized information for a given wiki link.
+   * @param {Event} event: The event object
+   * @param {Node} clickedNode: The node that was clicked on
+   * @param {bool} stayOpen: Whether to keep the infoviewer open if it was
+   * already open and the user right-clicked on the same node again.
    */
-  const rightClickHandler = (event, clickedNode) => {
+  const rightClickHandler = (event, clickedNode, stayOpen = false) => {
     event.preventDefault();
     let clickedNodeFromMapping = clickedNode;
     if (clickedNode.data) {
@@ -381,7 +395,8 @@ export const TreeViewer = ({ data }) => {
     }
     curViewingNodeID.current = toggleInfoBoxVisibility(
       clickedNodeFromMapping.name,
-      curViewingNodeID.current
+      curViewingNodeID.current,
+      stayOpen
     );
     const nodeID = getParameterByName("id", clickedNodeFromMapping.url);
     const nodeInfoUrl = replaceSpaceCharacters(
@@ -497,8 +512,12 @@ export const TreeViewer = ({ data }) => {
   };
 
   /**
-   *
-   * @param {string} clickedLink
+   * For the infoViewer, when a link is clicked this function is
+   * called with the link as the href in e.target
+   * If the link refers to an element in the tree, that element's parent
+   * becomes the new visibleRoot (unless the element is the root). Else
+   * open the link in a new tab
+   * @param {Event} e : the event related to the link click
    */
   const linkClickHandler = (e) => {
     e.preventDefault();
@@ -520,8 +539,6 @@ export const TreeViewer = ({ data }) => {
         );
         return;
       }
-      rightClickHandler(new Event(""), searchResult.node);
-      return;
     } else {
       if (!setNewVisibleRoot(searchResult.parent)) {
         Logger.debug(
@@ -529,8 +546,9 @@ export const TreeViewer = ({ data }) => {
         );
         return;
       }
-      rightClickHandler(new Event(""), searchResult.node);
     }
+    //simulate a right click on the new node to be viewed in the infoViewer
+    rightClickHandler(new Event(""), searchResult.node, true);
   };
 
   /**
