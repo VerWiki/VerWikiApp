@@ -512,8 +512,8 @@ export const TreeViewer = ({ data }) => {
     console.log(clickedLink);
     const searchResult = findNodeWithLink(data, clickedLink);
     if (searchResult.parent == null && searchResult.node == null) {
-      //external link TODO -> make it open in a new tab
-      e.invokeDefault();
+      //external link TODO
+      window.open(clickedLink, "_blank");
       return;
     } else if (searchResult.parent == null) {
       // The link refers to the root node which has no parent
