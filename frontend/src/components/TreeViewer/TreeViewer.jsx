@@ -320,23 +320,25 @@ export const TreeViewer = ({ data }) => {
    * visible root.
    * @param {Node} newRoot The node which is to be the new visible root
    * @param {bool} addHistory Whether to add to history or not; default true
+   * @return {bool} returns whether the newVisibleRoot was set or not
    */
   const setNewVisibleRoot = (newRoot, addHistory = true) => {
     if (newRoot.name == null || newRoot.name === undefined) {
       Logger.warn("setNewVisibleRoot: Node has no name");
-      return;
+      return false;
     }
     if (newRoot.name === getCurrentRootName(currentPath)) {
       //We are already at the new root
-      return;
+      return false;
     }
     const path = pathToAncestor(newRoot, nameToNodeMapping);
     path.reverse(); // We want ancestor -> clicked node
     if (addHistory) {
       historyRecorder.addBackwardHistory(getCurrentRootName(currentPath));
     }
-    console.log("The new path is ", path);
+    Logger.debug("The new path is ", path);
     setCurrentPath(path);
+    return true;
   };
 
   /**
@@ -370,12 +372,9 @@ export const TreeViewer = ({ data }) => {
   const rightClickHandler = (event, clickedNode) => {
     event.preventDefault();
     let clickedNodeFromMapping = clickedNode;
-    //console.log(clickedNode.data.name);
     if (clickedNode.data) {
-      console.log("clicekdnode.data");
       clickedNodeFromMapping = nameToNodeMapping[clickedNode.data.name];
       if (clickedNodeFromMapping === undefined) {
-        console.log(clickedNodeFromMapping);
         Logger.error("rightClickHandler: clicked node not found in mapping");
         return;
       }
@@ -489,7 +488,6 @@ export const TreeViewer = ({ data }) => {
       return;
     }
     const link = hoveredElement.getAttribute("href");
-    console.log(link);
     const hashIndex = link.indexOf("#");
     if (hashIndex > -1) {
       setHoveredNodeLink(link.substring(0, hashIndex));
@@ -509,30 +507,30 @@ export const TreeViewer = ({ data }) => {
     if (hashIndex > -1) {
       clickedLink = clickedLink.substring(0, hashIndex);
     }
-    console.log(clickedLink);
     const searchResult = findNodeWithLink(data, clickedLink);
     if (searchResult.parent == null && searchResult.node == null) {
-      //external link TODO
+      //external link
       window.open(clickedLink, "_blank");
       return;
     } else if (searchResult.parent == null) {
       // The link refers to the root node which has no parent
-      if (searchResult.node.name === getCurrentRootName(currentPath)) {
-        //We are already at the new root
+      if (!setNewVisibleRoot(searchResult.node)) {
+        Logger.debug(
+          "linkClickHandler: New root not set as we are already at new root, or error occurred"
+        );
         return;
       }
-      setNewVisibleRoot(searchResult.node);
       rightClickHandler(new Event(""), searchResult.node);
       return;
+    } else {
+      if (!setNewVisibleRoot(searchResult.parent)) {
+        Logger.debug(
+          "linkClickHandler: New root not set as we are already at new root, or error occurred"
+        );
+        return;
+      }
+      rightClickHandler(new Event(""), searchResult.node);
     }
-    console.log(searchResult);
-    if (searchResult.node.name === getCurrentRootName(currentPath)) {
-      //We are already at the new root
-      return;
-    }
-    setNewVisibleRoot(searchResult.parent);
-
-    rightClickHandler(new Event(""), searchResult.node);
   };
 
   /**
