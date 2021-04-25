@@ -255,6 +255,8 @@ function getParent(nodeName, nameToNodeMapping) {
 function toggleInfoBoxVisibility(
   clickedNodeName,
   curViewingNodeID,
+  url,
+  setViewingUrl,
   stayOpen = false
 ) {
   const articleDiv = document.getElementsByClassName("article")[0];
@@ -266,6 +268,7 @@ function toggleInfoBoxVisibility(
     if (stayOpen) {
       return clickedNodeName;
     }
+    setViewingUrl("");
     articleDiv.classList.remove("col");
     articleDiv.classList.remove("span-1-of-2");
     treeDiv.classList.remove("col");
@@ -273,6 +276,7 @@ function toggleInfoBoxVisibility(
     nodeViewingAfterToggle = "";
   } else {
     //Not yet displaying
+    setViewingUrl(url);
     articleDiv.classList.add("col");
     articleDiv.classList.add("span-1-of-2");
     treeDiv.classList.add("col");
@@ -393,17 +397,15 @@ export const TreeViewer = ({ data }) => {
         return;
       }
     }
+    const url = clickedNodeFromMapping.url;
     curViewingNodeID.current = toggleInfoBoxVisibility(
       clickedNodeFromMapping.name,
       curViewingNodeID.current,
+      url,
+      setInfoViewingLink,
       stayOpen
     );
-    const url = clickedNodeFromMapping.url;
-    if (infoViewingLink === "") {
-      setInfoViewingLink(url);
-    } else {
-      setInfoViewingLink("");
-    }
+
     const nodeID = getParameterByName("id", clickedNodeFromMapping.url);
     const nodeInfoUrl = replaceSpaceCharacters(
       `http://localhost:3003/get-node-info/${nodeID}`
