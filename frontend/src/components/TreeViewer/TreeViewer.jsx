@@ -320,6 +320,7 @@ export const TreeViewer = ({ data }) => {
   const [currentPath, setCurrentPath] = useState([]);
   const [historyRecorder, setHistoryRecorder] = useState();
   const [hoveredNodeLink, setHoveredNodeLink] = useState("");
+  const [infoViewingLink, setInfoViewingLink] = useState("");
   const curViewingNodeID = useRef("");
 
   /**
@@ -397,6 +398,12 @@ export const TreeViewer = ({ data }) => {
       curViewingNodeID.current,
       stayOpen
     );
+    const url = clickedNodeFromMapping.url;
+    if (infoViewingLink === "") {
+      setInfoViewingLink(url);
+    } else {
+      setInfoViewingLink("");
+    }
     const nodeID = getParameterByName("id", clickedNodeFromMapping.url);
     const nodeInfoUrl = replaceSpaceCharacters(
       `http://localhost:3003/get-node-info/${nodeID}`
@@ -708,6 +715,7 @@ export const TreeViewer = ({ data }) => {
               info={nodeInfoContent.content}
               linkHoverHandler={linkHoverHandler}
               linkClickHandler={linkClickHandler}
+              curViewedLink={infoViewingLink}
             ></InfoWindow>
           </p>
         </div>

@@ -1,5 +1,7 @@
 import React from "react";
 import DOMPurify from "dompurify";
+import { Button } from "antd";
+import "antd/dist/antd.css";
 
 /**
  * The react component for the information window for each node
@@ -8,7 +10,12 @@ import DOMPurify from "dompurify";
  * sanitization is done to the incoming htmlInfo using DOMPurify
  */
 
-export const InfoWindow = ({ info, linkHoverHandler, linkClickHandler }) => {
+export const InfoWindow = ({
+  info,
+  linkHoverHandler,
+  linkClickHandler,
+  curViewedLink,
+}) => {
   const highlightRelatedNode = (e) => {
     const elementType = e.target.tagName;
     //Check if we hovered over a link (as opposed to plain text etc)
@@ -37,6 +44,16 @@ export const InfoWindow = ({ info, linkHoverHandler, linkClickHandler }) => {
   return (
     <div>
       <h2>Wiki Information</h2>
+      <Button
+        type="primary"
+        onClick={() => {
+          if (curViewedLink !== "") {
+            window.open(curViewedLink, "_blank");
+          }
+        }}
+      >
+        Veiw on CWSL Wiki
+      </Button>
       <div
         id="infoWindowDiv"
         dangerouslySetInnerHTML={{ __html: safeHTML }}
