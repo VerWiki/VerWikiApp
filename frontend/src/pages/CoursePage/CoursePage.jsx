@@ -37,8 +37,17 @@ export const CoursePage = () => {
   return (
     <>
       <Navigation />
-      <h1 className={styles.heading}>{courseData[courseId].name}</h1>
+      <h1 className={styles.heading} style={{ color: "#2d94ed" }}>
+        {courseData[courseId].name}
+      </h1>
       <div>{Viewer}</div>
     </>
   );
 };
+
+/**
+ * TODO:
+ * 1. put course name and explore button on the toolbar
+ * 2. add animations to the info box appearing
+ * 3.
+ */

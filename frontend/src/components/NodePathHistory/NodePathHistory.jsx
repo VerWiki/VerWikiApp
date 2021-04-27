@@ -145,7 +145,7 @@ export const NodePathHistory = ({
 
   const EditButton = (
     <Button
-      color="primary"
+      color="#2d94ed"
       variant="outlined"
       size="large"
       onClick={() => setMode(MODES.EDIT)}
@@ -156,7 +156,7 @@ export const NodePathHistory = ({
 
   const DoneButton = (
     <Button
-      color="primary"
+      color="#2d94ed"
       variant="outlined"
       size="large"
       disabled={!isCurrentTextValid}
