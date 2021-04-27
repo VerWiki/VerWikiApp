@@ -52,7 +52,7 @@ export const InfoWindow = ({
           }
         }}
       >
-        Veiw on CWSL Wiki
+        View on CWSL Wiki
       </Button>
       <div
         id="infoWindowDiv"
