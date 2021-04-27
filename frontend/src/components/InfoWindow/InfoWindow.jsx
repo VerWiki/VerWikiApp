@@ -1,6 +1,6 @@
 import React from "react";
 import DOMPurify from "dompurify";
-import { Button } from "antd";
+import { Button, BackTop } from "antd";
 import "antd/dist/antd.css";
 
 /**
@@ -15,6 +15,7 @@ export const InfoWindow = ({
   linkHoverHandler,
   linkClickHandler,
   curViewedLink,
+  contentRef,
 }) => {
   const highlightRelatedNode = (e) => {
     const elementType = e.target.tagName;
@@ -43,23 +44,46 @@ export const InfoWindow = ({
   const safeHTML = DOMPurify.sanitize(info);
   return (
     <div>
-      <h2>Wiki Information</h2>
-      <Button
-        type="primary"
-        onClick={() => {
-          if (curViewedLink !== "") {
-            window.open(curViewedLink, "_blank");
-          }
-        }}
-      >
-        View on CWSL Wiki
-      </Button>
-      <div
-        id="infoWindowDiv"
-        dangerouslySetInnerHTML={{ __html: safeHTML }}
-        onMouseOver={highlightRelatedNode}
-        onClick={clickInfoViewerHandler}
-      ></div>
+      <div>
+        <h2
+          style={{
+            display: "inline-block",
+            float: "left",
+            paddingLeft: "20px",
+            fontSize: "30px",
+          }}
+        >
+          Wiki Information
+        </h2>
+        <Button
+          type="primary"
+          style={{
+            display: "inline-block",
+            float: "right",
+            paddingRight: "20px",
+          }}
+          onClick={() => {
+            if (curViewedLink !== "") {
+              window.open(curViewedLink, "_blank");
+            }
+          }}
+        >
+          View on CWSL Wiki
+        </Button>
+        <div
+          id="infoWindowDiv"
+          style={{
+            paddingTop: "50px",
+            textAlign: "left",
+          }}
+          dangerouslySetInnerHTML={{ __html: safeHTML }}
+          onMouseOver={highlightRelatedNode}
+          onClick={clickInfoViewerHandler}
+        ></div>
+      </div>
+      <BackTop
+        target={() => console.log(contentRef.current) || contentRef.current}
+      />
     </div>
   );
 };

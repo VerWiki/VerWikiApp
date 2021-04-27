@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, createRef } from "react";
 import styles from "./TreeViewer.module.css";
 import { Tree } from "../Tree/Tree";
 import { InfoWindow } from "../../components/InfoWindow/InfoWindow";
@@ -326,6 +326,7 @@ export const TreeViewer = ({ data }) => {
   const [hoveredNodeLink, setHoveredNodeLink] = useState("");
   const [infoViewingLink, setInfoViewingLink] = useState("");
   const curViewingNodeID = useRef("");
+  const contentRef = createRef();
 
   /**
    * Given a node, this function resets the path to indicate that the node will
@@ -711,13 +712,25 @@ export const TreeViewer = ({ data }) => {
             curViewingNodeID={curViewingNodeID.current}
           ></Tree>
         </div>
-        <div className="article">
+        <div
+          className="article"
+          ref={contentRef}
+          style={{
+            overflow: "scroll",
+            boxSizing: "border-box",
+            padding: "20px",
+            backgroundColor: "#ededed",
+            boxShadow: "2px 2px 2px 2px #ededed",
+            margin: "10px",
+          }}
+        >
           <p>
             <InfoWindow
               info={nodeInfoContent.content}
               linkHoverHandler={linkHoverHandler}
               linkClickHandler={linkClickHandler}
               curViewedLink={infoViewingLink}
+              contentRef={contentRef}
             ></InfoWindow>
           </p>
         </div>
