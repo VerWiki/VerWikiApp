@@ -1,3 +1,8 @@
 .button {
   color: #2d94ed; 
 }
+.heading {
+  color: rgb(8, 140, 140);
+  font-size: 20px;
+  float: right;
+}

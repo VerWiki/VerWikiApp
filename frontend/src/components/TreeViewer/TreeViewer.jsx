@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, createRef } from "react";
 import styles from "./TreeViewer.module.css";
 import { Tree } from "../Tree/Tree";
 import { InfoWindow } from "../../components/InfoWindow/InfoWindow";
+import { Navigation } from "../../components/Navigation/Navigation";
 import { replaceSpaceCharacters, getParameterByName } from "../../utils/utils";
 import { NodePathHistory } from "../NodePathHistory/NodePathHistory";
 import { Toolbar } from "../Toolbar/Toolbar";
@@ -317,7 +318,7 @@ function getAbsoluteRootName(currentPath) {
   return currentPath[0];
 }
 
-export const TreeViewer = ({ data }) => {
+export const TreeViewer = ({ data, heading }) => {
   const [trimmedData, setTrimmedData] = useState({});
   const [nameToNodeMapping, setNameToNodeMapping] = useState({});
   const [nodeInfoContent, setNodeInfoContent] = useState("");
@@ -702,6 +703,13 @@ export const TreeViewer = ({ data }) => {
           onPathChange={pathChangeHandler}
           validatePath={validatePath}
         />
+        <div
+          className={styles.heading}
+          style={{ color: "#2d94ed", marginLeft: "300px", fontSize: "25px" }}
+        >
+          {heading}
+        </div>
+        <Navigation />
       </Toolbar>
       <div className="row treeViewerContainer">
         <div className="tree" id="course-tree">

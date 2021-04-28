@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import styles from "./CoursePage.module.css";
-import { Navigation } from "../../components/Navigation/Navigation";
 import { TreeViewer } from "../../components/TreeViewer/TreeViewer";
 import { useParams } from "react-router-dom";
 import { courseData } from "../../model/courseData";
@@ -31,15 +30,11 @@ export const CoursePage = () => {
   if (error) {
     Viewer = <h2>{`Error: ${error.message}`}</h2>;
   } else {
-    Viewer = <TreeViewer data={treeObj} />;
+    Viewer = <TreeViewer data={treeObj} heading={courseData[courseId].name} />;
   }
 
   return (
     <>
-      <Navigation />
-      <h1 className={styles.heading} style={{ color: "#2d94ed" }}>
-        {courseData[courseId].name}
-      </h1>
       <div>{Viewer}</div>
     </>
   );
@@ -49,5 +44,5 @@ export const CoursePage = () => {
  * TODO:
  * 1. put course name and explore button on the toolbar
  * 2. add animations to the info box appearing
- * 3.
+ * 3. suggest antd backtop README improvement
  */
