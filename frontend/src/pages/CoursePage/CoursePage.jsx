@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import styles from "./CoursePage.module.css";
 import { TreeViewer } from "../../components/TreeViewer/TreeViewer";
 import { useParams } from "react-router-dom";
 import { courseData } from "../../model/courseData";

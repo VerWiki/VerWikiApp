@@ -269,6 +269,7 @@ function toggleInfoBoxVisibility(
     if (stayOpen) {
       return clickedNodeName;
     }
+    articleDiv.style["animation-name"] = "fadeOut";
     setViewingUrl("");
     articleDiv.classList.remove("col");
     articleDiv.classList.remove("span-1-of-2");
@@ -277,6 +278,7 @@ function toggleInfoBoxVisibility(
     nodeViewingAfterToggle = "";
   } else {
     //Not yet displaying
+    articleDiv.style["animation-name"] = "fadeIn";
     setViewingUrl(url);
     articleDiv.classList.add("col");
     articleDiv.classList.add("span-1-of-2");
