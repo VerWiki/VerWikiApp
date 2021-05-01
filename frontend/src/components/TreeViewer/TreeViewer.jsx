@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, createRef } from "react";
 import styles from "./TreeViewer.module.css";
 import { Tree } from "../Tree/Tree";
 import { InfoWindow } from "../../components/InfoWindow/InfoWindow";
+import { Navigation } from "../../components/Navigation/Navigation";
 import { replaceSpaceCharacters, getParameterByName } from "../../utils/utils";
 import { NodePathHistory } from "../NodePathHistory/NodePathHistory";
 import { Toolbar } from "../Toolbar/Toolbar";
@@ -25,7 +26,7 @@ import { Logger } from "../../utils/Logger";
  */
 
 const findNodeWithLink = (subTree, link, depth, parent = null) => {
-  if (subTree == null || link === "") {
+  if (subTree == null || link === "" || link === undefined) {
     return {
       node: null,
       parent: null,
@@ -245,18 +246,31 @@ function getParent(nodeName, nameToNodeMapping) {
 /**
  * toggleInfoBoxVisibility determines whether to hide or show the text
  * box to the right of the screen.
- * @param clickedNodeName: The name of the node that was just clicked
+ * @param {string} clickedNodeName: The name of the node that was just clicked
  * TODO: Change the param to an ID when we integrate that feature
- * @param curViewingNodeID: The ID of the node whose article is currently
+ * @param {string} curViewingNodeID: The ID of the node whose article is currently
  * being viewed in the infoViewer; "" if nothing currently viewed
+ * @param {bool} stayOpen: Whether to stay open if the infoViewer is already open;
+ * defaults to false
  */
-function toggleInfoBoxVisibility(clickedNodeName, curViewingNodeID) {
+function toggleInfoBoxVisibility(
+  clickedNodeName,
+  curViewingNodeID,
+  url,
+  setViewingUrl,
+  stayOpen = false
+) {
   const articleDiv = document.getElementsByClassName("article")[0];
   const treeDiv = document.getElementById("course-tree");
   let nodeViewingAfterToggle;
 
   if (curViewingNodeID === clickedNodeName) {
     // Already displaying and the user clicked on the same node again
+    if (stayOpen) {
+      return clickedNodeName;
+    }
+    articleDiv.style["animation-name"] = "fadeOut";
+    setViewingUrl("");
     articleDiv.classList.remove("col");
     articleDiv.classList.remove("span-1-of-2");
     treeDiv.classList.remove("col");
@@ -264,6 +278,8 @@ function toggleInfoBoxVisibility(clickedNodeName, curViewingNodeID) {
     nodeViewingAfterToggle = "";
   } else {
     //Not yet displaying
+    articleDiv.style["animation-name"] = "fadeIn";
+    setViewingUrl(url);
     articleDiv.classList.add("col");
     articleDiv.classList.add("span-1-of-2");
     treeDiv.classList.add("col");
@@ -304,14 +320,16 @@ function getAbsoluteRootName(currentPath) {
   return currentPath[0];
 }
 
-export const TreeViewer = ({ data }) => {
+export const TreeViewer = ({ data, heading }) => {
   const [trimmedData, setTrimmedData] = useState({});
   const [nameToNodeMapping, setNameToNodeMapping] = useState({});
   const [nodeInfoContent, setNodeInfoContent] = useState("");
   const [currentPath, setCurrentPath] = useState([]);
   const [historyRecorder, setHistoryRecorder] = useState();
   const [hoveredNodeLink, setHoveredNodeLink] = useState("");
+  const [infoViewingLink, setInfoViewingLink] = useState("");
   const curViewingNodeID = useRef("");
+  const contentRef = createRef();
 
   /**
    * Given a node, this function resets the path to indicate that the node will
@@ -320,14 +338,25 @@ export const TreeViewer = ({ data }) => {
    * visible root.
    * @param {Node} newRoot The node which is to be the new visible root
    * @param {bool} addHistory Whether to add to history or not; default true
+   * @return {bool} returns whether the newVisibleRoot was set or not
    */
   const setNewVisibleRoot = (newRoot, addHistory = true) => {
+    if (newRoot.name == null || newRoot.name === undefined) {
+      Logger.warn("setNewVisibleRoot: Node has no name");
+      return false;
+    }
+    if (newRoot.name === getCurrentRootName(currentPath)) {
+      //We are already at the new root
+      return false;
+    }
     const path = pathToAncestor(newRoot, nameToNodeMapping);
     path.reverse(); // We want ancestor -> clicked node
     if (addHistory) {
       historyRecorder.addBackwardHistory(getCurrentRootName(currentPath));
     }
+    Logger.debug("The new path is ", path);
     setCurrentPath(path);
+    return true;
   };
 
   /**
@@ -357,14 +386,31 @@ export const TreeViewer = ({ data }) => {
   /**
    * Function to handle right clicks - opens up a window to show
    * summarized information for a given wiki link.
+   * @param {Event} event: The event object
+   * @param {Node} clickedNode: The node that was clicked on
+   * @param {bool} stayOpen: Whether to keep the infoviewer open if it was
+   * already open and the user right-clicked on the same node again.
    */
-  const rightClickHandler = (event, clickedNode) => {
+  const rightClickHandler = (event, clickedNode, stayOpen = false) => {
     event.preventDefault();
+    let clickedNodeFromMapping = clickedNode;
+    if (clickedNode.data) {
+      clickedNodeFromMapping = nameToNodeMapping[clickedNode.data.name];
+      if (clickedNodeFromMapping === undefined) {
+        Logger.error("rightClickHandler: clicked node not found in mapping");
+        return;
+      }
+    }
+    const url = clickedNodeFromMapping.url;
     curViewingNodeID.current = toggleInfoBoxVisibility(
-      clickedNode.data.name,
-      curViewingNodeID.current
+      clickedNodeFromMapping.name,
+      curViewingNodeID.current,
+      url,
+      setInfoViewingLink,
+      stayOpen
     );
-    const nodeID = getParameterByName("id", clickedNode.data.url);
+
+    const nodeID = getParameterByName("id", clickedNodeFromMapping.url);
     const nodeInfoUrl = replaceSpaceCharacters(
       `http://localhost:3003/get-node-info/${nodeID}`
     );
@@ -381,7 +427,7 @@ export const TreeViewer = ({ data }) => {
       .catch((err) => {
         const defaultInfo = {
           content: "No additional information available for the topic ".concat(
-            clickedNode.data.name
+            clickedNodeFromMapping.name
           ),
         };
         setNodeInfoContent(defaultInfo);
@@ -468,7 +514,51 @@ export const TreeViewer = ({ data }) => {
       setHoveredNodeLink("");
       return;
     }
-    setHoveredNodeLink(hoveredElement.getAttribute("href"));
+    const link = hoveredElement.getAttribute("href");
+    const hashIndex = link.indexOf("#");
+    if (hashIndex > -1) {
+      setHoveredNodeLink(link.substring(0, hashIndex));
+    } else {
+      setHoveredNodeLink(link);
+    }
+  };
+
+  /**
+   * For the infoViewer, when a link is clicked this function is
+   * called with the link as the href in e.target
+   * If the link refers to an element in the tree, that element's parent
+   * becomes the new visibleRoot (unless the element is the root). Else
+   * open the link in a new tab
+   * @param {Event} e : the event related to the link click
+   */
+  const linkClickHandler = (e) => {
+    e.preventDefault();
+    let clickedLink = e.target.getAttribute("href");
+    const hashIndex = clickedLink.indexOf("#");
+    if (hashIndex > -1) {
+      clickedLink = clickedLink.substring(0, hashIndex);
+    }
+    const searchResult = findNodeWithLink(data, clickedLink);
+    if (searchResult.parent == null && searchResult.node == null) {
+      //external link
+      window.open(clickedLink, "_blank");
+      return;
+    } else if (searchResult.parent == null) {
+      // The link refers to the root node which has no parent
+      if (!setNewVisibleRoot(searchResult.node)) {
+        Logger.debug(
+          "linkClickHandler: New root not set as we are already at new root, or error occurred"
+        );
+      }
+    } else {
+      if (!setNewVisibleRoot(searchResult.parent)) {
+        Logger.debug(
+          "linkClickHandler: New root not set as we are already at new root, or error occurred"
+        );
+      }
+    }
+    //simulate a right click on the new node to be viewed in the infoViewer
+    rightClickHandler(new Event(""), searchResult.node, true);
   };
 
   /**
@@ -578,7 +668,12 @@ export const TreeViewer = ({ data }) => {
   }, [currentPath, nameToNodeMapping, hoveredNodeLink, data]);
 
   return (
-    <div className={styles.nav}>
+    <div
+      className={styles.nav}
+      style={{
+        margin: "0px 10px",
+      }}
+    >
       <Toolbar>
         <ButtonGroup>
           <Button
@@ -615,6 +710,22 @@ export const TreeViewer = ({ data }) => {
           onPathChange={pathChangeHandler}
           validatePath={validatePath}
         />
+        <div
+          className={`${styles.heading}`}
+          style={{
+            color: "#2d94ed",
+            marginLeft: "300px",
+            fontSize: "25px",
+            position: "absolute",
+            right: "40%",
+            top: "10px",
+          }}
+        >
+          {heading}
+        </div>
+        <div>
+          <Navigation />
+        </div>
       </Toolbar>
       <div className="row treeViewerContainer">
         <div className="tree" id="course-tree">
@@ -625,11 +736,24 @@ export const TreeViewer = ({ data }) => {
             curViewingNodeID={curViewingNodeID.current}
           ></Tree>
         </div>
-        <div className="article">
+        <div
+          className="article"
+          ref={contentRef}
+          style={{
+            overflow: "scroll",
+            boxSizing: "border-box",
+            padding: "20px",
+            backgroundColor: "#ededed",
+            boxShadow: "2px 2px 2px 2px #ededed",
+          }}
+        >
           <p>
             <InfoWindow
               info={nodeInfoContent.content}
               linkHoverHandler={linkHoverHandler}
+              linkClickHandler={linkClickHandler}
+              curViewedLink={infoViewingLink}
+              contentRef={contentRef}
             ></InfoWindow>
           </p>
         </div>

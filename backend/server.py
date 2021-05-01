@@ -2,7 +2,6 @@ import db_interface
 from flask import Flask, jsonify, request, Response, json
 from flask_cors import CORS
 from werkzeug.exceptions import InternalServerError, BadRequest, HTTPException, NotFound
-from keybert import KeyBERT
 from time import time
 from bs4 import BeautifulSoup
 import requests
