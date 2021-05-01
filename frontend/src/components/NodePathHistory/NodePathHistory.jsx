@@ -106,7 +106,7 @@ export const NodePathHistory = ({
   // to the current node.
   const BreadcrumbsView = (
     <Breadcrumbs
-      maxItems={4}
+      maxItems={3}
       itemsAfterCollapse={3}
       itemsBeforeCollapse={0}
       color="primary"

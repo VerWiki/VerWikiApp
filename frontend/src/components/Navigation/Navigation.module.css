@@ -3,6 +3,9 @@
   padding: 10px;
   margin-left: 350px;
   font-size: 15px;
+  right: 100px;
+  top: 10px;
+  position: absolute;
 }
 
 .nav ul {

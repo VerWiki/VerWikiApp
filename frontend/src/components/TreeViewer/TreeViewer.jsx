@@ -711,12 +711,21 @@ export const TreeViewer = ({ data, heading }) => {
           validatePath={validatePath}
         />
         <div
-          className={styles.heading}
-          style={{ color: "#2d94ed", marginLeft: "300px", fontSize: "25px" }}
+          className={`${styles.heading}`}
+          style={{
+            color: "#2d94ed",
+            marginLeft: "300px",
+            fontSize: "25px",
+            position: "absolute",
+            right: "40%",
+            top: "10px",
+          }}
         >
           {heading}
         </div>
-        <Navigation />
+        <div>
+          <Navigation />
+        </div>
       </Toolbar>
       <div className="row treeViewerContainer">
         <div className="tree" id="course-tree">
