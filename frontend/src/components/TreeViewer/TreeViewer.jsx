@@ -668,7 +668,12 @@ export const TreeViewer = ({ data, heading }) => {
   }, [currentPath, nameToNodeMapping, hoveredNodeLink, data]);
 
   return (
-    <div className={styles.nav}>
+    <div
+      className={styles.nav}
+      style={{
+        margin: "0px 10px",
+      }}
+    >
       <Toolbar>
         <ButtonGroup>
           <Button
@@ -731,7 +736,6 @@ export const TreeViewer = ({ data, heading }) => {
             padding: "20px",
             backgroundColor: "#ededed",
             boxShadow: "2px 2px 2px 2px #ededed",
-            margin: "10px",
           }}
         >
           <p>
