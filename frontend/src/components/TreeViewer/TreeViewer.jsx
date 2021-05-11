@@ -7,7 +7,6 @@ import { NodePathHistory } from "../NodePathHistory/NodePathHistory";
 import { Toolbar } from "../Toolbar/Toolbar";
 import Button from "@material-ui/core/Button";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
-import TextField from "@material-ui/core/TextField";
 import NavigateBeforeRounded from "@material-ui/icons/NavigateBeforeRounded";
 import NavigateNextRounded from "@material-ui/icons/NavigateNextRounded";
 import HomeRounded from "@material-ui/icons/HomeRounded";
