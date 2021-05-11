@@ -2,12 +2,12 @@ import React, { useState, useEffect, useRef, createRef } from "react";
 import styles from "./TreeViewer.module.css";
 import { Tree } from "../Tree/Tree";
 import { InfoWindow } from "../../components/InfoWindow/InfoWindow";
-import { Navigation } from "../../components/Navigation/Navigation";
 import { replaceSpaceCharacters, getParameterByName } from "../../utils/utils";
 import { NodePathHistory } from "../NodePathHistory/NodePathHistory";
 import { Toolbar } from "../Toolbar/Toolbar";
 import Button from "@material-ui/core/Button";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
+import TextField from "@material-ui/core/TextField";
 import NavigateBeforeRounded from "@material-ui/icons/NavigateBeforeRounded";
 import NavigateNextRounded from "@material-ui/icons/NavigateNextRounded";
 import HomeRounded from "@material-ui/icons/HomeRounded";
@@ -15,6 +15,7 @@ import { HistoryRecorder } from "../../utils/HistoryRecorder";
 import "fontsource-roboto";
 import { VConf } from "../../utils/config";
 import { Logger } from "../../utils/Logger";
+import { Link } from "react-router-dom";
 
 /**
  * Recursive function to find the node, and its parent with a given link.
@@ -674,59 +675,56 @@ export const TreeViewer = ({ data, heading }) => {
         margin: "0px 10px",
       }}
     >
-      <Toolbar>
-        <ButtonGroup>
-          <Button
-            disabled={historyRecorder && !historyRecorder.canGoBackward()}
-            onClick={backClickHandler}
-          >
-            <NavigateBeforeRounded
+      <Toolbar
+        left={
+          <Link className={styles.backButton} to={"/"}>
+            <div className={styles.backButtonArrow}>
+              <NavigateBeforeRounded />
+            </div>
+            Explore
+          </Link>
+        }
+        center={<div className={styles.heading}>{heading}</div>}
+      />
+      <Toolbar
+        left={[
+          <ButtonGroup>
+            <Button
+              disabled={historyRecorder && !historyRecorder.canGoBackward()}
+              onClick={backClickHandler}
+            >
+              <NavigateBeforeRounded
+                classes={{
+                  root: styles.button,
+                }}
+              />
+            </Button>
+            <Button
+              disabled={historyRecorder && !historyRecorder.canGoForward()}
+              onClick={forwardClickHandler}
+            >
+              <NavigateNextRounded
+                classes={{
+                  root: styles.button,
+                }}
+              />
+            </Button>
+          </ButtonGroup>,
+          <Button variant="outlined" onClick={homeClickHandler}>
+            <HomeRounded
               classes={{
                 root: styles.button,
               }}
             />
-          </Button>
-          <Button
-            disabled={historyRecorder && !historyRecorder.canGoForward()}
-            onClick={forwardClickHandler}
-          >
-            <NavigateNextRounded
-              classes={{
-                root: styles.button,
-              }}
-            />
-          </Button>
-        </ButtonGroup>
-        <Button variant="outlined" onClick={homeClickHandler}>
-          <HomeRounded
-            classes={{
-              root: styles.button,
-            }}
-          />
-        </Button>
-        <NodePathHistory
-          path={currentPath}
-          onNodeNameClick={nodeNameClickHandler}
-          onPathChange={pathChangeHandler}
-          validatePath={validatePath}
-        />
-        <div
-          className={`${styles.heading}`}
-          style={{
-            color: "#2d94ed",
-            marginLeft: "300px",
-            fontSize: "25px",
-            position: "absolute",
-            right: "40%",
-            top: "10px",
-          }}
-        >
-          {heading}
-        </div>
-        <div>
-          <Navigation />
-        </div>
-      </Toolbar>
+          </Button>,
+          <NodePathHistory
+            path={currentPath}
+            onNodeNameClick={nodeNameClickHandler}
+            onPathChange={pathChangeHandler}
+            validatePath={validatePath}
+          />,
+        ]}
+      />
       <div className="row treeViewerContainer">
         <div className="tree" id="course-tree">
           <Tree

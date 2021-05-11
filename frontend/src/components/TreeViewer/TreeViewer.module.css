@@ -1,8 +1,42 @@
 .button {
-  color: #2d94ed; 
+  color: #2d94ed;
 }
 .heading {
-  color: rgb(8, 140, 140);
-  font-size: 20px;
-  float: right;
+  color: #2d94ed;
+  font-size: 25px;
+}
+
+.backButton {
+  color: #dc990a;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  position: relative;
+  transition: 0.2s;
+  left: -20px;
+}
+
+.backButton:hover {
+  color: #c98c09;
+  left: 0;
+}
+
+.backButtonArrow {
+  display: flex;
+  visibility: hidden;
+  opacity: 0;
+  position: relative;
+  align-items: center;
+  transition: 0.2s;
+  left: 10px;
+}
+
+.backButton:hover .backButtonArrow {
+  visibility: visible;
+  opacity: 1;
+  left: 0;
+}
+
+.leftSide {
+  display: flex;
 }

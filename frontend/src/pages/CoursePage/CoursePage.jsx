@@ -32,11 +32,7 @@ export const CoursePage = () => {
     Viewer = <TreeViewer data={treeObj} heading={courseData[courseId].name} />;
   }
 
-  return (
-    <>
-      <div>{Viewer}</div>
-    </>
-  );
+  return <div>{Viewer}</div>;
 };
 
 /**
