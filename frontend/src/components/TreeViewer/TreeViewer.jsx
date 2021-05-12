@@ -720,7 +720,7 @@ export const TreeViewer = ({ data, heading }) => {
         ]}
       />
       <div className={styles.treeViewerContainer}>
-        <div>
+        <div id="course-tree">
           <Tree
             jsonData={trimmedData}
             onNodeClick={nodeClickHandler}
