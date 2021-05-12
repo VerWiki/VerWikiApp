@@ -668,12 +668,7 @@ export const TreeViewer = ({ data, heading }) => {
   }, [currentPath, nameToNodeMapping, hoveredNodeLink, data]);
 
   return (
-    <div
-      className={styles.nav}
-      style={{
-        margin: "0px 10px",
-      }}
-    >
+    <div>
       <Toolbar
         left={
           <Link className={styles.backButton} to={"/"}>
