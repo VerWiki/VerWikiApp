@@ -719,8 +719,8 @@ export const TreeViewer = ({ data, heading }) => {
           />,
         ]}
       />
-      <div className="row treeViewerContainer">
-        <div className="tree" id="course-tree">
+      <div className={styles.treeViewerContainer}>
+        <div>
           <Tree
             jsonData={trimmedData}
             onNodeClick={nodeClickHandler}
