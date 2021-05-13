@@ -41,6 +41,6 @@
   left: 0;
 }
 
-.leftSide {
-  display: flex;
+.search {
+  width: 200px;
 }

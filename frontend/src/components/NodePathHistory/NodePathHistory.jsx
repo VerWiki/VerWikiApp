@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-// import styles from "./NodePathHistory.module.css";
+import styles from "./NodePathHistory.module.css";
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
 import Breadcrumbs from "@material-ui/core/Breadcrumbs";
@@ -106,8 +106,12 @@ export const NodePathHistory = ({
   // to the current node.
   const BreadcrumbsView = (
     <Breadcrumbs
-      maxItems={3}
-      itemsAfterCollapse={3}
+      classes={{
+        root: styles.breadcrumbContainer,
+        ol: styles.breadcrumbOl,
+      }}
+      maxItems={2}
+      itemsAfterCollapse={2}
       itemsBeforeCollapse={0}
       color="primary"
       aria-label="breadcrumb"

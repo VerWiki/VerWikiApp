@@ -26,8 +26,9 @@ export const Toolbar = ({ left, center, right }) => {
       display="flex"
       alignItems="center"
       justifyContent="space-between"
-      flexWrap="wrap"
+      flexWrap="nowrap"
       minHeight={40}
+      overflow="scroll"
     >
       <Box
         p={1.5}

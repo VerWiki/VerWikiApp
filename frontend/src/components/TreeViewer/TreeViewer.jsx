@@ -15,6 +15,7 @@ import "fontsource-roboto";
 import { VConf } from "../../utils/config";
 import { Logger } from "../../utils/Logger";
 import { Link } from "react-router-dom";
+import { TextField } from "@material-ui/core";
 
 /**
  * Recursive function to find the node, and its parent with a given link.
@@ -718,6 +719,16 @@ export const TreeViewer = ({ data, heading }) => {
             validatePath={validatePath}
           />,
         ]}
+        // right={
+        //   <TextField
+        //     label="Search"
+        //     variant="outlined"
+        //     size="small"
+        //     classes={{
+        //       root: styles.search,
+        //     }}
+        //   />
+        // }
       />
       <div className={styles.treeViewerContainer}>
         <div id="course-tree">

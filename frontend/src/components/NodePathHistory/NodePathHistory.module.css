@@ -1,0 +1,8 @@
+.breadcrumbContainer {
+  max-width: 300px;
+  overflow: scroll;
+}
+
+.breadcrumbOl {
+  flex-wrap: nowrap;
+}
