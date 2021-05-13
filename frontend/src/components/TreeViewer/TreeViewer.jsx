@@ -12,7 +12,7 @@ import NavigateNextRounded from "@material-ui/icons/NavigateNextRounded";
 import HomeRounded from "@material-ui/icons/HomeRounded";
 import { HistoryRecorder } from "../../utils/HistoryRecorder";
 import "fontsource-roboto";
-import { VConf, ServConf } from "../../utils/config";
+import { VConf } from "../../utils/config";
 
 /**
  * Recursive function to find the node, and its parent with a given link.
@@ -307,9 +307,7 @@ export const TreeViewer = ({ data }) => {
     );
     //previouslyClickedNode.current = clickedNode.data.name;
     const nodeID = getParameterByName("id", clickedNode.data.url);
-    const nodeInfoUrl = replaceSpaceCharacters(
-      `http://${ServConf.HOST}:${ServConf.PORT}/get-node-info/${nodeID}`
-    );
+    const nodeInfoUrl = replaceSpaceCharacters(`/get-node-info/${nodeID}`);
     fetch(nodeInfoUrl)
       .then((res) => {
         if (res.status !== 200) {
