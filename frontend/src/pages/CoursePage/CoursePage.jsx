@@ -34,10 +34,3 @@ export const CoursePage = () => {
 
   return <div>{Viewer}</div>;
 };
-
-/**
- * TODO:
- * 1. put course name and explore button on the toolbar
- * 2. add animations to the info box appearing
- * 3. suggest antd backtop README improvement
- */
