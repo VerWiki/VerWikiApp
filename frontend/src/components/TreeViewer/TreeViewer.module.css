@@ -11,8 +11,9 @@
 }
 
 .backButton {
-  color: #dc990a;
+  color: #2d94ed;
   font-size: 15px;
+  font-weight: bold;
   display: flex;
   align-items: center;
   position: relative;
@@ -21,7 +22,7 @@
 }
 
 .backButton:hover {
-  color: #c98c09;
+  color: black;
   left: 0;
 }
 

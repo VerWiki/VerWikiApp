@@ -98,6 +98,8 @@ function renderTree(
 
   nodeGroup.exit().remove();
 
+  const tooltip = select("node-group");
+
   // Add nodes to the node group
   nodeGroupEnter
     .append("circle")
@@ -128,7 +130,16 @@ function renderTree(
         return TreeConf.VIEWING_NODE_SIZE;
       }
       return TreeConf.NODE_SIZE;
-    });
+    })
+    .on("mouseover", (d, i) => {
+      return tooltip
+        .transition()
+        .duration("100")
+        .attr("fill", TreeConf.VIEWING_NODE_COLOUR);
+    })
+    .on("mouseout", (d, i) =>
+      tooltip.transition().duration("100").attr("fill", TreeConf.NODE_COLOUR)
+    );
 
   // Add labels to the node group
   nodeGroupEnter
@@ -150,7 +161,6 @@ function renderTree(
     )
     .attr("dy", "1.00em")
     .attr("dx", "0.0em")
-    .text((node) => node.data.name + " ")
     .attr("opacity", (d) => {
       return d.data.opacity;
     })
@@ -167,7 +177,31 @@ function renderTree(
     .attr("opacity", (d) => {
       return d.data.opacity;
     })
-    .text((node) => node.data.name);
+    //.append("title")
+    .text((node) => {
+      console.log(node.data.name);
+      const spaceIndex = node.data.name.indexOf(" ");
+      if (spaceIndex !== -1) {
+        if (spaceIndex > TreeConf.LABEL_MAX_LENGTH + 3) {
+          return node.data.name.substr(0, TreeConf.LABEL_MAX_LENGTH) + "...";
+        } else {
+          return node.data.name.substr(0, spaceIndex) + "...";
+        }
+      } else {
+        if (node.data.name.length > TreeConf.LABEL_MAX_LENGTH + 3) {
+          return node.data.name.substr(0, TreeConf.LABEL_MAX_LENGTH) + "...";
+        } else {
+          return node.data.name;
+        }
+      }
+    })
+    .on("mouseover", (d, i) => {
+      console.log(i.data.name);
+      select(this).text(() => i.data.name);
+    })
+    .on("mouseout", (d, i) => {
+      // select(this).transition().duration("50").attr("opacity", 1);
+    });
 
   // Add links between nodes
   const enteringAndUpdatingLinks = svg

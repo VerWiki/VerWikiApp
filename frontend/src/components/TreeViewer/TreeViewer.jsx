@@ -15,7 +15,7 @@ import "fontsource-roboto";
 import { VConf } from "../../utils/config";
 import { Logger } from "../../utils/Logger";
 import { Link } from "react-router-dom";
-// import { TextField } from "@material-ui/core";
+import { TextField } from "@material-ui/core";
 
 /**
  * Recursive function to find the node, and its parent with a given link.
@@ -671,18 +671,13 @@ export const TreeViewer = ({ data, heading }) => {
   return (
     <div>
       <Toolbar
-        left={
+        left={[
           <Link className={styles.backButton} to={"/"}>
             <div className={styles.backButtonArrow}>
               <NavigateBeforeRounded />
             </div>
             Explore
-          </Link>
-        }
-        center={<div className={styles.heading}>{heading}</div>}
-      />
-      <Toolbar
-        left={[
+          </Link>,
           <ButtonGroup>
             <Button
               disabled={historyRecorder && !historyRecorder.canGoBackward()}
@@ -720,19 +715,32 @@ export const TreeViewer = ({ data, heading }) => {
           />,
         ]}
         // Search bar for the next phase
-        // right={
-        //   <TextField
-        //     label="Search"
-        //     variant="outlined"
-        //     size="small"
-        //     classes={{
-        //       root: styles.search,
-        //     }}
-        //   />
-        // }
+        right={[
+          <div
+            className={styles.heading}
+            style={{
+              fontWeight: "bold",
+            }}
+          >
+            {heading}
+          </div>,
+          <TextField
+            label="Search"
+            variant="outlined"
+            size="small"
+            classes={{
+              root: styles.search,
+            }}
+          />,
+        ]}
       />
       <div className={styles.treeViewerContainer}>
-        <div id="course-tree">
+        <div
+          id="course-tree"
+          style={{
+            borderRadius: "50%",
+          }}
+        >
           <Tree
             jsonData={trimmedData}
             onNodeClick={nodeClickHandler}

@@ -41,6 +41,23 @@ export const InfoWindow = ({
       }
     }
   };
+  const button = (
+    <Button
+      type="primary"
+      style={{
+        display: "inline-block",
+        float: "right",
+        paddingRight: "20px",
+      }}
+      onClick={() => {
+        if (curViewedLink !== "") {
+          window.open(curViewedLink, "_blank");
+        }
+      }}
+    >
+      View on CWSL Wiki
+    </Button>
+  );
   const safeHTML = DOMPurify.sanitize(info);
   return (
     <div>
@@ -55,21 +72,7 @@ export const InfoWindow = ({
         >
           Wiki Information
         </h2>
-        <Button
-          type="primary"
-          style={{
-            display: "inline-block",
-            float: "right",
-            paddingRight: "20px",
-          }}
-          onClick={() => {
-            if (curViewedLink !== "") {
-              window.open(curViewedLink, "_blank");
-            }
-          }}
-        >
-          View on CWSL Wiki
-        </Button>
+        {curViewedLink ? button : null}
         <div
           id="infoWindowDiv"
           style={{
@@ -81,9 +84,7 @@ export const InfoWindow = ({
           onClick={clickInfoViewerHandler}
         ></div>
       </div>
-      <BackTop
-        target={() => console.log(contentRef.current) || contentRef.current}
-      />
+      <BackTop target={() => contentRef.current} />
     </div>
   );
 };
