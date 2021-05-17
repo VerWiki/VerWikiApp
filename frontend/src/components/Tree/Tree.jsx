@@ -55,7 +55,9 @@ function renderTree(
   svgRef,
   onNodeClick,
   onRightClick,
-  curViewingNodeID
+  curViewingNodeID,
+  hoverText,
+  setHoverText
 ) {
   const svg = select(svgRef.current);
   const { width, height } = dimensions;
@@ -180,6 +182,8 @@ function renderTree(
     //.append("title")
     .text((node) => {
       console.log(node.data.name);
+      if (hoverText === node.data.name) return node.data.name;
+
       const spaceIndex = node.data.name.indexOf(" ");
       if (spaceIndex !== -1) {
         if (spaceIndex > TreeConf.LABEL_MAX_LENGTH + 3) {
@@ -196,10 +200,12 @@ function renderTree(
       }
     })
     .on("mouseover", (d, i) => {
-      console.log(i.data.name);
-      select(this).text(() => i.data.name);
+      console.log("aaa", i.data.name);
+      setHoverText(i.data.name);
+      // select(this).text(() => i.data.name);
     })
     .on("mouseout", (d, i) => {
+      setHoverText("");
       // select(this).transition().duration("50").attr("opacity", 1);
     });
 
@@ -244,6 +250,7 @@ export function Tree({
   const svgRef = useRef();
   const wrapperRef = useRef();
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  const [hoverText, setHoverText] = useState("");
   // We save data to see if it changed
   const previouslyRenderedData = usePrevious(jsonData);
 
@@ -282,7 +289,9 @@ export function Tree({
       svgRef,
       onNodeClick,
       onRightClick,
-      curViewingNodeID
+      curViewingNodeID,
+      hoverText,
+      setHoverText
     );
     // Animate only when the tree root changes
     if (jsonData.name !== previouslyRenderedData.name) {
@@ -295,6 +304,7 @@ export function Tree({
     onNodeClick,
     onRightClick,
     curViewingNodeID,
+    hoverText,
   ]);
 
   return (
