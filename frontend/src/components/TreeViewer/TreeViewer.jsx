@@ -259,13 +259,14 @@ function toggleInfoBoxVisibility(
   curViewingNodeID,
   url,
   setViewingUrl,
-  stayOpen = false
+  stayOpen = false,
+  closeButtonClicked = false
 ) {
   const articleDiv = document.getElementsByClassName("article")[0];
   const treeDiv = document.getElementById("course-tree");
   let nodeViewingAfterToggle;
 
-  if (curViewingNodeID === clickedNodeName) {
+  if (curViewingNodeID === clickedNodeName || closeButtonClicked) {
     // Already displaying and the user clicked on the same node again
     if (stayOpen) {
       return clickedNodeName;
@@ -392,7 +393,12 @@ export const TreeViewer = ({ data, heading }) => {
    * @param {bool} stayOpen: Whether to keep the infoviewer open if it was
    * already open and the user right-clicked on the same node again.
    */
-  const rightClickHandler = (event, clickedNode, stayOpen = false) => {
+  const rightClickHandler = (
+    event,
+    clickedNode,
+    stayOpen = false,
+    closeButtonClicked = false
+  ) => {
     event.preventDefault();
     let clickedNodeFromMapping = clickedNode;
     if (clickedNode.data) {
@@ -408,7 +414,8 @@ export const TreeViewer = ({ data, heading }) => {
       curViewingNodeID.current,
       url,
       setInfoViewingLink,
-      stayOpen
+      stayOpen,
+      closeButtonClicked
     );
 
     const nodeID = getParameterByName("id", clickedNodeFromMapping.url);
@@ -758,6 +765,7 @@ export const TreeViewer = ({ data, heading }) => {
               linkClickHandler={linkClickHandler}
               curViewedLink={infoViewingLink}
               contentRef={contentRef}
+              rightClickHandler={rightClickHandler}
             ></InfoWindow>
           </p>
         </div>

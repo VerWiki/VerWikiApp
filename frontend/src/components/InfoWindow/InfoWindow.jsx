@@ -1,6 +1,7 @@
 import React from "react";
 import DOMPurify from "dompurify";
 import { Button, BackTop } from "antd";
+import { CloseCircleOutlined } from "@ant-design/icons";
 import "antd/dist/antd.css";
 
 /**
@@ -16,6 +17,7 @@ export const InfoWindow = ({
   linkClickHandler,
   curViewedLink,
   contentRef,
+  rightClickHandler,
 }) => {
   const highlightRelatedNode = (e) => {
     const elementType = e.target.tagName;
@@ -29,6 +31,11 @@ export const InfoWindow = ({
     } else {
       linkHoverHandler(null);
     }
+  };
+  const closeButtonInfoViewer = (event, stayOpen = false) => {
+    event.preventDefault();
+
+    rightClickHandler(event, closeButtonClicked = true, stayOpen = false);
   };
   const clickInfoViewerHandler = (e) => {
     const elementType = e.target.tagName;
@@ -45,6 +52,19 @@ export const InfoWindow = ({
   return (
     <div>
       <div>
+        <Button
+          onClick={closeButtonInfoViewer}
+          size="large"
+          type="primary"
+          style={{
+            display: "inline-block",
+            position: "absolute",
+            right: 5,
+            top: 150,
+            paddingLeft: "0px",
+          }}
+          icon={<CloseCircleOutlined />}
+        />
         <h2
           style={{
             display: "inline-block",
@@ -53,7 +73,7 @@ export const InfoWindow = ({
             fontSize: "30px",
           }}
         >
-          Wiki Information
+          VerWiki Information
         </h2>
         <Button
           type="primary"
@@ -70,6 +90,7 @@ export const InfoWindow = ({
         >
           View on CWSL Wiki
         </Button>
+
         <div
           id="infoWindowDiv"
           style={{
