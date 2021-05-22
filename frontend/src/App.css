@@ -22,3 +22,11 @@
   from {opacity: 1;}
   to {opacity: 0;}
 }
+
+.scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar {
+  scrollbar-width: none;
+}

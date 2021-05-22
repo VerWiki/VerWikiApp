@@ -107,11 +107,11 @@ export const NodePathHistory = ({
   const BreadcrumbsView = (
     <Breadcrumbs
       classes={{
-        root: styles.breadcrumbContainer,
+        root: `${styles.breadcrumbContainer} scrollbar`,
         ol: styles.breadcrumbOl,
       }}
-      maxItems={2}
-      itemsAfterCollapse={2}
+      maxItems={3}
+      itemsAfterCollapse={3}
       itemsBeforeCollapse={0}
       color="primary"
       aria-label="breadcrumb"

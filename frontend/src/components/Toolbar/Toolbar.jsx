@@ -1,5 +1,6 @@
 import React from "react";
 import Box from "@material-ui/core/Box";
+// import styles from "./Toolbar.module.css";
 
 const convertToArray = (obj) => {
   if (obj && !Array.isArray(obj)) {
@@ -29,6 +30,7 @@ export const Toolbar = ({ left, center, right }) => {
       flexWrap="nowrap"
       minHeight={40}
       overflow="scroll"
+      className="scrollbar"
     >
       <Box
         p={1.5}
