@@ -1,7 +1,8 @@
 import React from "react";
 import DOMPurify from "dompurify";
 import { Button, BackTop } from "antd";
-import { CloseCircleOutlined } from "@ant-design/icons";
+import { Toolbar } from "../Toolbar/Toolbar";
+import { CloseOutlined } from "@ant-design/icons";
 import "antd/dist/antd.css";
 
 /**
@@ -17,7 +18,8 @@ export const InfoWindow = ({
   linkClickHandler,
   curViewedLink,
   contentRef,
-  rightClickHandler,
+  closeButtonHandler,
+  title,
 }) => {
   const highlightRelatedNode = (e) => {
     const elementType = e.target.tagName;
@@ -32,10 +34,8 @@ export const InfoWindow = ({
       linkHoverHandler(null);
     }
   };
-  const closeButtonInfoViewer = (event, stayOpen = false) => {
-    event.preventDefault();
-
-    rightClickHandler(event, closeButtonClicked = true, stayOpen = false);
+  const closeInfoViewer = (event) => {
+    closeButtonHandler(event, {}, false, true);
   };
   const clickInfoViewerHandler = (e) => {
     const elementType = e.target.tagName;
@@ -52,44 +52,37 @@ export const InfoWindow = ({
   return (
     <div>
       <div>
-        <Button
-          onClick={closeButtonInfoViewer}
-          size="large"
-          type="primary"
-          style={{
-            display: "inline-block",
-            position: "absolute",
-            right: 5,
-            top: 150,
-            paddingLeft: "0px",
-          }}
-          icon={<CloseCircleOutlined />}
+        <Toolbar
+          left={
+            <Button
+              onClick={closeInfoViewer}
+              size="medium"
+              type="primary"
+              icon={<CloseOutlined />}
+            />
+          }
+          center={
+            <h2
+              style={{
+                fontSize: "30px",
+              }}
+            >
+              {title}
+            </h2>
+          }
+          right={
+            <Button
+              type="primary"
+              onClick={() => {
+                if (curViewedLink !== "") {
+                  window.open(curViewedLink, "_blank");
+                }
+              }}
+            >
+              View on CWSL Wiki
+            </Button>
+          }
         />
-        <h2
-          style={{
-            display: "inline-block",
-            float: "left",
-            paddingLeft: "20px",
-            fontSize: "30px",
-          }}
-        >
-          VerWiki Information
-        </h2>
-        <Button
-          type="primary"
-          style={{
-            display: "inline-block",
-            float: "right",
-            paddingRight: "20px",
-          }}
-          onClick={() => {
-            if (curViewedLink !== "") {
-              window.open(curViewedLink, "_blank");
-            }
-          }}
-        >
-          View on CWSL Wiki
-        </Button>
 
         <div
           id="infoWindowDiv"
@@ -102,9 +95,7 @@ export const InfoWindow = ({
           onClick={clickInfoViewerHandler}
         ></div>
       </div>
-      <BackTop
-        target={() => console.log(contentRef.current) || contentRef.current}
-      />
+      <BackTop target={() => contentRef.current} />
     </div>
   );
 };

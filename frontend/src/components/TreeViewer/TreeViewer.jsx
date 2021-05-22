@@ -253,6 +253,8 @@ function getParent(nodeName, nameToNodeMapping) {
  * being viewed in the infoViewer; "" if nothing currently viewed
  * @param {bool} stayOpen: Whether to stay open if the infoViewer is already open;
  * defaults to false
+ * @param {bool} closeButtonClicked: Whether the current signal comes from the close
+ * button on an infowindow
  */
 function toggleInfoBoxVisibility(
   clickedNodeName,
@@ -267,6 +269,7 @@ function toggleInfoBoxVisibility(
   let nodeViewingAfterToggle;
 
   if (curViewingNodeID === clickedNodeName || closeButtonClicked) {
+    console.log("GOT HERE MFS");
     // Already displaying and the user clicked on the same node again
     if (stayOpen) {
       return clickedNodeName;
@@ -326,6 +329,7 @@ export const TreeViewer = ({ data, heading }) => {
   const [trimmedData, setTrimmedData] = useState({});
   const [nameToNodeMapping, setNameToNodeMapping] = useState({});
   const [nodeInfoContent, setNodeInfoContent] = useState("");
+  const [nodeInfoName, setNodeInfoName] = useState("");
   const [currentPath, setCurrentPath] = useState([]);
   const [historyRecorder, setHistoryRecorder] = useState();
   const [hoveredNodeLink, setHoveredNodeLink] = useState("");
@@ -392,6 +396,8 @@ export const TreeViewer = ({ data, heading }) => {
    * @param {Node} clickedNode: The node that was clicked on
    * @param {bool} stayOpen: Whether to keep the infoviewer open if it was
    * already open and the user right-clicked on the same node again.
+   * @param {bool} closeButtonClicked: Whether the current call is coming
+   * from a close button being clicked.
    */
   const rightClickHandler = (
     event,
@@ -431,6 +437,7 @@ export const TreeViewer = ({ data, heading }) => {
       })
       .then((res) => {
         setNodeInfoContent(res);
+        setNodeInfoName(clickedNodeFromMapping.name);
       })
       .catch((err) => {
         const defaultInfo = {
@@ -765,7 +772,8 @@ export const TreeViewer = ({ data, heading }) => {
               linkClickHandler={linkClickHandler}
               curViewedLink={infoViewingLink}
               contentRef={contentRef}
-              rightClickHandler={rightClickHandler}
+              closeButtonHandler={rightClickHandler}
+              title={nodeInfoName}
             ></InfoWindow>
           </p>
         </div>
