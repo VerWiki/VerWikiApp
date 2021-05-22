@@ -365,9 +365,7 @@ export const TreeViewer = ({ data }) => {
       curViewingNodeID.current
     );
     const nodeID = getParameterByName("id", clickedNode.data.url);
-    const nodeInfoUrl = replaceSpaceCharacters(
-      `http://localhost:3003/get-node-info/${nodeID}`
-    );
+    const nodeInfoUrl = replaceSpaceCharacters(`/get-node-info/${nodeID}`);
     fetch(nodeInfoUrl)
       .then((res) => {
         if (res.status !== 200) {
