@@ -15,7 +15,6 @@ import "fontsource-roboto";
 import { VConf } from "../../utils/config";
 import { Logger } from "../../utils/Logger";
 import { Link } from "react-router-dom";
-// import { TextField } from "@material-ui/core";
 
 /**
  * Recursive function to find the node, and its parent with a given link.
@@ -411,10 +410,12 @@ export const TreeViewer = ({ data, heading }) => {
       stayOpen
     );
 
+    // const nodeID = getParameterByName("id", clickedNodeFromMapping.url);
+    // const nodeInfoUrl = replaceSpaceCharacters(
+    //   `http://localhost:3003/get-node-info/${nodeID}`
+    // );
     const nodeID = getParameterByName("id", clickedNodeFromMapping.url);
-    const nodeInfoUrl = replaceSpaceCharacters(
-      `http://localhost:3003/get-node-info/${nodeID}`
-    );
+    const nodeInfoUrl = replaceSpaceCharacters(`/get-node-info/${nodeID}`);
     fetch(nodeInfoUrl)
       .then((res) => {
         if (res.status !== 200) {
