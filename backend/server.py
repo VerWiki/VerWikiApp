@@ -2,10 +2,10 @@ import db_interface
 from flask import Flask, jsonify, request, Response, json
 from flask_cors import CORS
 from werkzeug.exceptions import InternalServerError, BadRequest, HTTPException, NotFound
-from keybert import KeyBERT
 from time import time
 from bs4 import BeautifulSoup
 import requests
+import logging
 
 
 app = Flask(__name__)
@@ -39,24 +39,16 @@ def configure_routes(app):
             internalSrvErr.description = str(e)
             raise internalSrvErr
 
-    @app.route("/get-node-info/<node_id>", methods=["GET"])
-    def get_node_info(node_id):
+    @app.route("/get-node-info/<node_url>", methods=["GET"])
+    def get_node_info(node_url):
         """
         Gets the associated link from the database, gets the text associated
         with it, and summarizes it.
         """
         try:
-            link = db_interface.get_link_by_node_id(node_id)
-        except KeyError as e:
-            nf = NotFound()
-            nf.description = str(e)
-            raise nf
-        except Exception as e:
-            internalSrvErr = InternalServerError()
-            internalSrvErr.description = str(e)
-            raise internalSrvErr
-        try:
-            content = _get_content_from_site(link)
+            content = _get_content_from_site(
+                f"https://cwsl.ca/wiki/doku.php?id={node_url}"
+            )
         except Exception as e:
             raise e
         return jsonify({"content": content})
@@ -79,10 +71,11 @@ def _get_content_from_site(url: str) -> str:
     page = requests.get(url)
     if not page.ok:
         raise NotFound("No additional information available for the topic - 404")
-    soup = BeautifulSoup(page.content, "html.parser")
 
     # dokuwiki__content is assumed to have the main content of the article
-    content = soup.find("div", {"id": "dokuwiki__content"})
+    content = BeautifulSoup(page.content, "html.parser").find(
+        "div", {"id": "dokuwiki__content"}
+    )
     if content is None:
         raise InternalServerError("Error when showing article preview")
 

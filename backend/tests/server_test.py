@@ -1,6 +1,7 @@
 from flask import Flask
 import sys
 import os
+from test_utils.mock_page import MockPage
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import server
@@ -113,15 +114,39 @@ class TestGetTreeByIDRoute:
 
 
 class TestGetNodeInfo:
-    def test_get_node_info_exists(self):
+    @patch("server.requests")
+    def test_get_content_from_site_not_found_error(self, mock_req):
         app = Flask(__name__)
         client = app.test_client()
         server.configure_routes(app)
         url = "/get-node-info/leafs"
 
-        fake_link = {"link": "https://mapleleafs.nhl.com"}
-        server.db_interface.get_link_by_node_id = Mock()
-        server.db_interface.get_link_by_node_id.return_value = fake_link
+        mock_page = mock_req.get(url)
+        mock_page.ok = False
+
+        with pytest.raises(NotFound):
+            server._get_content_from_site(url)
+
+    @patch("server.requests")
+    @patch("server.BeautifulSoup")
+    def test_get_content_from_site_internal_server_error(self, mock_bs, mock_req):
+        app = Flask(__name__)
+        client = app.test_client()
+        server.configure_routes(app)
+        url = "/get-node-info/leafs"
+
+        mock_page = mock_req.get(url)
+        mock_page.ok = True
+
+        mock_bs.side_effect = InternalServerError()
+        with pytest.raises(InternalServerError):
+            server._get_content_from_site(url)
+
+    def test_get_node_info_exists(self):
+        app = Flask(__name__)
+        client = app.test_client()
+        server.configure_routes(app)
+        url = "/get-node-info/maple-leafs"
 
         server._get_content_from_site = Mock()
         server._get_content_from_site.return_value = (
@@ -131,42 +156,3 @@ class TestGetNodeInfo:
         response = client.get(url)
         assert response.status_code == 200
         assert response.json == {"content": "mock_get_content_from_site_return_value"}
-
-    def test_get_node_info_db_returns_key_error(self):
-        app = Flask(__name__)
-        client = app.test_client()
-        server.configure_routes(app)
-        url = "/get-node-info/leafs"
-
-        server.db_interface.get_link_by_node_id = Mock()
-        server.db_interface.get_link_by_node_id.side_effect = KeyError(
-            Mock(status=404), "not found"
-        )
-        response = client.get(url)
-        assert response.status_code == 404
-
-    def test_get_node_info_db_returns_type_error(self):
-        app = Flask(__name__)
-        client = app.test_client()
-        server.configure_routes(app)
-        url = "/get-node-info/leafs"
-
-        server.db_interface.get_link_by_node_id = Mock()
-        server.db_interface.get_link_by_node_id.side_effect = TypeError(
-            Mock(status=500), "Type Error"
-        )
-        response = client.get(url)
-        assert response.status_code == 500
-
-    def test_get_node_info_db_returns_system_error(self):
-        app = Flask(__name__)
-        client = app.test_client()
-        server.configure_routes(app)
-        url = "/get-node-info/leafs"
-
-        server.db_interface.get_link_by_node_id = Mock()
-        server.db_interface.get_link_by_node_id.side_effect = SystemError(
-            Mock(status=500), "System Error"
-        )
-        response = client.get(url)
-        assert response.status_code == 500

@@ -12,11 +12,7 @@ import NavigateNextRounded from "@material-ui/icons/NavigateNextRounded";
 import HomeRounded from "@material-ui/icons/HomeRounded";
 import { HistoryRecorder } from "../../utils/HistoryRecorder";
 import "fontsource-roboto";
-
-const MAX_DEPTH = 2;
-const FADE_OPACITY = 0.25;
-const FULL_OPACITY = 1;
-const NO_DEPTH_LIMIT = -1;
+import { VConf } from "../../utils/config";
 
 /**
  * Recursive function to find the node, and its parent with a given link.
@@ -93,7 +89,7 @@ const findVisibleSubtree = (
   const hoveredNodeObject = findNodeWithLink(
     treeToDisplay,
     hoveredNodeLink,
-    MAX_DEPTH
+    VConf.MAX_DEPTH
   );
 
   if (hoveredNodeObject.node !== null) {
@@ -103,7 +99,7 @@ const findVisibleSubtree = (
   const searchResult = findNodeWithLink(
     entireData,
     hoveredNodeLink,
-    NO_DEPTH_LIMIT
+    VConf.NO_DEPTH_LIMIT
   );
 
   if (searchResult.node === null) {
@@ -123,7 +119,7 @@ const findVisibleSubtree = (
  * of levels, this function trims the total depth of the tree
  * to the given depth.
  */
-function extractObjectWithMaxDepth(obj, depth = MAX_DEPTH) {
+function extractObjectWithMaxDepth(obj, depth = VConf.MAX_DEPTH) {
   if (depth < 0) {
     return null;
   }
@@ -153,15 +149,22 @@ function extractObjectWithMaxDepth(obj, depth = MAX_DEPTH) {
  * @param {float} currentOpacity Current opacity rating
  */
 const setOpacity = (data, link, currentOpacity) => {
-  if (currentOpacity !== FADE_OPACITY && currentOpacity !== FULL_OPACITY) {
+  if (
+    currentOpacity !== VConf.FADE_OPACITY &&
+    currentOpacity !== VConf.FULL_OPACITY
+  ) {
     console.log("WARNING: invalid passed in opacity...");
   }
   let childOpacity;
-  if (link === "" || data.url === link || currentOpacity === FULL_OPACITY) {
-    childOpacity = FULL_OPACITY;
+  if (
+    link === "" ||
+    data.url === link ||
+    currentOpacity === VConf.FULL_OPACITY
+  ) {
+    childOpacity = VConf.FULL_OPACITY;
   } else {
     /*currentOpacity === FADE_OPACITY*/
-    childOpacity = FADE_OPACITY;
+    childOpacity = VConf.FADE_OPACITY;
   }
   data.opacity = childOpacity;
   if (data.children) {
@@ -206,19 +209,21 @@ function pathToAncestor(currNode, ancestorNodeName, history = []) {
  * box to the right of the screen.
  * @param clickedNodeName: The name of the node that was just clicked
  * TODO: Change the param to an ID when we integrate that feature
+ * @param curViewingNodeID: The ID of the node whose article is currently
+ * being viewed in the infoViewer; "" if nothing currently viewed
  */
-function toggleInfoBoxVisibility(clickedNodeName, curViewingNodeName) {
+function toggleInfoBoxVisibility(clickedNodeName, curViewingNodeID) {
   const articleDiv = document.getElementsByClassName("article")[0];
   const treeDiv = document.getElementById("course-tree");
   let nodeViewingAfterToggle;
 
-  if (curViewingNodeName === clickedNodeName) {
+  if (curViewingNodeID === clickedNodeName) {
     // Already displaying and the user clicked on the same node again
     articleDiv.classList.remove("col");
     articleDiv.classList.remove("span-1-of-2");
     treeDiv.classList.remove("col");
     treeDiv.classList.remove("span-1-of-2");
-    nodeViewingAfterToggle = null;
+    nodeViewingAfterToggle = "";
   } else {
     //Not yet displaying
     articleDiv.classList.add("col");
@@ -235,18 +240,32 @@ function toggleInfoBoxVisibility(clickedNodeName, curViewingNodeName) {
   return nodeViewingAfterToggle;
 }
 
-export const TreeViewer = ({ data, treeID }) => {
+/**
+ * Gets the arguments of the query string from a given URL
+ * @param {string} name The name of the query-string parameter to get
+ * @param {string} url The url from where to parse query string
+ */
+const getParameterByName = (name, url) => {
+  name = name.replace(/[[\]]/g, "\\$&");
+  var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+    results = regex.exec(url);
+  if (!results) return null;
+  if (!results[2]) return "";
+  return decodeURIComponent(results[2].replace(/\+/g, " "));
+};
+
+export const TreeViewer = ({ data }) => {
   const [trimmedData, setTrimmedData] = useState({});
   const [nameToNodeMapping, setNameToNodeMapping] = useState({});
   const [nodeInfoContent, setNodeInfoContent] = useState("");
   const [currentPath, setCurrentPath] = useState([]);
   const [historyRecorder, setHistoryRecorder] = useState();
   const [hoveredNodeLink, setHoveredNodeLink] = useState("");
-  const curViewingNode = useRef(null);
+  const curViewingNodeID = useRef("");
 
   /**
    * This function handles the event where a user clicks a node on the tree
-   * and displays the subtree from that point onwards up to MAX_DEPTH.
+   * and displays the subtree from that point onwards up to VConf.MAX_DEPTH.
    */
   const nodeClickHandler = (event, clickedNode) => {
     /**
@@ -282,13 +301,13 @@ export const TreeViewer = ({ data, treeID }) => {
    */
   const rightClickHandler = (event, clickedNode) => {
     event.preventDefault();
-    curViewingNode.current = toggleInfoBoxVisibility(
+    curViewingNodeID.current = toggleInfoBoxVisibility(
       clickedNode.data.name,
-      curViewingNode.current
+      curViewingNodeID.current
     );
-    const nodeInfoUrl = replaceSpaceCharacters(
-      `http://localhost:3003/get-node-info/${clickedNode.data.name}-${treeID}`
-    );
+    //previouslyClickedNode.current = clickedNode.data.name;
+    const nodeID = getParameterByName("id", clickedNode.data.url);
+    const nodeInfoUrl = replaceSpaceCharacters(`/get-node-info/${nodeID}`);
     fetch(nodeInfoUrl)
       .then((res) => {
         if (res.status !== 200) {
@@ -407,9 +426,8 @@ export const TreeViewer = ({ data, treeID }) => {
       hoveredNodeLink,
       data
     );
-
-    // Trim the subtree to MAX_DEPTH and set it as the new tree
-    setTrimmedData(setOpacity(subTree, hoveredNodeLink, FADE_OPACITY));
+    // Trim the subtree to VConf.MAX_DEPTH and set it as the new tree
+    setTrimmedData(setOpacity(subTree, hoveredNodeLink, VConf.FADE_OPACITY));
   }, [currentPath, nameToNodeMapping, hoveredNodeLink, data]);
 
   return (
@@ -457,8 +475,7 @@ export const TreeViewer = ({ data, treeID }) => {
             jsonData={trimmedData}
             onNodeClick={nodeClickHandler}
             onRightClick={rightClickHandler}
-            isHovering={hoveredNodeLink !== ""}
-            curViewingNodeID={curViewingNode.current}
+            curViewingNodeID={curViewingNodeID.current}
           ></Tree>
         </div>
         <div className="article">
