@@ -1,6 +1,9 @@
 .nav {
   background-color: white;
   font-size: 15px;
+  position: fixed;
+  top: 0;
+  width: 100%;
 }
 
 .nav ul {

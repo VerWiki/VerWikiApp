@@ -1,6 +1,8 @@
 import React from "react";
 import DOMPurify from "dompurify";
 import { Button, BackTop } from "antd";
+import { Toolbar } from "../Toolbar/Toolbar";
+import { CloseOutlined } from "@ant-design/icons";
 import "antd/dist/antd.css";
 
 /**
@@ -16,6 +18,8 @@ export const InfoWindow = ({
   linkClickHandler,
   curViewedLink,
   contentRef,
+  closeButtonHandler,
+  title,
 }) => {
   const highlightRelatedNode = (e) => {
     const elementType = e.target.tagName;
@@ -29,6 +33,9 @@ export const InfoWindow = ({
     } else {
       linkHoverHandler(null);
     }
+  };
+  const closeInfoViewer = (event) => {
+    closeButtonHandler(event, {}, false, true);
   };
   const clickInfoViewerHandler = (e) => {
     const elementType = e.target.tagName;
@@ -62,17 +69,38 @@ export const InfoWindow = ({
   return (
     <div>
       <div>
-        <h2
-          style={{
-            display: "inline-block",
-            float: "left",
-            paddingLeft: "20px",
-            fontSize: "30px",
-          }}
-        >
-          Wiki Information
-        </h2>
-        {curViewedLink ? button : null}
+        <Toolbar
+          left={
+            <Button
+              onClick={closeInfoViewer}
+              size="medium"
+              type="primary"
+              icon={<CloseOutlined />}
+            />
+          }
+          center={
+            <h2
+              style={{
+                fontSize: "30px",
+              }}
+            >
+              {title}
+            </h2>
+          }
+          right={
+            <Button
+              type="primary"
+              onClick={() => {
+                if (curViewedLink !== "") {
+                  window.open(curViewedLink, "_blank");
+                }
+              }}
+            >
+              View on CWSL Wiki
+            </Button>
+          }
+        />
+
         <div
           id="infoWindowDiv"
           style={{
