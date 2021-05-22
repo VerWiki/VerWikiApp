@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-// import styles from "./NodePathHistory.module.css";
+import styles from "./NodePathHistory.module.css";
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
 import Breadcrumbs from "@material-ui/core/Breadcrumbs";
@@ -106,7 +106,11 @@ export const NodePathHistory = ({
   // to the current node.
   const BreadcrumbsView = (
     <Breadcrumbs
-      maxItems={4}
+      classes={{
+        root: `${styles.breadcrumbContainer} scrollbar`,
+        ol: styles.breadcrumbOl,
+      }}
+      maxItems={3}
       itemsAfterCollapse={3}
       itemsBeforeCollapse={0}
       color="primary"
@@ -145,7 +149,7 @@ export const NodePathHistory = ({
 
   const EditButton = (
     <Button
-      color="primary"
+      color="#2d94ed"
       variant="outlined"
       size="large"
       onClick={() => setMode(MODES.EDIT)}
@@ -156,7 +160,7 @@ export const NodePathHistory = ({
 
   const DoneButton = (
     <Button
-      color="primary"
+      color="#2d94ed"
       variant="outlined"
       size="large"
       disabled={!isCurrentTextValid}
