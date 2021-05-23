@@ -42,6 +42,10 @@ export const InfoWindow = ({
       }
     }
   };
+  /**
+   * Scrolls to the top of the article whenever the
+   * current article in the infoviewer changes
+   */
   useEffect(() => {
     Logger.debug("Scrolling to top");
     contentRef.current.scrollTo(0, 0);
