@@ -16,6 +16,8 @@ import { VConf } from "../../utils/config";
 import { Logger } from "../../utils/Logger";
 import { Link } from "react-router-dom";
 
+let MAX_DEPTH = 2; //The maximum depth of nodes to be visible to the viewer in the tree
+
 /**
  * Recursive function to find the node, and its parent with a given link.
  * @param subTree: The root of the subtree in which to search.
@@ -91,7 +93,7 @@ const findVisibleSubtree = (
   const hoveredNodeObject = findNodeWithLink(
     treeToDisplay,
     hoveredNodeLink,
-    VConf.MAX_DEPTH
+    MAX_DEPTH
   );
 
   if (hoveredNodeObject.node !== null) {
@@ -123,7 +125,7 @@ const findVisibleSubtree = (
  * of levels, this function trims the total depth of the tree
  * to the given depth.
  */
-function extractObjectWithMaxDepth(obj, depth = VConf.MAX_DEPTH) {
+function extractObjectWithMaxDepth(obj, depth = MAX_DEPTH) {
   if (depth < 0) {
     return null;
   }
@@ -340,12 +342,12 @@ export const TreeViewer = ({ data, heading }) => {
    * @param {bool} addHistory Whether to add to history or not; default true
    * @return {bool} returns whether the newVisibleRoot was set or not
    */
-  const setNewVisibleRoot = (newRoot, addHistory = true) => {
+  const setNewVisibleRoot = (newRoot, addHistory = true, force = false) => {
     if (newRoot.name == null || newRoot.name === undefined) {
       Logger.warn("setNewVisibleRoot: Node has no name");
       return false;
     }
-    if (newRoot.name === getCurrentRootName(currentPath)) {
+    if (newRoot.name === getCurrentRootName(currentPath) && !force) {
       //We are already at the new root
       return false;
     }
@@ -468,21 +470,24 @@ export const TreeViewer = ({ data, heading }) => {
    * It goes back one level in the tree.
    */
   const backClickHandler = () => {
-    const previouslyVisitedNodeName = historyRecorder.goBackward(
-      getCurrentRootName(currentPath)
-    );
-    if (previouslyVisitedNodeName === "") {
-      Logger.warn("backClickHandler: no previously visted node");
-      return;
-    }
-    const previouslyVisitedNode = nameToNodeMapping[previouslyVisitedNodeName];
-    if (previouslyVisitedNode === null) {
-      Logger.warn(
-        "backClickHandler: error finding the previously visited node given name"
-      );
-      return;
-    }
-    setNewVisibleRoot(previouslyVisitedNode, false);
+    // const previouslyVisitedNodeName = historyRecorder.goBackward(
+    //   getCurrentRootName(currentPath)
+    // );
+    // if (previouslyVisitedNodeName === "") {
+    //   Logger.warn("backClickHandler: no previously visted node");
+    //   return;
+    // }
+    // const previouslyVisitedNode = nameToNodeMapping[previouslyVisitedNodeName];
+    // if (previouslyVisitedNode === null) {
+    //   Logger.warn(
+    //     "backClickHandler: error finding the previously visited node given name"
+    //   );
+    //   return;
+    // }
+    // setNewVisibleRoot(previouslyVisitedNode, false);
+    MAX_DEPTH = MAX_DEPTH + 1;
+    const currentRoot = nameToNodeMapping[getCurrentRootName(currentPath)];
+    setNewVisibleRoot(currentRoot, false, true);
   };
 
   /**
@@ -490,21 +495,26 @@ export const TreeViewer = ({ data, heading }) => {
    * It goes forward one level in the tree, if that exists.
    */
   const forwardClickHandler = () => {
-    const forwardNodeName = historyRecorder.goForward(
-      getCurrentRootName(currentPath)
-    );
-    if (forwardNodeName === "") {
-      Logger.warn("forwardClickHandler: no forward node");
-      return;
+    // const forwardNodeName = historyRecorder.goForward(
+    //   getCurrentRootName(currentPath)
+    // );
+    // if (forwardNodeName === "") {
+    //   Logger.warn("forwardClickHandler: no forward node");
+    //   return;
+    // }
+    // const forwardNode = nameToNodeMapping[forwardNodeName];
+    // if (forwardNode === null) {
+    //   Logger.warn(
+    //     "forwardClickHandler: error finding the forward node given name"
+    //   );
+    //   return;
+    // }
+    // setNewVisibleRoot(forwardNode, false);
+    if (MAX_DEPTH > 0) {
+      MAX_DEPTH = MAX_DEPTH - 1;
+      const currentRoot = nameToNodeMapping[getCurrentRootName(currentPath)];
+      setNewVisibleRoot(currentRoot, false, true);
     }
-    const forwardNode = nameToNodeMapping[forwardNodeName];
-    if (forwardNode === null) {
-      Logger.warn(
-        "forwardClickHandler: error finding the forward node given name"
-      );
-      return;
-    }
-    setNewVisibleRoot(forwardNode, false);
   };
 
   /**
@@ -686,7 +696,8 @@ export const TreeViewer = ({ data, heading }) => {
         left={[
           <ButtonGroup>
             <Button
-              disabled={historyRecorder && !historyRecorder.canGoBackward()}
+              //disabled={historyRecorder && !historyRecorder.canGoBackward()}
+              disabled={false}
               onClick={backClickHandler}
             >
               <NavigateBeforeRounded
@@ -696,7 +707,8 @@ export const TreeViewer = ({ data, heading }) => {
               />
             </Button>
             <Button
-              disabled={historyRecorder && !historyRecorder.canGoForward()}
+              //disabled={historyRecorder && !historyRecorder.canGoForward()}
+              disabled={false}
               onClick={forwardClickHandler}
             >
               <NavigateNextRounded
