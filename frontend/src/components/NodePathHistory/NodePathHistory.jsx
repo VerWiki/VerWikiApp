@@ -17,7 +17,7 @@ export const NodePathHistory = ({
   onPathChange,
   validatePath,
 }) => {
-  const [mode, setMode] = useState(NPHConf.MODES_VIEW);
+  const [mode, setMode] = useState(NPHConf.MODE_VIEW);
   const [currentText, setCurrentText] = useState("");
   const [isCurrentTextValid, setIsCurrentTextValid] = useState(false);
 
@@ -74,7 +74,7 @@ export const NodePathHistory = ({
    */
   const clearChanges = () => {
     setCurrentText(convertPathToString(path));
-    setMode(NPHConf.MODES_VIEW);
+    setMode(NPHConf.MODE_VIEW);
   };
 
   const Links = path.slice(0, -1).map((name, index) => (
@@ -137,7 +137,7 @@ export const NodePathHistory = ({
       color="#2d94ed"
       variant="outlined"
       size="large"
-      onClick={() => setMode(NPHConf.MODES_EDIT)}
+      onClick={() => setMode(NPHConf.MODE_EDIT)}
     >
       <EditRounded fontSize="small" />
     </Button>
@@ -157,10 +157,8 @@ export const NodePathHistory = ({
 
   return (
     <Box display="flex" alignItems="center">
-      <Box>{mode === NPHConf.MODES_VIEW ? BreadcrumbsView : EditPathView}</Box>
-      <Box pl={1.5}>
-        {mode === NPHConf.MODES_VIEW ? EditButton : DoneButton}
-      </Box>
+      <Box>{mode === NPHConf.MODE_VIEW ? BreadcrumbsView : EditPathView}</Box>
+      <Box pl={1.5}>{mode === NPHConf.MODE_VIEW ? EditButton : DoneButton}</Box>
     </Box>
   );
 };
