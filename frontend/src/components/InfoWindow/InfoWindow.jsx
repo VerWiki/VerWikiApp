@@ -48,23 +48,6 @@ export const InfoWindow = ({
       }
     }
   };
-  const button = (
-    <Button
-      type="primary"
-      style={{
-        display: "inline-block",
-        float: "right",
-        paddingRight: "20px",
-      }}
-      onClick={() => {
-        if (curViewedLink !== "") {
-          window.open(curViewedLink, "_blank");
-        }
-      }}
-    >
-      View on CWSL Wiki
-    </Button>
-  );
   const safeHTML = DOMPurify.sanitize(info);
   return (
     <div>

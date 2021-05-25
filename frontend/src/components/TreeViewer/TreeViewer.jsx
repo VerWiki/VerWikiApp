@@ -734,6 +734,7 @@ export const TreeViewer = ({ data, heading }) => {
             className={styles.heading}
             style={{
               fontWeight: "bold",
+              fontSize: "30px",
             }}
           >
             {heading}
