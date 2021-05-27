@@ -340,6 +340,8 @@ export const TreeViewer = ({ data, heading }) => {
    * visible root.
    * @param {Node} newRoot The node which is to be the new visible root
    * @param {bool} addHistory Whether to add to history or not; default true
+   * @param {bool} force whether to force rerender regardless of if we are at the newRoot
+   * already or not
    * @return {bool} returns whether the newVisibleRoot was set or not
    */
   const setNewVisibleRoot = (newRoot, addHistory = true, force = false) => {
@@ -465,29 +467,40 @@ export const TreeViewer = ({ data, heading }) => {
     setNewVisibleRoot(absoluteRoot);
   };
 
+  const zoomOutHandler = () => {
+    MAX_DEPTH = MAX_DEPTH + 1;
+    const currentRoot = nameToNodeMapping[getCurrentRootName(currentPath)];
+    setNewVisibleRoot(currentRoot, false, true);
+  };
+
+  const zoomInHandler = () => {
+    if (MAX_DEPTH > 0) {
+      MAX_DEPTH = MAX_DEPTH - 1;
+      const currentRoot = nameToNodeMapping[getCurrentRootName(currentPath)];
+      setNewVisibleRoot(currentRoot, false, true);
+    }
+  };
+
   /**
    * This function is triggered when the back button is clicked.
    * It goes back one level in the tree.
    */
   const backClickHandler = () => {
-    // const previouslyVisitedNodeName = historyRecorder.goBackward(
-    //   getCurrentRootName(currentPath)
-    // );
-    // if (previouslyVisitedNodeName === "") {
-    //   Logger.warn("backClickHandler: no previously visted node");
-    //   return;
-    // }
-    // const previouslyVisitedNode = nameToNodeMapping[previouslyVisitedNodeName];
-    // if (previouslyVisitedNode === null) {
-    //   Logger.warn(
-    //     "backClickHandler: error finding the previously visited node given name"
-    //   );
-    //   return;
-    // }
-    // setNewVisibleRoot(previouslyVisitedNode, false);
-    MAX_DEPTH = MAX_DEPTH + 1;
-    const currentRoot = nameToNodeMapping[getCurrentRootName(currentPath)];
-    setNewVisibleRoot(currentRoot, false, true);
+    const previouslyVisitedNodeName = historyRecorder.goBackward(
+      getCurrentRootName(currentPath)
+    );
+    if (previouslyVisitedNodeName === "") {
+      Logger.warn("backClickHandler: no previously visted node");
+      return;
+    }
+    const previouslyVisitedNode = nameToNodeMapping[previouslyVisitedNodeName];
+    if (previouslyVisitedNode === null) {
+      Logger.warn(
+        "backClickHandler: error finding the previously visited node given name"
+      );
+      return;
+    }
+    setNewVisibleRoot(previouslyVisitedNode, false);
   };
 
   /**
@@ -495,26 +508,21 @@ export const TreeViewer = ({ data, heading }) => {
    * It goes forward one level in the tree, if that exists.
    */
   const forwardClickHandler = () => {
-    // const forwardNodeName = historyRecorder.goForward(
-    //   getCurrentRootName(currentPath)
-    // );
-    // if (forwardNodeName === "") {
-    //   Logger.warn("forwardClickHandler: no forward node");
-    //   return;
-    // }
-    // const forwardNode = nameToNodeMapping[forwardNodeName];
-    // if (forwardNode === null) {
-    //   Logger.warn(
-    //     "forwardClickHandler: error finding the forward node given name"
-    //   );
-    //   return;
-    // }
-    // setNewVisibleRoot(forwardNode, false);
-    if (MAX_DEPTH > 0) {
-      MAX_DEPTH = MAX_DEPTH - 1;
-      const currentRoot = nameToNodeMapping[getCurrentRootName(currentPath)];
-      setNewVisibleRoot(currentRoot, false, true);
+    const forwardNodeName = historyRecorder.goForward(
+      getCurrentRootName(currentPath)
+    );
+    if (forwardNodeName === "") {
+      Logger.warn("forwardClickHandler: no forward node");
+      return;
     }
+    const forwardNode = nameToNodeMapping[forwardNodeName];
+    if (forwardNode === null) {
+      Logger.warn(
+        "forwardClickHandler: error finding the forward node given name"
+      );
+      return;
+    }
+    setNewVisibleRoot(forwardNode, false);
   };
 
   /**
@@ -698,7 +706,7 @@ export const TreeViewer = ({ data, heading }) => {
             <Button
               //disabled={historyRecorder && !historyRecorder.canGoBackward()}
               disabled={false}
-              onClick={backClickHandler}
+              onClick={zoomOutHandler}
             >
               <NavigateBeforeRounded
                 classes={{
@@ -709,6 +717,28 @@ export const TreeViewer = ({ data, heading }) => {
             <Button
               //disabled={historyRecorder && !historyRecorder.canGoForward()}
               disabled={false}
+              onClick={zoomInHandler}
+            >
+              <NavigateNextRounded
+                classes={{
+                  root: styles.button,
+                }}
+              />
+            </Button>
+          </ButtonGroup>,
+          <ButtonGroup>
+            <Button
+              disabled={historyRecorder && !historyRecorder.canGoBackward()}
+              onClick={backClickHandler}
+            >
+              <NavigateBeforeRounded
+                classes={{
+                  root: styles.button,
+                }}
+              />
+            </Button>
+            <Button
+              disabled={historyRecorder && !historyRecorder.canGoForward()}
               onClick={forwardClickHandler}
             >
               <NavigateNextRounded
@@ -718,6 +748,7 @@ export const TreeViewer = ({ data, heading }) => {
               />
             </Button>
           </ButtonGroup>,
+
           <Button variant="outlined" onClick={homeClickHandler}>
             <HomeRounded
               classes={{
