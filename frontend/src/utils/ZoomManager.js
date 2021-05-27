@@ -7,17 +7,17 @@ export class ZoomManager {
     this.curZoom = curZoom;
   }
 
-  canZoomOut() {
+  canZoomIn() {
     return this.curZoom >= this.minZoom;
   }
 
-  canZoomIn() {
+  canZoomOut() {
     return this.curZoom <= this.maxZoom;
   }
 
   zoomIn() {
     if (this.canZoomIn()) {
-      this.curZoom += 1;
+      this.curZoom -= 1;
       return this.curZoom;
     }
     Logger.warn("ZoomManager: Tried to zoom in when zooming in was disabled");
@@ -26,7 +26,7 @@ export class ZoomManager {
 
   zoomOut() {
     if (this.canZoomOut()) {
-      this.curZoom -= 1;
+      this.curZoom += 1;
       return this.curZoom;
     }
     Logger.warn("ZoomManager: Tried to zoom out when zooming in was disabled");

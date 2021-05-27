@@ -15,6 +15,7 @@ import "fontsource-roboto";
 import { VConf } from "../../utils/config";
 import { Logger } from "../../utils/Logger";
 import { Link } from "react-router-dom";
+import { ZoomManager } from "../../utils/ZoomManager";
 
 let MAX_DEPTH = 2; //The maximum depth of nodes to be visible to the viewer in the tree
 
@@ -328,6 +329,7 @@ export const TreeViewer = ({ data, heading }) => {
   const [nodeInfoContent, setNodeInfoContent] = useState("");
   const [currentPath, setCurrentPath] = useState([]);
   const [historyRecorder, setHistoryRecorder] = useState();
+  const [zoomManager, setZoomManager] = useState();
   const [hoveredNodeLink, setHoveredNodeLink] = useState("");
   const [infoViewingLink, setInfoViewingLink] = useState("");
   const curViewingNodeID = useRef("");
@@ -468,15 +470,27 @@ export const TreeViewer = ({ data, heading }) => {
   };
 
   const zoomOutHandler = () => {
-    MAX_DEPTH = MAX_DEPTH + 1;
-    const currentRoot = nameToNodeMapping[getCurrentRootName(currentPath)];
-    setNewVisibleRoot(currentRoot, false, true);
+    // MAX_DEPTH = MAX_DEPTH + 1;
+    // const currentRoot = nameToNodeMapping[getCurrentRootName(currentPath)];
+    // setNewVisibleRoot(currentRoot, false, true);
+    if (zoomManager.canZoomOut()) {
+      const newZoom = zoomManager.zoomOut();
+      const currentRoot = nameToNodeMapping[getCurrentRootName(currentPath)];
+      MAX_DEPTH = newZoom;
+      setNewVisibleRoot(currentRoot, false, true);
+    }
   };
 
   const zoomInHandler = () => {
-    if (MAX_DEPTH > 0) {
-      MAX_DEPTH = MAX_DEPTH - 1;
+    // if (MAX_DEPTH > 0) {
+    //   MAX_DEPTH = MAX_DEPTH - 1;
+    //   const currentRoot = nameToNodeMapping[getCurrentRootName(currentPath)];
+    //   setNewVisibleRoot(currentRoot, false, true);
+    // }
+    if (zoomManager.canZoomIn()) {
+      const newZoom = zoomManager.zoomIn();
       const currentRoot = nameToNodeMapping[getCurrentRootName(currentPath)];
+      MAX_DEPTH = newZoom;
       setNewVisibleRoot(currentRoot, false, true);
     }
   };
@@ -668,6 +682,7 @@ export const TreeViewer = ({ data, heading }) => {
     setNameToNodeMapping(createNameToNodeMapping(data));
     setCurrentPath([data.name]);
     setHistoryRecorder(new HistoryRecorder());
+    setZoomManager(new ZoomManager(MAX_DEPTH, 4));
   }, [data]);
 
   /**
