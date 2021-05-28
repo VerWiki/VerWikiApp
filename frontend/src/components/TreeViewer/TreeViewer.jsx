@@ -471,7 +471,7 @@ export const TreeViewer = ({ data, heading }) => {
 
   const zoomOutHandler = () => {
     if (zoomManager.canZoomOut()) {
-      const newZoom = zoomManager.zoomOut();
+      zoomManager.zoomOut();
       const currentRoot = nameToNodeMapping[getCurrentRootName(currentPath)];
       setNewVisibleRoot(currentRoot, false, true);
     }
@@ -479,7 +479,7 @@ export const TreeViewer = ({ data, heading }) => {
 
   const zoomInHandler = () => {
     if (zoomManager.canZoomIn()) {
-      const newZoom = zoomManager.zoomIn();
+      zoomManager.zoomIn();
       const currentRoot = nameToNodeMapping[getCurrentRootName(currentPath)];
       setNewVisibleRoot(currentRoot, false, true);
     }
@@ -691,7 +691,7 @@ export const TreeViewer = ({ data, heading }) => {
     );
     // Trim the subtree to Zoomanager.curZoom and set it as the new tree
     setTrimmedData(setOpacity(subTree, hoveredNodeLink, VConf.FADE_OPACITY));
-  }, [currentPath, nameToNodeMapping, hoveredNodeLink, data]);
+  }, [currentPath, nameToNodeMapping, hoveredNodeLink, data, zoomManager]);
 
   return (
     <div>

@@ -6,27 +6,6 @@ export class ZoomManager {
     this.maxZoom = maxDepth;
     this.curZoom = curZoom;
   }
-
-  getCurZoom() {
-    return this.curZoom;
-  }
-
-  getMaxZoom() {
-    return this.maxZoom;
-  }
-
-  getMinZoom() {
-    return this.minZoom;
-  }
-
-  canZoomIn() {
-    return this.curZoom >= this.minZoom;
-  }
-
-  canZoomOut() {
-    return this.curZoom <= this.maxZoom;
-  }
-
   zoomIn() {
     if (this.canZoomIn()) {
       this.curZoom -= 1;
@@ -52,22 +31,23 @@ export class ZoomManager {
     }
     return this.curZoom;
   }
-}
+  getCurZoom() {
+    return this.curZoom;
+  }
 
-function calculateMaxDepth(root) {
-  //console.log("The root is: ", root);
-  if (root == null || root === undefined) {
-    return 0;
+  getMaxZoom() {
+    return this.maxZoom;
   }
-  let maxDepth = 0;
-  if (root.children == null || root.children === undefined) {
-    return 1;
+
+  getMinZoom() {
+    return this.minZoom;
   }
-  root.children.forEach((child) => {
-    const depth = calculateMaxDepth(child);
-    if (depth > maxDepth) {
-      maxDepth = depth;
-    }
-  });
-  return 1 + maxDepth;
+
+  canZoomIn() {
+    return this.curZoom >= this.minZoom;
+  }
+
+  canZoomOut() {
+    return this.curZoom <= this.maxZoom;
+  }
 }
