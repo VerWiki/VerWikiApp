@@ -17,8 +17,6 @@ import { Logger } from "../../utils/Logger";
 import { Link } from "react-router-dom";
 import { ZoomManager } from "../../utils/ZoomManager";
 
-let MAX_DEPTH = 2; //The maximum depth of nodes to be visible to the viewer in the tree
-
 /**
  * Recursive function to find the node, and its parent with a given link.
  * @param subTree: The root of the subtree in which to search.
@@ -78,12 +76,14 @@ const findVisibleSubtree = (
   currentPath,
   nameToNodeMapping,
   hoveredNodeLink,
-  entireData
+  entireData,
+  curDepth
 ) => {
   // Get the visible root from the last element of the path
   const curRootName = getCurrentRootName(currentPath);
   const treeToDisplay = extractObjectWithMaxDepth(
-    nameToNodeMapping[curRootName] || {}
+    nameToNodeMapping[curRootName] || {},
+    curDepth
   );
   // If the user is not hovering over anything, then no changes to be made
   if (hoveredNodeLink === "") {
@@ -94,7 +94,7 @@ const findVisibleSubtree = (
   const hoveredNodeObject = findNodeWithLink(
     treeToDisplay,
     hoveredNodeLink,
-    MAX_DEPTH
+    curDepth
   );
 
   if (hoveredNodeObject.node !== null) {
@@ -115,10 +115,10 @@ const findVisibleSubtree = (
     return treeToDisplay;
   } else if (searchResult.parent === null) {
     // If the link corresponded to the tree root, display a tree starting there
-    return extractObjectWithMaxDepth(searchResult.node);
+    return extractObjectWithMaxDepth(searchResult.node, curDepth);
   }
   // Else display a tree starting at the parent of the hovered node
-  return extractObjectWithMaxDepth(searchResult.parent);
+  return extractObjectWithMaxDepth(searchResult.parent, curDepth);
 };
 
 /**
@@ -126,7 +126,7 @@ const findVisibleSubtree = (
  * of levels, this function trims the total depth of the tree
  * to the given depth.
  */
-function extractObjectWithMaxDepth(obj, depth = MAX_DEPTH) {
+function extractObjectWithMaxDepth(obj, depth) {
   if (depth < 0) {
     return null;
   }
@@ -367,7 +367,7 @@ export const TreeViewer = ({ data, heading }) => {
 
   /**
    * This function handles the event where a user clicks a node on the tree
-   * and displays the subtree from that point onwards up to VConf.MAX_DEPTH.
+   * and displays the subtree from that point onwards up to ZoomManager's curZoom.
    */
   const nodeClickHandler = (event, clickedNode) => {
     /**
@@ -470,27 +470,17 @@ export const TreeViewer = ({ data, heading }) => {
   };
 
   const zoomOutHandler = () => {
-    // MAX_DEPTH = MAX_DEPTH + 1;
-    // const currentRoot = nameToNodeMapping[getCurrentRootName(currentPath)];
-    // setNewVisibleRoot(currentRoot, false, true);
     if (zoomManager.canZoomOut()) {
       const newZoom = zoomManager.zoomOut();
       const currentRoot = nameToNodeMapping[getCurrentRootName(currentPath)];
-      MAX_DEPTH = newZoom;
       setNewVisibleRoot(currentRoot, false, true);
     }
   };
 
   const zoomInHandler = () => {
-    // if (MAX_DEPTH > 0) {
-    //   MAX_DEPTH = MAX_DEPTH - 1;
-    //   const currentRoot = nameToNodeMapping[getCurrentRootName(currentPath)];
-    //   setNewVisibleRoot(currentRoot, false, true);
-    // }
     if (zoomManager.canZoomIn()) {
       const newZoom = zoomManager.zoomIn();
       const currentRoot = nameToNodeMapping[getCurrentRootName(currentPath)];
-      MAX_DEPTH = newZoom;
       setNewVisibleRoot(currentRoot, false, true);
     }
   };
@@ -682,7 +672,7 @@ export const TreeViewer = ({ data, heading }) => {
     setNameToNodeMapping(createNameToNodeMapping(data));
     setCurrentPath([data.name]);
     setHistoryRecorder(new HistoryRecorder());
-    setZoomManager(new ZoomManager(MAX_DEPTH, 4));
+    setZoomManager(new ZoomManager(VConf.INTIAL_ZOOM, 4));
   }, [data]);
 
   /**
@@ -696,9 +686,10 @@ export const TreeViewer = ({ data, heading }) => {
       currentPath,
       nameToNodeMapping,
       hoveredNodeLink,
-      data
+      data,
+      zoomManager ? zoomManager.getCurZoom() : VConf.INTIAL_ZOOM
     );
-    // Trim the subtree to VConf.MAX_DEPTH and set it as the new tree
+    // Trim the subtree to Zoomanager.curZoom and set it as the new tree
     setTrimmedData(setOpacity(subTree, hoveredNodeLink, VConf.FADE_OPACITY));
   }, [currentPath, nameToNodeMapping, hoveredNodeLink, data]);
 

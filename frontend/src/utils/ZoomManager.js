@@ -7,6 +7,18 @@ export class ZoomManager {
     this.curZoom = curZoom;
   }
 
+  getCurZoom() {
+    return this.curZoom;
+  }
+
+  getMaxZoom() {
+    return this.maxZoom;
+  }
+
+  getMinZoom() {
+    return this.minZoom;
+  }
+
   canZoomIn() {
     return this.curZoom >= this.minZoom;
   }
