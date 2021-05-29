@@ -683,6 +683,7 @@ export const TreeViewer = ({ data, heading }) => {
     setZoomManager(new ZoomManager(VConf.INTIAL_ZOOM, 4));
     const maxDepth = calculateMaxDepth(data);
     zoomManager.updateMaxZoom(maxDepth);
+    // eslint-disable-next-line
   }, [data]);
 
   /**
