@@ -720,8 +720,7 @@ export const TreeViewer = ({ data, heading }) => {
         left={[
           <ButtonGroup>
             <Button
-              //disabled={historyRecorder && !historyRecorder.canGoBackward()}
-              disabled={false}
+              disabled={zoomManager && !zoomManager.canZoomOut()}
               onClick={zoomOutHandler}
             >
               <NavigateBeforeRounded
@@ -731,8 +730,7 @@ export const TreeViewer = ({ data, heading }) => {
               />
             </Button>
             <Button
-              //disabled={historyRecorder && !historyRecorder.canGoForward()}
-              disabled={false}
+              disabled={zoomManager && !zoomManager.canZoomIn()}
               onClick={zoomInHandler}
             >
               <NavigateNextRounded
