@@ -63,7 +63,7 @@ export function calculateMaxDepth(root) {
   }
   let maxDepth = 0;
   if (root.children == null || root.children === undefined) {
-    return 1;
+    return 0;
   }
   root.children.forEach((child) => {
     const depth = calculateMaxDepth(child);

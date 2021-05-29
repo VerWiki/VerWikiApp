@@ -2,7 +2,11 @@ import React, { useState, useEffect, useRef, createRef } from "react";
 import styles from "./TreeViewer.module.css";
 import { Tree } from "../Tree/Tree";
 import { InfoWindow } from "../../components/InfoWindow/InfoWindow";
-import { replaceSpaceCharacters, getParameterByName } from "../../utils/utils";
+import {
+  replaceSpaceCharacters,
+  getParameterByName,
+  calculateMaxDepth,
+} from "../../utils/utils";
 import { NodePathHistory } from "../NodePathHistory/NodePathHistory";
 import { Toolbar } from "../Toolbar/Toolbar";
 import Button from "@material-ui/core/Button";
@@ -361,6 +365,10 @@ export const TreeViewer = ({ data, heading }) => {
       historyRecorder.addBackwardHistory(getCurrentRootName(currentPath));
     }
     Logger.debug("The new path is ", path);
+
+    //Set new max zoom based on the max depth of this new subtree
+    const maxDepth = calculateMaxDepth(newRoot);
+    zoomManager.updateMaxZoom(maxDepth);
     setCurrentPath(path);
     return true;
   };
@@ -673,6 +681,8 @@ export const TreeViewer = ({ data, heading }) => {
     setCurrentPath([data.name]);
     setHistoryRecorder(new HistoryRecorder());
     setZoomManager(new ZoomManager(VConf.INTIAL_ZOOM, 4));
+    const maxDepth = calculateMaxDepth(data);
+    zoomManager.updateMaxZoom(maxDepth);
   }, [data]);
 
   /**
