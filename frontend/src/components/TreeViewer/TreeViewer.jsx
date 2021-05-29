@@ -13,6 +13,8 @@ import Button from "@material-ui/core/Button";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
 import NavigateBeforeRounded from "@material-ui/icons/NavigateBeforeRounded";
 import NavigateNextRounded from "@material-ui/icons/NavigateNextRounded";
+import AddIcon from "@material-ui/icons/Add";
+import RemoveIcon from "@material-ui/icons/Remove";
 import HomeRounded from "@material-ui/icons/HomeRounded";
 import { HistoryRecorder } from "../../utils/HistoryRecorder";
 import "fontsource-roboto";
@@ -726,7 +728,7 @@ export const TreeViewer = ({ data, heading }) => {
               disabled={zoomManager && !zoomManager.canZoomOut()}
               onClick={zoomOutHandler}
             >
-              <NavigateBeforeRounded
+              <RemoveIcon
                 classes={{
                   root: styles.button,
                 }}
@@ -736,7 +738,7 @@ export const TreeViewer = ({ data, heading }) => {
               disabled={zoomManager && !zoomManager.canZoomIn()}
               onClick={zoomInHandler}
             >
-              <NavigateNextRounded
+              <AddIcon
                 classes={{
                   root: styles.button,
                 }}
