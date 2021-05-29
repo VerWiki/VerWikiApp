@@ -683,6 +683,8 @@ export const TreeViewer = ({ data, heading }) => {
     setZoomManager(new ZoomManager(VConf.INTIAL_ZOOM, 4));
     const maxDepth = calculateMaxDepth(data);
     zoomManager.updateMaxZoom(maxDepth);
+    //This effect should ONLY be activated on initial render, so we
+    //have to tell eslint to ignore the zoomManager dependency
     // eslint-disable-next-line
   }, [data]);
 

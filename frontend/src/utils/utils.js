@@ -57,7 +57,6 @@ export const getParameterByName = (name, url) => {
 };
 
 export function calculateMaxDepth(root) {
-  //console.log("The root is: ", root);
   if (root == null || root === undefined) {
     return 0;
   }
