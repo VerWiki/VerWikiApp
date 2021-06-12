@@ -55,3 +55,20 @@ export const getParameterByName = (name, url) => {
   if (!results[2]) return "";
   return decodeURIComponent(results[2].replace(/\+/g, " "));
 };
+
+export function calculateMaxDepth(root) {
+  if (root == null || root === undefined) {
+    return 0;
+  }
+  let maxDepth = 0;
+  if (root.children == null || root.children === undefined) {
+    return 0;
+  }
+  root.children.forEach((child) => {
+    const depth = calculateMaxDepth(child);
+    if (depth > maxDepth) {
+      maxDepth = depth;
+    }
+  });
+  return 1 + maxDepth;
+}

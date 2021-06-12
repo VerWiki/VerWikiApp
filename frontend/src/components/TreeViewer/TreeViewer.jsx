@@ -2,19 +2,26 @@ import React, { useState, useEffect, useRef, createRef } from "react";
 import styles from "./TreeViewer.module.css";
 import { Tree } from "../Tree/Tree";
 import { InfoWindow } from "../../components/InfoWindow/InfoWindow";
-import { replaceSpaceCharacters, getParameterByName } from "../../utils/utils";
+import {
+  replaceSpaceCharacters,
+  getParameterByName,
+  calculateMaxDepth,
+} from "../../utils/utils";
 import { NodePathHistory } from "../NodePathHistory/NodePathHistory";
 import { Toolbar } from "../Toolbar/Toolbar";
 import Button from "@material-ui/core/Button";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
 import NavigateBeforeRounded from "@material-ui/icons/NavigateBeforeRounded";
 import NavigateNextRounded from "@material-ui/icons/NavigateNextRounded";
+import AddIcon from "@material-ui/icons/Add";
+import RemoveIcon from "@material-ui/icons/Remove";
 import HomeRounded from "@material-ui/icons/HomeRounded";
 import { HistoryRecorder } from "../../utils/HistoryRecorder";
 import "fontsource-roboto";
 import { VConf } from "../../utils/config";
 import { Logger } from "../../utils/Logger";
 import { Link } from "react-router-dom";
+import { ZoomManager } from "../../utils/ZoomManager";
 
 /**
  * Recursive function to find the node, and its parent with a given link.
@@ -75,12 +82,14 @@ const findVisibleSubtree = (
   currentPath,
   nameToNodeMapping,
   hoveredNodeLink,
-  entireData
+  entireData,
+  curDepth
 ) => {
   // Get the visible root from the last element of the path
   const curRootName = getCurrentRootName(currentPath);
   const treeToDisplay = extractObjectWithMaxDepth(
-    nameToNodeMapping[curRootName] || {}
+    nameToNodeMapping[curRootName] || {},
+    curDepth
   );
   // If the user is not hovering over anything, then no changes to be made
   if (hoveredNodeLink === "") {
@@ -91,7 +100,7 @@ const findVisibleSubtree = (
   const hoveredNodeObject = findNodeWithLink(
     treeToDisplay,
     hoveredNodeLink,
-    VConf.MAX_DEPTH
+    curDepth
   );
 
   if (hoveredNodeObject.node !== null) {
@@ -112,10 +121,10 @@ const findVisibleSubtree = (
     return treeToDisplay;
   } else if (searchResult.parent === null) {
     // If the link corresponded to the tree root, display a tree starting there
-    return extractObjectWithMaxDepth(searchResult.node);
+    return extractObjectWithMaxDepth(searchResult.node, curDepth);
   }
   // Else display a tree starting at the parent of the hovered node
-  return extractObjectWithMaxDepth(searchResult.parent);
+  return extractObjectWithMaxDepth(searchResult.parent, curDepth);
 };
 
 /**
@@ -123,7 +132,7 @@ const findVisibleSubtree = (
  * of levels, this function trims the total depth of the tree
  * to the given depth.
  */
-function extractObjectWithMaxDepth(obj, depth = VConf.MAX_DEPTH) {
+function extractObjectWithMaxDepth(obj, depth) {
   if (depth < 0) {
     return null;
   }
@@ -326,6 +335,7 @@ export const TreeViewer = ({ data, heading }) => {
   const [nodeInfoContent, setNodeInfoContent] = useState("");
   const [currentPath, setCurrentPath] = useState([]);
   const [historyRecorder, setHistoryRecorder] = useState();
+  const [zoomManager, setZoomManager] = useState();
   const [hoveredNodeLink, setHoveredNodeLink] = useState("");
   const [infoViewingLink, setInfoViewingLink] = useState("");
   const curViewingNodeID = useRef("");
@@ -338,14 +348,16 @@ export const TreeViewer = ({ data, heading }) => {
    * visible root.
    * @param {Node} newRoot The node which is to be the new visible root
    * @param {bool} addHistory Whether to add to history or not; default true
+   * @param {bool} force whether to force rerender regardless of if we are at the newRoot
+   * already or not
    * @return {bool} returns whether the newVisibleRoot was set or not
    */
-  const setNewVisibleRoot = (newRoot, addHistory = true) => {
+  const setNewVisibleRoot = (newRoot, addHistory = true, force = false) => {
     if (newRoot.name == null || newRoot.name === undefined) {
       Logger.warn("setNewVisibleRoot: Node has no name");
       return false;
     }
-    if (newRoot.name === getCurrentRootName(currentPath)) {
+    if (newRoot.name === getCurrentRootName(currentPath) && !force) {
       //We are already at the new root
       return false;
     }
@@ -355,13 +367,17 @@ export const TreeViewer = ({ data, heading }) => {
       historyRecorder.addBackwardHistory(getCurrentRootName(currentPath));
     }
     Logger.debug("The new path is ", path);
+
+    //Set new max zoom based on the max depth of this new subtree
+    const maxDepth = calculateMaxDepth(newRoot);
+    zoomManager.updateMaxZoom(maxDepth);
     setCurrentPath(path);
     return true;
   };
 
   /**
    * This function handles the event where a user clicks a node on the tree
-   * and displays the subtree from that point onwards up to VConf.MAX_DEPTH.
+   * and displays the subtree from that point onwards up to ZoomManager's curZoom.
    */
   const nodeClickHandler = (event, clickedNode) => {
     /**
@@ -461,6 +477,22 @@ export const TreeViewer = ({ data, heading }) => {
       return;
     }
     setNewVisibleRoot(absoluteRoot);
+  };
+
+  const zoomOutHandler = () => {
+    if (zoomManager.canZoomOut()) {
+      zoomManager.zoomOut();
+      const currentRoot = nameToNodeMapping[getCurrentRootName(currentPath)];
+      setNewVisibleRoot(currentRoot, false, true);
+    }
+  };
+
+  const zoomInHandler = () => {
+    if (zoomManager.canZoomIn()) {
+      zoomManager.zoomIn();
+      const currentRoot = nameToNodeMapping[getCurrentRootName(currentPath)];
+      setNewVisibleRoot(currentRoot, false, true);
+    }
   };
 
   /**
@@ -650,6 +682,14 @@ export const TreeViewer = ({ data, heading }) => {
     setNameToNodeMapping(createNameToNodeMapping(data));
     setCurrentPath([data.name]);
     setHistoryRecorder(new HistoryRecorder());
+    setZoomManager(new ZoomManager(VConf.INTIAL_ZOOM, 4));
+    const maxDepth = calculateMaxDepth(data);
+    if (zoomManager) {
+      zoomManager.updateMaxZoom(maxDepth);
+    }
+    //This effect should ONLY be activated on initial render, so we
+    //have to tell eslint to ignore the zoomManager dependency
+    // eslint-disable-next-line
   }, [data]);
 
   /**
@@ -663,11 +703,12 @@ export const TreeViewer = ({ data, heading }) => {
       currentPath,
       nameToNodeMapping,
       hoveredNodeLink,
-      data
+      data,
+      zoomManager ? zoomManager.getCurZoom() : VConf.INTIAL_ZOOM
     );
-    // Trim the subtree to VConf.MAX_DEPTH and set it as the new tree
+    // Trim the subtree to Zoomanager.curZoom and set it as the new tree
     setTrimmedData(setOpacity(subTree, hoveredNodeLink, VConf.FADE_OPACITY));
-  }, [currentPath, nameToNodeMapping, hoveredNodeLink, data]);
+  }, [currentPath, nameToNodeMapping, hoveredNodeLink, data, zoomManager]);
 
   return (
     <div>
@@ -684,6 +725,28 @@ export const TreeViewer = ({ data, heading }) => {
       />
       <Toolbar
         left={[
+          <ButtonGroup>
+            <Button
+              disabled={zoomManager && !zoomManager.canZoomOut()}
+              onClick={zoomOutHandler}
+            >
+              <RemoveIcon
+                classes={{
+                  root: styles.button,
+                }}
+              />
+            </Button>
+            <Button
+              disabled={zoomManager && !zoomManager.canZoomIn()}
+              onClick={zoomInHandler}
+            >
+              <AddIcon
+                classes={{
+                  root: styles.button,
+                }}
+              />
+            </Button>
+          </ButtonGroup>,
           <ButtonGroup>
             <Button
               disabled={historyRecorder && !historyRecorder.canGoBackward()}
@@ -706,6 +769,7 @@ export const TreeViewer = ({ data, heading }) => {
               />
             </Button>
           </ButtonGroup>,
+
           <Button variant="outlined" onClick={homeClickHandler}>
             <HomeRounded
               classes={{
