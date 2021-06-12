@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useEffect } from "react";
 import DOMPurify from "dompurify";
 import { Button, BackTop } from "antd";
 import "antd/dist/antd.css";
+import { Logger } from "../../utils/Logger";
 
 /**
  * The react component for the information window for each node
@@ -41,6 +42,18 @@ export const InfoWindow = ({
       }
     }
   };
+  /**
+   * Scrolls to the top of the article whenever the
+   * current article in the infoviewer changes
+   */
+  useEffect(() => {
+    Logger.debug("Scrolling to top");
+    contentRef.current.scrollTo(0, 0);
+    // Don't want to include contentRef as a dependency as
+    // this means that the scroll up will begin happening before
+    // the article changes
+    // eslint-disable-next-line
+  }, [info]);
   const safeHTML = DOMPurify.sanitize(info);
   return (
     <div>
@@ -81,9 +94,7 @@ export const InfoWindow = ({
           onClick={clickInfoViewerHandler}
         ></div>
       </div>
-      <BackTop
-        target={() => console.log(contentRef.current) || contentRef.current}
-      />
+      <BackTop target={() => contentRef.current} />
     </div>
   );
 };
