@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import DOMPurify from "dompurify";
 import { Button, BackTop } from "antd";
 import "antd/dist/antd.css";
-import { Logger } from "../../utils/Logger";
 
 /**
  * The react component for the information window for each node
@@ -47,7 +46,6 @@ export const InfoWindow = ({
    * current article in the infoviewer changes
    */
   useEffect(() => {
-    Logger.debug("Scrolling to top");
     contentRef.current.scrollTo(0, 0);
     // Don't want to include contentRef as a dependency as
     // this means that the scroll up will begin happening before
