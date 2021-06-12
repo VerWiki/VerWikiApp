@@ -40,3 +40,12 @@ export const LoggerConf = Object.freeze({
   LEVEL_INFO: 3, //General information logs
   LEVEL_DEBUG: 4, //Logs for debugging purposes
 });
+
+// NodePathHistory.jsx config
+export const NPHConf = Object.freeze({
+  MODE_VIEW: 0, //Constant to denote the node path being in view mode, where the user can click on individual items
+  MODE_EDIT: 1, //Constant to denote the node path being in edit mode, where the user can manually type a path
+  MAX_ITEMS: 4, // Max items to show in the node path history at once
+  ITEMS_AFTER_COLLAPSE: 4, // Number of items to show after the collapsed "..." part of the path
+  ITEMS_BEFORE_COLLAPSE: 0, // Number of items to show before the collapsed "..." part of the path
+});

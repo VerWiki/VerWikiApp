@@ -3,39 +3,43 @@ import { LoggerConf } from "./config";
 // Class to provide logging functionality
 export class Logger {
   /**
-   * Logs the message if the level allows
-   * @param {string} msg Message to log
+   * Logs the message if the level allows. Allows for an arbitrary number
+   * of arguments
+   * E.g. Logger.error("First", "Second", "Third");
    */
-  static error(msg) {
+  static error() {
     if (LoggerConf.LOG_LEVEL >= LoggerConf.LEVEL_ERROR) {
-      console.error(msg);
+      console.error(...arguments);
     }
   }
   /**
-   * Logs the message if the level allows
-   * @param {string} msg Message to log
+   * Logs the message if the level allows. Allows for an arbitrary number
+   * of arguments
+   * E.g. Logger.warn("First", "Second", "Third");
    */
-  static warn(msg) {
+  static warn() {
     if (LoggerConf.LOG_LEVEL >= LoggerConf.LEVEL_WARNING) {
-      console.warn(msg);
+      console.warn(...arguments);
     }
   }
   /**
-   * Logs the message if the level allows
-   * @param {string} msg Message to log
+   * Logs the message if the level allows. Allows for an arbitrary number
+   * of arguments
+   * E.g. Logger.info("First", "Second", "Third");
    */
-  static info(msg) {
+  static info() {
     if (LoggerConf.LOG_LEVEL >= LoggerConf.LEVEL_INFO) {
-      console.info(msg);
+      console.info(...arguments);
     }
   }
   /**
-   * Logs the message if the level allows
-   * @param {string} msg Message to log
+   * Logs the message if the level allows. Allows for an arbitrary number
+   * of arguments
+   * E.g. Logger.debug("First", "Second", "Third");
    */
-  static debug(msg) {
+  static debug() {
     if (LoggerConf.LOG_LEVEL >= LoggerConf.LEVEL_DEBUG) {
-      console.log(msg);
+      console.log(...arguments);
     }
   }
 }

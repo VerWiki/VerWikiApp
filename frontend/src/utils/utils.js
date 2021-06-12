@@ -1,6 +1,21 @@
 import { useRef, useEffect } from "react";
 
 /**
+ * Join the list of node names into one string, and add
+ * an extra slash at the end so the user knows what the
+ * delimiter is initially, when there is only one node
+ * in the path.
+ */
+export function convertPathToString(path) {
+  return path.join("/") + "/";
+}
+
+export function convertStringToPath(string) {
+  // Remove preceding or trailing slashes and spaces
+  return string.trim().replace(/^\/+/, "").replace(/\/+$/, "").split("/");
+}
+
+/**
  * Tracks the previous value of the given item. Returns
  * the previous value
  * @param value : The object to be tracked
