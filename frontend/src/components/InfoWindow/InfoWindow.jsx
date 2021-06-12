@@ -49,6 +49,9 @@ export const InfoWindow = ({
   useEffect(() => {
     Logger.debug("Scrolling to top");
     contentRef.current.scrollTo(0, 0);
+    // Don't want to include contentRef as a dependency as
+    // this means that the scroll up will begin happening before
+    // the article changes
     // eslint-disable-next-line
   }, [info]);
   const safeHTML = DOMPurify.sanitize(info);
