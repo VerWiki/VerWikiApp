@@ -4,6 +4,7 @@
 //TreeViewer.jsx config
 export const VConf = Object.freeze({
   MAX_DEPTH: 2, //The maximum depth of nodes to be visible to the viewer in the tree
+  INTIAL_ZOOM: 2, //The maximum depth of nodes to be visible to the viewer in the tree
   FADE_OPACITY: 0.25, //The opacity of the faded nodes when the user hovers over a link in the infoViewer
   FULL_OPACITY: 1.0, //The opacity of the fully visible nodes
   NO_DEPTH_LIMIT: -1, //Constant to disable depth limit when searching for a node with particular link
@@ -40,4 +41,13 @@ export const LoggerConf = Object.freeze({
   LEVEL_WARNING: 2, //warning-level logs; logs that indicate an issue but do not immediately cause issues for the user
   LEVEL_INFO: 3, //General information logs
   LEVEL_DEBUG: 4, //Logs for debugging purposes
+});
+
+// NodePathHistory.jsx config
+export const NPHConf = Object.freeze({
+  MODE_VIEW: 0, //Constant to denote the node path being in view mode, where the user can click on individual items
+  MODE_EDIT: 1, //Constant to denote the node path being in edit mode, where the user can manually type a path
+  MAX_ITEMS: 4, // Max items to show in the node path history at once
+  ITEMS_AFTER_COLLAPSE: 4, // Number of items to show after the collapsed "..." part of the path
+  ITEMS_BEFORE_COLLAPSE: 0, // Number of items to show before the collapsed "..." part of the path
 });

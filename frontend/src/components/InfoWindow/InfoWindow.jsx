@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import DOMPurify from "dompurify";
 import { Button, BackTop } from "antd";
 import { Toolbar } from "../Toolbar/Toolbar";
@@ -48,6 +48,17 @@ export const InfoWindow = ({
       }
     }
   };
+  /**
+   * Scrolls to the top of the article whenever the
+   * current article in the infoviewer changes
+   */
+  useEffect(() => {
+    contentRef.current.scrollTo(0, 0);
+    // Don't want to include contentRef as a dependency as
+    // this means that the scroll up will begin happening before
+    // the article changes
+    // eslint-disable-next-line
+  }, [info]);
   const safeHTML = DOMPurify.sanitize(info);
   return (
     <div>
@@ -83,7 +94,6 @@ export const InfoWindow = ({
             </Button>
           }
         />
-
         <div
           id="infoWindowDiv"
           style={{

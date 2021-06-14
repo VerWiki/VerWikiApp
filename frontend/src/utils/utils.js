@@ -1,6 +1,21 @@
 import { useRef, useEffect } from "react";
 
 /**
+ * Join the list of node names into one string, and add
+ * an extra slash at the end so the user knows what the
+ * delimiter is initially, when there is only one node
+ * in the path.
+ */
+export function convertPathToString(path) {
+  return path.join("/") + "/";
+}
+
+export function convertStringToPath(string) {
+  // Remove preceding or trailing slashes and spaces
+  return string.trim().replace(/^\/+/, "").replace(/\/+$/, "").split("/");
+}
+
+/**
  * Tracks the previous value of the given item. Returns
  * the previous value
  * @param value : The object to be tracked
@@ -55,3 +70,20 @@ export const getParameterByName = (name, url) => {
   if (!results[2]) return "";
   return decodeURIComponent(results[2].replace(/\+/g, " "));
 };
+
+export function calculateMaxDepth(root) {
+  if (root == null || root === undefined) {
+    return 0;
+  }
+  let maxDepth = 0;
+  if (root.children == null || root.children === undefined) {
+    return 0;
+  }
+  root.children.forEach((child) => {
+    const depth = calculateMaxDepth(child);
+    if (depth > maxDepth) {
+      maxDepth = depth;
+    }
+  });
+  return 1 + maxDepth;
+}

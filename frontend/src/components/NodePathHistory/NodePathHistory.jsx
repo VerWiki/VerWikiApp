@@ -8,23 +8,8 @@ import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import NavigateNext from "@material-ui/icons/NavigateNext";
 import EditRounded from "@material-ui/icons/EditRounded";
 import DoneRounded from "@material-ui/icons/DoneRounded";
-
-const MODES = { VIEW: 0, EDIT: 1 };
-
-/**
- * Join the list of node names into one string, and add
- * an extra slash at the end so the user knows what the
- * delimiter is initially, when there is only one node
- * in the path.
- */
-function convertPathToString(path) {
-  return path.join("/") + "/";
-}
-
-function convertStringToPath(string) {
-  // Remove preceding or trailing slashes and spaces
-  return string.trim().replace(/^\/+/, "").replace(/\/+$/, "").split("/");
-}
+import { NPHConf } from "../../utils/config";
+import { convertPathToString, convertStringToPath } from "../../utils/utils";
 
 export const NodePathHistory = ({
   path,
@@ -32,7 +17,7 @@ export const NodePathHistory = ({
   onPathChange,
   validatePath,
 }) => {
-  const [mode, setMode] = useState(MODES.VIEW);
+  const [mode, setMode] = useState(NPHConf.MODE_VIEW);
   const [currentText, setCurrentText] = useState("");
   const [isCurrentTextValid, setIsCurrentTextValid] = useState(false);
 
@@ -89,7 +74,7 @@ export const NodePathHistory = ({
    */
   const clearChanges = () => {
     setCurrentText(convertPathToString(path));
-    setMode(MODES.VIEW);
+    setMode(NPHConf.MODE_VIEW);
   };
 
   const Links = path.slice(0, -1).map((name, index) => (
@@ -110,9 +95,9 @@ export const NodePathHistory = ({
         root: styles.breadcrumbContainer,
         ol: styles.breadcrumbOl,
       }}
-      maxItems={2}
-      itemsAfterCollapse={2}
-      itemsBeforeCollapse={0}
+      maxItems={NPHConf.MAX_ITEMS}
+      itemsAfterCollapse={NPHConf.ITEMS_AFTER_COLLAPSE}
+      itemsBeforeCollapse={NPHConf.ITEMS_BEFORE_COLLAPSE}
       color="primary"
       aria-label="breadcrumb"
       separator={<NavigateNext fontSize="small" />}
@@ -152,7 +137,7 @@ export const NodePathHistory = ({
       color="#2d94ed"
       variant="outlined"
       size="large"
-      onClick={() => setMode(MODES.EDIT)}
+      onClick={() => setMode(NPHConf.MODE_EDIT)}
     >
       <EditRounded fontSize="small" />
     </Button>
@@ -172,8 +157,8 @@ export const NodePathHistory = ({
 
   return (
     <Box display="flex" alignItems="center">
-      <Box>{mode === MODES.VIEW ? BreadcrumbsView : EditPathView}</Box>
-      <Box pl={1.5}>{mode === MODES.VIEW ? EditButton : DoneButton}</Box>
+      <Box>{mode === NPHConf.MODE_VIEW ? BreadcrumbsView : EditPathView}</Box>
+      <Box pl={1.5}>{mode === NPHConf.MODE_VIEW ? EditButton : DoneButton}</Box>
     </Box>
   );
 };
