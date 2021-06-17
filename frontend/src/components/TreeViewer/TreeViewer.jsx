@@ -253,6 +253,42 @@ function getParent(nodeName, nameToNodeMapping) {
   return nameToNodeMapping[nodeParentName];
 }
 
+function closeInfoBox(
+  clickedNodeName,
+  articleDiv,
+  setViewingUrl,
+  treeDiv,
+  stayOpen
+) {
+  // Already displaying and the user clicked on the same node again
+  if (stayOpen) {
+    return clickedNodeName;
+  }
+  articleDiv.style["animation-name"] = "fadeOut";
+  setViewingUrl("");
+  articleDiv.classList.remove("col");
+  articleDiv.classList.remove("span-1-of-2");
+  treeDiv.classList.remove("col");
+  treeDiv.classList.remove("span-1-of-2");
+  return "";
+}
+
+function openInfoBox(clickedNodeName, articleDiv, setViewingUrl, treeDiv, url) {
+  //Not yet displaying
+  articleDiv.style["animation-name"] = "fadeIn";
+  setViewingUrl(url);
+  articleDiv.classList.add("col");
+  articleDiv.classList.add("span-1-of-2");
+  treeDiv.classList.add("col");
+  treeDiv.classList.add("span-1-of-2");
+
+  //Set the height of the textbox equal to the height of the
+  //treeDiv
+  const treeHeightpx = treeDiv.offsetHeight.toString().concat("px");
+  articleDiv.style.height = treeHeightpx;
+  return clickedNodeName;
+}
+
 /**
  * toggleInfoBoxVisibility determines whether to hide or show the text
  * box to the right of the screen.
@@ -278,31 +314,21 @@ function toggleInfoBoxVisibility(
   let nodeViewingAfterToggle;
 
   if (curViewingNodeID === clickedNodeName || forceCloseInfoViewer) {
-    // Already displaying and the user clicked on the same node again
-    if (stayOpen) {
-      return clickedNodeName;
-    }
-    articleDiv.style["animation-name"] = "fadeOut";
-    setViewingUrl("");
-    articleDiv.classList.remove("col");
-    articleDiv.classList.remove("span-1-of-2");
-    treeDiv.classList.remove("col");
-    treeDiv.classList.remove("span-1-of-2");
-    nodeViewingAfterToggle = "";
+    nodeViewingAfterToggle = closeInfoBox(
+      clickedNodeName,
+      articleDiv,
+      setViewingUrl,
+      treeDiv,
+      stayOpen
+    );
   } else {
-    //Not yet displaying
-    articleDiv.style["animation-name"] = "fadeIn";
-    setViewingUrl(url);
-    articleDiv.classList.add("col");
-    articleDiv.classList.add("span-1-of-2");
-    treeDiv.classList.add("col");
-    treeDiv.classList.add("span-1-of-2");
-    nodeViewingAfterToggle = clickedNodeName;
-
-    //Set the height of the textbox equal to the height of the
-    //treeDiv
-    const treeHeightpx = treeDiv.offsetHeight.toString().concat("px");
-    articleDiv.style.height = treeHeightpx;
+    nodeViewingAfterToggle = openInfoBox(
+      clickedNodeName,
+      articleDiv,
+      setViewingUrl,
+      treeDiv,
+      url
+    );
   }
   return nodeViewingAfterToggle;
 }
