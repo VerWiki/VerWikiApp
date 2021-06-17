@@ -262,7 +262,7 @@ function getParent(nodeName, nameToNodeMapping) {
  * being viewed in the infoViewer; "" if nothing currently viewed
  * @param {bool} stayOpen: Whether to stay open if the infoViewer is already open;
  * defaults to false
- * @param {bool} closeButtonClicked: Whether the current signal comes from the close
+ * @param {bool} forceCloseInfoViewer: Whether the current signal comes from the close
  * button on an infowindow
  */
 function toggleInfoBoxVisibility(
@@ -271,13 +271,13 @@ function toggleInfoBoxVisibility(
   url,
   setViewingUrl,
   stayOpen = false,
-  closeButtonClicked = false
+  forceCloseInfoViewer = false
 ) {
   const articleDiv = document.getElementsByClassName("article")[0];
   const treeDiv = document.getElementById("course-tree");
   let nodeViewingAfterToggle;
 
-  if (curViewingNodeID === clickedNodeName || closeButtonClicked) {
+  if (curViewingNodeID === clickedNodeName || forceCloseInfoViewer) {
     // Already displaying and the user clicked on the same node again
     if (stayOpen) {
       return clickedNodeName;
@@ -411,14 +411,14 @@ export const TreeViewer = ({ data, heading }) => {
    * @param {Node} clickedNode: The node that was clicked on
    * @param {bool} stayOpen: Whether to keep the infoviewer open if it was
    * already open and the user right-clicked on the same node again.
-   * @param {bool} closeButtonClicked: Whether the current call is coming
+   * @param {bool} forceCloseInfoViewer: Whether the current call is coming
    * from a close button being clicked.
    */
   const rightClickHandler = (
     event,
     clickedNode,
     stayOpen = false,
-    closeButtonClicked = false
+    forceCloseInfoViewer = false
   ) => {
     event.preventDefault();
     let clickedNodeFromMapping = clickedNode;
@@ -436,13 +436,9 @@ export const TreeViewer = ({ data, heading }) => {
       url,
       setInfoViewingLink,
       stayOpen,
-      closeButtonClicked
+      forceCloseInfoViewer
     );
 
-    // const nodeID = getParameterByName("id", clickedNodeFromMapping.url);
-    // const nodeInfoUrl = replaceSpaceCharacters(
-    //   `http://localhost:3003/get-node-info/${nodeID}`
-    // );
     const nodeID = getParameterByName("id", clickedNodeFromMapping.url);
     const nodeInfoUrl = replaceSpaceCharacters(`/get-node-info/${nodeID}`);
     fetch(nodeInfoUrl)
@@ -845,7 +841,7 @@ export const TreeViewer = ({ data, heading }) => {
               linkClickHandler={linkClickHandler}
               curViewedLink={infoViewingLink}
               contentRef={contentRef}
-              closeButtonHandler={rightClickHandler}
+              forceCloseInfoViewer={rightClickHandler}
               title={nodeInfoName}
             ></InfoWindow>
           </p>

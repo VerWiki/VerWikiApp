@@ -13,6 +13,7 @@ export const VConf = Object.freeze({
 
 //Tree.jsx config
 export const TreeConf = Object.freeze({
+  SHORT_ANIMATE_TIME: "100", //Tree node mouseover and mouseout function handlers
   ANIMATE_TIME: 200, //How long the animation effect lasts
   RADIUS_SCALER: 1 / 2.5, //Multiplicative factor, how much to scale radius relative to min(container.width, container.height)
 

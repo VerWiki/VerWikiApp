@@ -18,7 +18,7 @@ export const InfoWindow = ({
   linkClickHandler,
   curViewedLink,
   contentRef,
-  closeButtonHandler,
+  forceCloseInfoViewer,
   title,
 }) => {
   const highlightRelatedNode = (e) => {
@@ -35,7 +35,7 @@ export const InfoWindow = ({
     }
   };
   const closeInfoViewer = (event) => {
-    closeButtonHandler(event, {}, false, true);
+    forceCloseInfoViewer(event, {}, false, true);
   };
   const clickInfoViewerHandler = (e) => {
     const elementType = e.target.tagName;

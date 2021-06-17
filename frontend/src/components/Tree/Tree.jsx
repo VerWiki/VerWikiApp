@@ -46,6 +46,9 @@ function animateTree(nodeGroupEnterAndUpdate, enteringAndUpdatingLinks) {
  * to take when a node in the tree is right-clicked
  * @param curViewingNodeID: A node that is currently being viewed
  * (if any)
+ * @param hoverText: A variable that decides the heading of the
+ * info window
+ * @param setHoverText: A function that sets the hover text
  * @returns SVG groupings of nodes-and-text, and inter-node links
  */
 
@@ -100,8 +103,6 @@ function renderTree(
 
   nodeGroup.exit().remove();
 
-  const tooltip = select("node-group");
-
   // Add nodes to the node group
   nodeGroupEnter
     .append("circle")
@@ -132,16 +133,7 @@ function renderTree(
         return TreeConf.VIEWING_NODE_SIZE;
       }
       return TreeConf.NODE_SIZE;
-    })
-    .on("mouseover", (d, i) => {
-      return tooltip
-        .transition()
-        .duration("100")
-        .attr("fill", TreeConf.VIEWING_NODE_COLOUR);
-    })
-    .on("mouseout", (d, i) =>
-      tooltip.transition().duration("100").attr("fill", TreeConf.NODE_COLOUR)
-    );
+    });
 
   // Add labels to the node group
   nodeGroupEnter
@@ -179,34 +171,38 @@ function renderTree(
     .attr("opacity", (d) => {
       return d.data.opacity;
     })
-    //.append("title")
     .text((node) => {
-      console.log(node.data.name);
       if (hoverText === node.data.name) return node.data.name;
 
+      // name truncation section
       const spaceIndex = node.data.name.indexOf(" ");
+
+      // if space character found
       if (spaceIndex !== -1) {
+        // if space character not in range of 3 + LABEL_MAX_LENGTH
         if (spaceIndex > TreeConf.LABEL_MAX_LENGTH + 3) {
+          // then clip it at LABEL_MAX_LENGTH
           return node.data.name.substr(0, TreeConf.LABEL_MAX_LENGTH) + "...";
         } else {
+          // else clip it at the index of space character
           return node.data.name.substr(0, spaceIndex) + "...";
         }
       } else {
+        // if space character not found
         if (node.data.name.length > TreeConf.LABEL_MAX_LENGTH + 3) {
+          // truncate at LABEL_MAX_LENGTH
           return node.data.name.substr(0, TreeConf.LABEL_MAX_LENGTH) + "...";
         } else {
+          // else, no truncation
           return node.data.name;
         }
       }
     })
     .on("mouseover", (d, i) => {
-      console.log("aaa", i.data.name);
       setHoverText(i.data.name);
-      // select(this).text(() => i.data.name);
     })
     .on("mouseout", (d, i) => {
       setHoverText("");
-      // select(this).transition().duration("50").attr("opacity", 1);
     });
 
   // Add links between nodes
