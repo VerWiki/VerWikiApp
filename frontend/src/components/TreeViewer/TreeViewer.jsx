@@ -253,25 +253,42 @@ function getParent(nodeName, nameToNodeMapping) {
   return nameToNodeMapping[nodeParentName];
 }
 
-function closeInfoBox(curViewingNodeID, setViewingUrl) {
+/**
+ * closeInfoViewer closes the infoviewer component, and updates the appropriate
+ * TreeViewer variables to signal that the infoviewer component has closed
+ * @param {Ref} curViewingNodeID : A ref whose "current" property
+ * represents the currently viewing node
+ * @param {func(string)} setViewingUrl : A pointer to the function to set the
+ * currently viewing URL
+ */
+function closeInfoViewer(curViewingNodeID, setViewingUrl) {
   const articleDiv = document.getElementsByClassName("article")[0];
   const treeDiv = document.getElementById("course-tree");
   articleDiv.style["animation-name"] = "fadeOut";
-  setViewingUrl("");
   articleDiv.classList.remove("col");
   articleDiv.classList.remove("span-1-of-2");
   treeDiv.classList.remove("col");
   treeDiv.classList.remove("span-1-of-2");
+  setViewingUrl("");
   curViewingNodeID.current = "";
 }
 
-function openInfoBox(clickedNode, url, curViewingNodeID, setViewingUrl) {
+/**
+ * openInfoViewer closes the infoviewer component, and updates the appropriate
+ * TreeViewer variables to signal that the infoviewer component has opened
+ * @param {string} clickedNode : The name of the node which was clicked
+ * @param {string} url : The URL of the node whose infoViewer article we want to view
+ * @param {Ref} curViewingNodeID : A ref whose "current" property
+ * represents the currently viewing node
+ * @param {func(string)} setViewingUrl : A pointer to the function to set the
+ * currently viewing URL
+ */
+function openInfoViewer(clickedNode, url, curViewingNodeID, setViewingUrl) {
   const articleDiv = document.getElementsByClassName("article")[0];
   const treeDiv = document.getElementById("course-tree");
 
   //Not yet displaying
   articleDiv.style["animation-name"] = "fadeIn";
-  setViewingUrl(url);
   articleDiv.classList.add("col");
   articleDiv.classList.add("span-1-of-2");
   treeDiv.classList.add("col");
@@ -281,6 +298,7 @@ function openInfoBox(clickedNode, url, curViewingNodeID, setViewingUrl) {
   //treeDiv
   const treeHeightpx = treeDiv.offsetHeight.toString().concat("px");
   articleDiv.style.height = treeHeightpx;
+  setViewingUrl(url);
   curViewingNodeID.current = clickedNode;
 }
 
@@ -303,9 +321,9 @@ function toggleInfoBoxVisibility(
   setViewingUrl
 ) {
   if (currentViewingNodeID.current === clickedNodeName) {
-    closeInfoBox(currentViewingNodeID, setViewingUrl);
+    closeInfoViewer(currentViewingNodeID, setViewingUrl);
   } else {
-    openInfoBox(clickedNodeName, url, currentViewingNodeID, setViewingUrl);
+    openInfoViewer(clickedNodeName, url, currentViewingNodeID, setViewingUrl);
   }
 }
 
@@ -429,14 +447,14 @@ export const TreeViewer = ({ data, heading }) => {
         setInfoViewingLink
       );
     } else if (managerOption === VConf.OPEN_INFO_VIEWER) {
-      openInfoBox(
+      openInfoViewer(
         clickedNodeFromMapping.name,
         url,
         curViewingNodeID,
         setInfoViewingLink
       );
     } else if (managerOption === VConf.CLOSE_INFO_VIEWER) {
-      closeInfoBox(curViewingNodeID, setInfoViewingLink);
+      closeInfoViewer(curViewingNodeID, setInfoViewingLink);
     } else {
       Logger.error(
         "Invalid managerOption. Please consult config.js for valid options."
