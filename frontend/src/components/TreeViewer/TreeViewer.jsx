@@ -469,6 +469,7 @@ export const TreeViewer = ({ data, heading }) => {
       closeInfoViewer(curViewingNodeID, setInfoViewingLink);
     } else {
       Logger.error("manageInfoViewer: Invalid managerOption specified");
+      return;
     }
 
     const nodeID = getParameterByName("id", clickedNodeFromMapping.url);
@@ -644,12 +645,7 @@ export const TreeViewer = ({ data, heading }) => {
         );
       }
     }
-
     manageInfoViewer(searchResult.node, VConf.OPEN_INFO_VIEWER);
-
-    // //simulate a right click on the new node to be viewed in the infoViewer
-
-    // rightClickHandler(new Event(""), searchResult.node, true);
   };
 
   /**
