@@ -287,7 +287,6 @@ function openInfoViewer(clickedNode, url, curViewingNodeID, setViewingUrl) {
   const articleDiv = document.getElementsByClassName("article")[0];
   const treeDiv = document.getElementById("course-tree");
 
-  //Not yet displaying
   articleDiv.style["animation-name"] = "fadeIn";
   articleDiv.classList.add("col");
   articleDiv.classList.add("span-1-of-2");
@@ -303,18 +302,16 @@ function openInfoViewer(clickedNode, url, curViewingNodeID, setViewingUrl) {
 }
 
 /**
- * toggleInfoBoxVisibility determines whether to hide or show the text
+ * toggleInfoViewerVisibility determines whether to hide or show the text
  * box to the right of the screen.
  * @param {string} clickedNodeName: The name of the node that was just clicked
  * TODO: Change the param to an ID when we integrate that feature
  * @param {string} curViewingNodeID: The ID of the node whose article is currently
  * being viewed in the infoViewer; "" if nothing currently viewed
- * @param {bool} stayOpen: Whether to stay open if the infoViewer is already open;
- * defaults to false
- * @param {bool} forceCloseInfoViewer: Whether the current signal comes from the close
- * button on an infowindow
+ * @param {string} url: The URL that we are currently viewing
+ * @param {func(string)} setViewingUrl: A function pointer to update the currently viewing URL
  */
-function toggleInfoBoxVisibility(
+function toggleInfoViewerVisibility(
   clickedNodeName,
   currentViewingNodeID,
   url,
@@ -424,23 +421,38 @@ export const TreeViewer = ({ data, heading }) => {
     }
   };
 
-  const manageInfoViewer = (
-    clickedNode,
-    managerOption
-    // option = 0 (toggling when stayopen false and forceClose false), 1 (open infoviewer with stayopen true and forceClose false), 2 (close infoviewer with stayopen false and forceClose true)
-  ) => {
+  /**
+   * manageInfoViewer allows the caller to apply an action to the infoViewer, to open, close
+   * or toggle it.
+   * @param {Node} clickedNode : The node which was clicked on, else {} if no node clicked
+   * @param {int} managerOption : The action to take. Must be one of the following options:
+   * VConf.TOGGLE_INFO_VIEWER, VConf.OPEN_INFO_VIEWER, VConf.CLOSE_INFO_VIEWER
+   * @returns null
+   */
+  const manageInfoViewer = (clickedNode, managerOption) => {
+    if (clickedNode === {} && managerOption !== VConf.CLOSE_INFO_VIEWER) {
+      Logger.error(
+        "manageInfoViewer: empty node passed in when trying to open or toggle the infoViewer!"
+      );
+      return;
+    }
+
     let clickedNodeFromMapping = clickedNode;
     if (clickedNode.data) {
+      //There are two representations of nodes, one from the page itself and
+      //one from our nameToNodeMapping. If the passed in value is of the former type, convert it
+      // to the latter.
       clickedNodeFromMapping = nameToNodeMapping[clickedNode.data.name];
       if (clickedNodeFromMapping === undefined) {
-        Logger.error("rightClickHandler: clicked node not found in mapping");
+        Logger.error("manageInfoViewer: clicked node not found in mapping");
         return;
       }
     }
+
     const url = clickedNodeFromMapping.url;
 
     if (managerOption === VConf.TOGGLE_INFO_VIEWER) {
-      toggleInfoBoxVisibility(
+      toggleInfoViewerVisibility(
         clickedNodeFromMapping.name,
         curViewingNodeID,
         url,
@@ -456,9 +468,7 @@ export const TreeViewer = ({ data, heading }) => {
     } else if (managerOption === VConf.CLOSE_INFO_VIEWER) {
       closeInfoViewer(curViewingNodeID, setInfoViewingLink);
     } else {
-      Logger.error(
-        "Invalid managerOption. Please consult config.js for valid options."
-      );
+      Logger.error("manageInfoViewer: Invalid managerOption specified");
     }
 
     const nodeID = getParameterByName("id", clickedNodeFromMapping.url);
@@ -485,14 +495,10 @@ export const TreeViewer = ({ data, heading }) => {
   };
 
   /**
-   * Function to handle right clicks - opens up a window to show
-   * summarized information for a given wiki link.
+   * Function to handle right clicks - open/close a window to show
+   * summarized information for the clicked node's wiki link.
    * @param {Event} event: The event object
    * @param {Node} clickedNode: The node that was clicked on
-   * @param {bool} stayOpen: Whether to keep the infoviewer open if it was
-   * already open and the user right-clicked on the same node again.
-   * @param {bool} forceCloseInfoViewer: Whether the current call is coming
-   * from a close button being clicked.
    */
   const rightClickHandler = (event, clickedNode) => {
     event.preventDefault();
