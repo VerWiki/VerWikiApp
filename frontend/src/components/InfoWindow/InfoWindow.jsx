@@ -3,6 +3,7 @@ import DOMPurify from "dompurify";
 import { Button, BackTop } from "antd";
 import { Toolbar } from "../Toolbar/Toolbar";
 import { CloseOutlined } from "@ant-design/icons";
+import { VConf } from "../../utils/config";
 import "antd/dist/antd.css";
 
 /**
@@ -18,7 +19,7 @@ export const InfoWindow = ({
   linkClickHandler,
   curViewedLink,
   contentRef,
-  forceCloseInfoViewer,
+  manageInfoViewer,
   title,
 }) => {
   const highlightRelatedNode = (e) => {
@@ -35,7 +36,8 @@ export const InfoWindow = ({
     }
   };
   const closeInfoViewer = (event) => {
-    forceCloseInfoViewer(event, {}, false, true);
+    event.preventDefault();
+    manageInfoViewer({}, VConf.CLOSE_INFO_VIEWER);
   };
   const clickInfoViewerHandler = (e) => {
     const elementType = e.target.tagName;

@@ -253,27 +253,22 @@ function getParent(nodeName, nameToNodeMapping) {
   return nameToNodeMapping[nodeParentName];
 }
 
-function closeInfoBox(
-  clickedNodeName,
-  articleDiv,
-  setViewingUrl,
-  treeDiv,
-  stayOpen
-) {
-  // Already displaying and the user clicked on the same node again
-  if (stayOpen) {
-    return clickedNodeName;
-  }
+function closeInfoBox(curViewingNodeID, setViewingUrl) {
+  const articleDiv = document.getElementsByClassName("article")[0];
+  const treeDiv = document.getElementById("course-tree");
   articleDiv.style["animation-name"] = "fadeOut";
   setViewingUrl("");
   articleDiv.classList.remove("col");
   articleDiv.classList.remove("span-1-of-2");
   treeDiv.classList.remove("col");
   treeDiv.classList.remove("span-1-of-2");
-  return "";
+  curViewingNodeID.current = "";
 }
 
-function openInfoBox(clickedNodeName, articleDiv, setViewingUrl, treeDiv, url) {
+function openInfoBox(clickedNode, url, curViewingNodeID, setViewingUrl) {
+  const articleDiv = document.getElementsByClassName("article")[0];
+  const treeDiv = document.getElementById("course-tree");
+
   //Not yet displaying
   articleDiv.style["animation-name"] = "fadeIn";
   setViewingUrl(url);
@@ -286,7 +281,7 @@ function openInfoBox(clickedNodeName, articleDiv, setViewingUrl, treeDiv, url) {
   //treeDiv
   const treeHeightpx = treeDiv.offsetHeight.toString().concat("px");
   articleDiv.style.height = treeHeightpx;
-  return clickedNodeName;
+  curViewingNodeID.current = clickedNode;
 }
 
 /**
@@ -303,34 +298,15 @@ function openInfoBox(clickedNodeName, articleDiv, setViewingUrl, treeDiv, url) {
  */
 function toggleInfoBoxVisibility(
   clickedNodeName,
-  curViewingNodeID,
+  currentViewingNodeID,
   url,
-  setViewingUrl,
-  stayOpen = false,
-  forceCloseInfoViewer = false
+  setViewingUrl
 ) {
-  const articleDiv = document.getElementsByClassName("article")[0];
-  const treeDiv = document.getElementById("course-tree");
-  let nodeViewingAfterToggle;
-
-  if (curViewingNodeID === clickedNodeName || forceCloseInfoViewer) {
-    nodeViewingAfterToggle = closeInfoBox(
-      clickedNodeName,
-      articleDiv,
-      setViewingUrl,
-      treeDiv,
-      stayOpen
-    );
+  if (currentViewingNodeID.current === clickedNodeName) {
+    closeInfoBox(currentViewingNodeID, setViewingUrl);
   } else {
-    nodeViewingAfterToggle = openInfoBox(
-      clickedNodeName,
-      articleDiv,
-      setViewingUrl,
-      treeDiv,
-      url
-    );
+    openInfoBox(clickedNodeName, url, currentViewingNodeID, setViewingUrl);
   }
-  return nodeViewingAfterToggle;
 }
 
 /**
@@ -430,23 +406,11 @@ export const TreeViewer = ({ data, heading }) => {
     }
   };
 
-  /**
-   * Function to handle right clicks - opens up a window to show
-   * summarized information for a given wiki link.
-   * @param {Event} event: The event object
-   * @param {Node} clickedNode: The node that was clicked on
-   * @param {bool} stayOpen: Whether to keep the infoviewer open if it was
-   * already open and the user right-clicked on the same node again.
-   * @param {bool} forceCloseInfoViewer: Whether the current call is coming
-   * from a close button being clicked.
-   */
-  const rightClickHandler = (
-    event,
+  const manageInfoViewer = (
     clickedNode,
-    stayOpen = false,
-    forceCloseInfoViewer = false
+    managerOption
+    // option = 0 (toggling when stayopen false and forceClose false), 1 (open infoviewer with stayopen true and forceClose false), 2 (close infoviewer with stayopen false and forceClose true)
   ) => {
-    event.preventDefault();
     let clickedNodeFromMapping = clickedNode;
     if (clickedNode.data) {
       clickedNodeFromMapping = nameToNodeMapping[clickedNode.data.name];
@@ -456,14 +420,28 @@ export const TreeViewer = ({ data, heading }) => {
       }
     }
     const url = clickedNodeFromMapping.url;
-    curViewingNodeID.current = toggleInfoBoxVisibility(
-      clickedNodeFromMapping.name,
-      curViewingNodeID.current,
-      url,
-      setInfoViewingLink,
-      stayOpen,
-      forceCloseInfoViewer
-    );
+
+    if (managerOption === VConf.TOGGLE_INFO_VIEWER) {
+      toggleInfoBoxVisibility(
+        clickedNodeFromMapping.name,
+        curViewingNodeID,
+        url,
+        setInfoViewingLink
+      );
+    } else if (managerOption === VConf.OPEN_INFO_VIEWER) {
+      openInfoBox(
+        clickedNodeFromMapping.name,
+        url,
+        curViewingNodeID,
+        setInfoViewingLink
+      );
+    } else if (managerOption === VConf.CLOSE_INFO_VIEWER) {
+      closeInfoBox(curViewingNodeID, setInfoViewingLink);
+    } else {
+      Logger.error(
+        "Invalid managerOption. Please consult config.js for valid options."
+      );
+    }
 
     const nodeID = getParameterByName("id", clickedNodeFromMapping.url);
     const nodeInfoUrl = replaceSpaceCharacters(`/get-node-info/${nodeID}`);
@@ -486,6 +464,21 @@ export const TreeViewer = ({ data, heading }) => {
         };
         setNodeInfoContent(defaultInfo);
       });
+  };
+
+  /**
+   * Function to handle right clicks - opens up a window to show
+   * summarized information for a given wiki link.
+   * @param {Event} event: The event object
+   * @param {Node} clickedNode: The node that was clicked on
+   * @param {bool} stayOpen: Whether to keep the infoviewer open if it was
+   * already open and the user right-clicked on the same node again.
+   * @param {bool} forceCloseInfoViewer: Whether the current call is coming
+   * from a close button being clicked.
+   */
+  const rightClickHandler = (event, clickedNode) => {
+    event.preventDefault();
+    manageInfoViewer(clickedNode, VConf.TOGGLE_INFO_VIEWER);
   };
 
   /* This function handles the event where a user clicks a name in the
@@ -627,8 +620,12 @@ export const TreeViewer = ({ data, heading }) => {
         );
       }
     }
-    //simulate a right click on the new node to be viewed in the infoViewer
-    rightClickHandler(new Event(""), searchResult.node, true);
+
+    manageInfoViewer(searchResult.node, VConf.OPEN_INFO_VIEWER);
+
+    // //simulate a right click on the new node to be viewed in the infoViewer
+
+    // rightClickHandler(new Event(""), searchResult.node, true);
   };
 
   /**
@@ -867,7 +864,7 @@ export const TreeViewer = ({ data, heading }) => {
               linkClickHandler={linkClickHandler}
               curViewedLink={infoViewingLink}
               contentRef={contentRef}
-              forceCloseInfoViewer={rightClickHandler}
+              manageInfoViewer={manageInfoViewer}
               title={nodeInfoName}
             ></InfoWindow>
           </p>

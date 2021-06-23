@@ -9,6 +9,9 @@ export const VConf = Object.freeze({
   FULL_OPACITY: 1.0, //The opacity of the fully visible nodes
   NO_DEPTH_LIMIT: -1, //Constant to disable depth limit when searching for a node with particular link
   COMPLETE_PATH: "", //Constant passed in to PathToAncestor which signals it to find the entire path from current node to global root
+  OPEN_INFO_VIEWER: 2, // Constant indicating the mode where a closed info-window is to be opened
+  CLOSE_INFO_VIEWER: 1, // Constant indicating the mode where an open info-window has to be closed
+  TOGGLE_INFO_VIEWER: 0, // Constant indicating the mode where an info-window is to be toggled
 });
 
 //Tree.jsx config
