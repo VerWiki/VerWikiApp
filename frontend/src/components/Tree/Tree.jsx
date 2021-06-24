@@ -174,28 +174,13 @@ function renderTree(
     .text((node) => {
       if (hoverText === node.data.name) return node.data.name;
 
-      // name truncation section
-      const spaceIndex = node.data.name.indexOf(" ");
-
-      // if space character found
-      if (spaceIndex !== -1) {
-        // if space character not in range of 3 + LABEL_MAX_LENGTH
-        if (spaceIndex > TreeConf.LABEL_MAX_LENGTH + 3) {
-          // then clip it at LABEL_MAX_LENGTH
-          return node.data.name.substr(0, TreeConf.LABEL_MAX_LENGTH) + "...";
-        } else {
-          // else clip it at the index of space character
-          return node.data.name.substr(0, spaceIndex) + "...";
-        }
+      // if name length more than the LABEL_MAX_LENGTH plus buffer
+      if (node.data.name.length > TreeConf.LABEL_MAX_LENGTH + 3) {
+        // truncate at LABEL_MAX_LENGTH
+        return node.data.name.substr(0, TreeConf.LABEL_MAX_LENGTH) + "...";
       } else {
-        // if space character not found
-        if (node.data.name.length > TreeConf.LABEL_MAX_LENGTH + 3) {
-          // truncate at LABEL_MAX_LENGTH
-          return node.data.name.substr(0, TreeConf.LABEL_MAX_LENGTH) + "...";
-        } else {
-          // else, no truncation
-          return node.data.name;
-        }
+        // else return full name
+        return node.data.name;
       }
     })
     .on("mouseover", (d, i) => {
