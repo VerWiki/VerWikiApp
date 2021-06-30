@@ -1,6 +1,9 @@
 import React, { useEffect } from "react";
 import DOMPurify from "dompurify";
 import { Button, BackTop } from "antd";
+import { Toolbar } from "../Toolbar/Toolbar";
+import { CloseOutlined } from "@ant-design/icons";
+import { VConf } from "../../utils/config";
 import "antd/dist/antd.css";
 
 /**
@@ -16,6 +19,8 @@ export const InfoWindow = ({
   linkClickHandler,
   curViewedLink,
   contentRef,
+  manageInfoViewer,
+  title,
 }) => {
   const highlightRelatedNode = (e) => {
     const elementType = e.target.tagName;
@@ -29,6 +34,10 @@ export const InfoWindow = ({
     } else {
       linkHoverHandler(null);
     }
+  };
+  const closeInfoViewer = (event) => {
+    event.preventDefault();
+    manageInfoViewer({}, VConf.CLOSE_INFO_VIEWER);
   };
   const clickInfoViewerHandler = (e) => {
     const elementType = e.target.tagName;
@@ -56,31 +65,37 @@ export const InfoWindow = ({
   return (
     <div>
       <div>
-        <h2
-          style={{
-            display: "inline-block",
-            float: "left",
-            paddingLeft: "20px",
-            fontSize: "30px",
-          }}
-        >
-          Wiki Information
-        </h2>
-        <Button
-          type="primary"
-          style={{
-            display: "inline-block",
-            float: "right",
-            paddingRight: "20px",
-          }}
-          onClick={() => {
-            if (curViewedLink !== "") {
-              window.open(curViewedLink, "_blank");
-            }
-          }}
-        >
-          View on CWSL Wiki
-        </Button>
+        <Toolbar
+          left={
+            <Button
+              onClick={closeInfoViewer}
+              size="medium"
+              type="primary"
+              icon={<CloseOutlined />}
+            />
+          }
+          center={
+            <h2
+              style={{
+                fontSize: "30px",
+              }}
+            >
+              {title}
+            </h2>
+          }
+          right={
+            <Button
+              type="primary"
+              onClick={() => {
+                if (curViewedLink !== "") {
+                  window.open(curViewedLink, "_blank");
+                }
+              }}
+            >
+              View on CWSL Wiki
+            </Button>
+          }
+        />
         <div
           id="infoWindowDiv"
           style={{

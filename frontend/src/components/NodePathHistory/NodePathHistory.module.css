@@ -1,6 +1,5 @@
 .breadcrumbContainer {
-  max-width: 600px;
-  overflow: scroll;
+  max-width: 300px;
 }
 
 .breadcrumbOl {

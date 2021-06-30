@@ -92,7 +92,7 @@ export const NodePathHistory = ({
   const BreadcrumbsView = (
     <Breadcrumbs
       classes={{
-        root: `${styles.breadcrumbContainer} scrollbar`,
+        root: styles.breadcrumbContainer,
         ol: styles.breadcrumbOl,
       }}
       maxItems={NPHConf.MAX_ITEMS}

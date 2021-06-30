@@ -21,6 +21,7 @@ import "fontsource-roboto";
 import { VConf } from "../../utils/config";
 import { Logger } from "../../utils/Logger";
 import { Link } from "react-router-dom";
+import { TextField } from "@material-ui/core";
 import { ZoomManager } from "../../utils/ZoomManager";
 
 /**
@@ -253,54 +254,74 @@ function getParent(nodeName, nameToNodeMapping) {
 }
 
 /**
- * toggleInfoBoxVisibility determines whether to hide or show the text
+ * closeInfoViewer closes the infoviewer component, and updates the appropriate
+ * TreeViewer variables to signal that the infoviewer component has closed
+ * @param {Ref} curViewingNodeID : A ref whose "current" property
+ * represents the currently viewing node
+ * @param {func(string)} setViewingUrl : A pointer to the function to set the
+ * currently viewing URL
+ */
+function closeInfoViewer(curViewingNodeID, setViewingUrl) {
+  const articleDiv = document.getElementsByClassName("article")[0];
+  const treeDiv = document.getElementById("course-tree");
+  articleDiv.style["animation-name"] = "fadeOut";
+  articleDiv.classList.remove("col");
+  articleDiv.classList.remove("span-1-of-2");
+  treeDiv.classList.remove("col");
+  treeDiv.classList.remove("span-1-of-2");
+  setViewingUrl("");
+  curViewingNodeID.current = "";
+}
+
+/**
+ * openInfoViewer closes the infoviewer component, and updates the appropriate
+ * TreeViewer variables to signal that the infoviewer component has opened
+ * @param {string} clickedNode : The name of the node which was clicked
+ * @param {string} url : The URL of the node whose infoViewer article we want to view
+ * @param {Ref} curViewingNodeID : A ref whose "current" property
+ * represents the currently viewing node
+ * @param {func(string)} setViewingUrl : A pointer to the function to set the
+ * currently viewing URL
+ */
+function openInfoViewer(clickedNode, url, curViewingNodeID, setViewingUrl) {
+  const articleDiv = document.getElementsByClassName("article")[0];
+  const treeDiv = document.getElementById("course-tree");
+
+  articleDiv.style["animation-name"] = "fadeIn";
+  articleDiv.classList.add("col");
+  articleDiv.classList.add("span-1-of-2");
+  treeDiv.classList.add("col");
+  treeDiv.classList.add("span-1-of-2");
+
+  //Set the height of the textbox equal to the height of the
+  //treeDiv
+  const treeHeightpx = treeDiv.offsetHeight.toString().concat("px");
+  articleDiv.style.height = treeHeightpx;
+  setViewingUrl(url);
+  curViewingNodeID.current = clickedNode;
+}
+
+/**
+ * toggleInfoViewerVisibility determines whether to hide or show the text
  * box to the right of the screen.
  * @param {string} clickedNodeName: The name of the node that was just clicked
  * TODO: Change the param to an ID when we integrate that feature
  * @param {string} curViewingNodeID: The ID of the node whose article is currently
  * being viewed in the infoViewer; "" if nothing currently viewed
- * @param {bool} stayOpen: Whether to stay open if the infoViewer is already open;
- * defaults to false
+ * @param {string} url: The URL that we are currently viewing
+ * @param {func(string)} setViewingUrl: A function pointer to update the currently viewing URL
  */
-function toggleInfoBoxVisibility(
+function toggleInfoViewerVisibility(
   clickedNodeName,
-  curViewingNodeID,
+  currentViewingNodeID,
   url,
-  setViewingUrl,
-  stayOpen = false
+  setViewingUrl
 ) {
-  const articleDiv = document.getElementsByClassName("article")[0];
-  const treeDiv = document.getElementById("course-tree");
-  let nodeViewingAfterToggle;
-
-  if (curViewingNodeID === clickedNodeName) {
-    // Already displaying and the user clicked on the same node again
-    if (stayOpen) {
-      return clickedNodeName;
-    }
-    articleDiv.style["animation-name"] = "fadeOut";
-    setViewingUrl("");
-    articleDiv.classList.remove("col");
-    articleDiv.classList.remove("span-1-of-2");
-    treeDiv.classList.remove("col");
-    treeDiv.classList.remove("span-1-of-2");
-    nodeViewingAfterToggle = "";
+  if (currentViewingNodeID.current === clickedNodeName) {
+    closeInfoViewer(currentViewingNodeID, setViewingUrl);
   } else {
-    //Not yet displaying
-    articleDiv.style["animation-name"] = "fadeIn";
-    setViewingUrl(url);
-    articleDiv.classList.add("col");
-    articleDiv.classList.add("span-1-of-2");
-    treeDiv.classList.add("col");
-    treeDiv.classList.add("span-1-of-2");
-    nodeViewingAfterToggle = clickedNodeName;
-
-    //Set the height of the textbox equal to the height of the
-    //treeDiv
-    const treeHeightpx = treeDiv.offsetHeight.toString().concat("px");
-    articleDiv.style.height = treeHeightpx;
+    openInfoViewer(clickedNodeName, url, currentViewingNodeID, setViewingUrl);
   }
-  return nodeViewingAfterToggle;
 }
 
 /**
@@ -333,6 +354,7 @@ export const TreeViewer = ({ data, heading }) => {
   const [trimmedData, setTrimmedData] = useState({});
   const [nameToNodeMapping, setNameToNodeMapping] = useState({});
   const [nodeInfoContent, setNodeInfoContent] = useState("");
+  const [nodeInfoName, setNodeInfoName] = useState("");
   const [currentPath, setCurrentPath] = useState([]);
   const [historyRecorder, setHistoryRecorder] = useState();
   const [zoomManager, setZoomManager] = useState();
@@ -400,36 +422,56 @@ export const TreeViewer = ({ data, heading }) => {
   };
 
   /**
-   * Function to handle right clicks - opens up a window to show
-   * summarized information for a given wiki link.
-   * @param {Event} event: The event object
-   * @param {Node} clickedNode: The node that was clicked on
-   * @param {bool} stayOpen: Whether to keep the infoviewer open if it was
-   * already open and the user right-clicked on the same node again.
+   * manageInfoViewer allows the caller to apply an action to the infoViewer, to open, close
+   * or toggle it.
+   * @param {Node} clickedNode : The node which was clicked on, else {} if no node clicked
+   * @param {int} managerOption : The action to take. Must be one of the following options:
+   * VConf.TOGGLE_INFO_VIEWER, VConf.OPEN_INFO_VIEWER, VConf.CLOSE_INFO_VIEWER
+   * @returns null
    */
-  const rightClickHandler = (event, clickedNode, stayOpen = false) => {
-    event.preventDefault();
+  const manageInfoViewer = (clickedNode, managerOption) => {
+    if (clickedNode === {} && managerOption !== VConf.CLOSE_INFO_VIEWER) {
+      Logger.error(
+        "manageInfoViewer: empty node passed in when trying to open or toggle the infoViewer!"
+      );
+      return;
+    }
+
     let clickedNodeFromMapping = clickedNode;
     if (clickedNode.data) {
+      //There are two representations of nodes, one from the page itself and
+      //one from our nameToNodeMapping. If the passed in value is of the former type, convert it
+      // to the latter.
       clickedNodeFromMapping = nameToNodeMapping[clickedNode.data.name];
       if (clickedNodeFromMapping === undefined) {
-        Logger.error("rightClickHandler: clicked node not found in mapping");
+        Logger.error("manageInfoViewer: clicked node not found in mapping");
         return;
       }
     }
-    const url = clickedNodeFromMapping.url;
-    curViewingNodeID.current = toggleInfoBoxVisibility(
-      clickedNodeFromMapping.name,
-      curViewingNodeID.current,
-      url,
-      setInfoViewingLink,
-      stayOpen
-    );
 
-    // const nodeID = getParameterByName("id", clickedNodeFromMapping.url);
-    // const nodeInfoUrl = replaceSpaceCharacters(
-    //   `http://localhost:3003/get-node-info/${nodeID}`
-    // );
+    const url = clickedNodeFromMapping.url;
+
+    if (managerOption === VConf.TOGGLE_INFO_VIEWER) {
+      toggleInfoViewerVisibility(
+        clickedNodeFromMapping.name,
+        curViewingNodeID,
+        url,
+        setInfoViewingLink
+      );
+    } else if (managerOption === VConf.OPEN_INFO_VIEWER) {
+      openInfoViewer(
+        clickedNodeFromMapping.name,
+        url,
+        curViewingNodeID,
+        setInfoViewingLink
+      );
+    } else if (managerOption === VConf.CLOSE_INFO_VIEWER) {
+      closeInfoViewer(curViewingNodeID, setInfoViewingLink);
+    } else {
+      Logger.error("manageInfoViewer: Invalid managerOption specified");
+      return;
+    }
+
     const nodeID = getParameterByName("id", clickedNodeFromMapping.url);
     const nodeInfoUrl = replaceSpaceCharacters(`/get-node-info/${nodeID}`);
     fetch(nodeInfoUrl)
@@ -441,6 +483,7 @@ export const TreeViewer = ({ data, heading }) => {
       })
       .then((res) => {
         setNodeInfoContent(res);
+        setNodeInfoName(clickedNodeFromMapping.name);
       })
       .catch((err) => {
         const defaultInfo = {
@@ -450,6 +493,17 @@ export const TreeViewer = ({ data, heading }) => {
         };
         setNodeInfoContent(defaultInfo);
       });
+  };
+
+  /**
+   * Function to handle right clicks - open/close a window to show
+   * summarized information for the clicked node's wiki link.
+   * @param {Event} event: The event object
+   * @param {Node} clickedNode: The node that was clicked on
+   */
+  const rightClickHandler = (event, clickedNode) => {
+    event.preventDefault();
+    manageInfoViewer(clickedNode, VConf.TOGGLE_INFO_VIEWER);
   };
 
   /* This function handles the event where a user clicks a name in the
@@ -591,8 +645,7 @@ export const TreeViewer = ({ data, heading }) => {
         );
       }
     }
-    //simulate a right click on the new node to be viewed in the infoViewer
-    rightClickHandler(new Event(""), searchResult.node, true);
+    manageInfoViewer(searchResult.node, VConf.OPEN_INFO_VIEWER);
   };
 
   /**
@@ -713,18 +766,13 @@ export const TreeViewer = ({ data, heading }) => {
   return (
     <div>
       <Toolbar
-        left={
+        left={[
           <Link className={styles.backButton} to={"/"}>
             <div className={styles.backButtonArrow}>
               <NavigateBeforeRounded />
             </div>
             Explore
-          </Link>
-        }
-        center={<div className={styles.heading}>{heading}</div>}
-      />
-      <Toolbar
-        left={[
+          </Link>,
           <ButtonGroup>
             <Button
               disabled={zoomManager && !zoomManager.canZoomOut()}
@@ -769,7 +817,6 @@ export const TreeViewer = ({ data, heading }) => {
               />
             </Button>
           </ButtonGroup>,
-
           <Button variant="outlined" onClick={homeClickHandler}>
             <HomeRounded
               classes={{
@@ -785,19 +832,33 @@ export const TreeViewer = ({ data, heading }) => {
           />,
         ]}
         // Search bar for the next phase
-        // right={
-        //   <TextField
-        //     label="Search"
-        //     variant="outlined"
-        //     size="small"
-        //     classes={{
-        //       root: styles.search,
-        //     }}
-        //   />
-        // }
+        right={[
+          <div
+            className={styles.heading}
+            style={{
+              fontWeight: "bold",
+              fontSize: "30px",
+            }}
+          >
+            {heading}
+          </div>,
+          <TextField
+            label="Search"
+            variant="outlined"
+            size="small"
+            classes={{
+              root: styles.search,
+            }}
+          />,
+        ]}
       />
       <div className={styles.treeViewerContainer}>
-        <div id="course-tree">
+        <div
+          id="course-tree"
+          style={{
+            borderRadius: "50%",
+          }}
+        >
           <Tree
             jsonData={trimmedData}
             onNodeClick={nodeClickHandler}
@@ -823,6 +884,8 @@ export const TreeViewer = ({ data, heading }) => {
               linkClickHandler={linkClickHandler}
               curViewedLink={infoViewingLink}
               contentRef={contentRef}
+              manageInfoViewer={manageInfoViewer}
+              title={nodeInfoName}
             ></InfoWindow>
           </p>
         </div>

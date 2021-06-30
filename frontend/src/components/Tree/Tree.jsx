@@ -46,6 +46,9 @@ function animateTree(nodeGroupEnterAndUpdate, enteringAndUpdatingLinks) {
  * to take when a node in the tree is right-clicked
  * @param curViewingNodeID: A node that is currently being viewed
  * (if any)
+ * @param hoverText: A variable that decides the heading of the
+ * info window
+ * @param setHoverText: A function that sets the hover text
  * @returns SVG groupings of nodes-and-text, and inter-node links
  */
 
@@ -55,7 +58,9 @@ function renderTree(
   svgRef,
   onNodeClick,
   onRightClick,
-  curViewingNodeID
+  curViewingNodeID,
+  hoverText,
+  setHoverText
 ) {
   const svg = select(svgRef.current);
   const { width, height } = dimensions;
@@ -150,7 +155,6 @@ function renderTree(
     )
     .attr("dy", "1.00em")
     .attr("dx", "0.0em")
-    .text((node) => node.data.name + " ")
     .attr("opacity", (d) => {
       return d.data.opacity;
     })
@@ -167,7 +171,24 @@ function renderTree(
     .attr("opacity", (d) => {
       return d.data.opacity;
     })
-    .text((node) => node.data.name);
+    .text((node) => {
+      if (hoverText === node.data.name) return node.data.name;
+
+      // if name length more than the LABEL_MAX_LENGTH plus buffer
+      if (node.data.name.length > TreeConf.LABEL_MAX_LENGTH + 3) {
+        // truncate at LABEL_MAX_LENGTH
+        return node.data.name.substr(0, TreeConf.LABEL_MAX_LENGTH) + "...";
+      } else {
+        // else return full name
+        return node.data.name;
+      }
+    })
+    .on("mouseover", (d, i) => {
+      setHoverText(i.data.name);
+    })
+    .on("mouseout", (d, i) => {
+      setHoverText("");
+    });
 
   // Add links between nodes
   const enteringAndUpdatingLinks = svg
@@ -210,6 +231,7 @@ export function Tree({
   const svgRef = useRef();
   const wrapperRef = useRef();
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  const [hoverText, setHoverText] = useState("");
   // We save data to see if it changed
   const previouslyRenderedData = usePrevious(jsonData);
 
@@ -248,7 +270,9 @@ export function Tree({
       svgRef,
       onNodeClick,
       onRightClick,
-      curViewingNodeID
+      curViewingNodeID,
+      hoverText,
+      setHoverText
     );
     // Animate only when the tree root changes
     if (jsonData.name !== previouslyRenderedData.name) {
@@ -261,6 +285,7 @@ export function Tree({
     onNodeClick,
     onRightClick,
     curViewingNodeID,
+    hoverText,
   ]);
 
   return (
