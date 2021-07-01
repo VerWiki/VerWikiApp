@@ -13,8 +13,8 @@ import Button from "@material-ui/core/Button";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
 import NavigateBeforeRounded from "@material-ui/icons/NavigateBeforeRounded";
 import NavigateNextRounded from "@material-ui/icons/NavigateNextRounded";
-import AddIcon from "@material-ui/icons/Add";
-import RemoveIcon from "@material-ui/icons/Remove";
+import ZoomInIcon from "@material-ui/icons/ZoomIn";
+import ZoomOutIcon from "@material-ui/icons/ZoomOut";
 import HomeRounded from "@material-ui/icons/HomeRounded";
 import { HistoryRecorder } from "../../utils/HistoryRecorder";
 import "fontsource-roboto";
@@ -386,7 +386,10 @@ export const TreeViewer = ({ data, heading }) => {
     const path = pathToAncestor(newRoot, nameToNodeMapping);
     path.reverse(); // We want ancestor -> clicked node
     if (addHistory) {
-      historyRecorder.addBackwardHistory(getCurrentRootName(currentPath));
+      historyRecorder.addBackwardHistory(
+        getCurrentRootName(currentPath),
+        curViewingNodeID.current
+      );
     }
     Logger.debug("The new path is ", path);
 
@@ -503,6 +506,11 @@ export const TreeViewer = ({ data, heading }) => {
    */
   const rightClickHandler = (event, clickedNode) => {
     event.preventDefault();
+    console.log("Right click handler");
+    historyRecorder.addBackwardHistory(
+      getCurrentRootName(currentPath),
+      curViewingNodeID.current
+    );
     manageInfoViewer(clickedNode, VConf.TOGGLE_INFO_VIEWER);
   };
 
@@ -554,9 +562,11 @@ export const TreeViewer = ({ data, heading }) => {
    * It goes back one level in the tree.
    */
   const backClickHandler = () => {
-    const previouslyVisitedNodeName = historyRecorder.goBackward(
-      getCurrentRootName(currentPath)
+    const historyStruct = historyRecorder.goBackward(
+      getCurrentRootName(currentPath),
+      curViewingNodeID.current
     );
+    const previouslyVisitedNodeName = historyStruct.currentRootName;
     if (previouslyVisitedNodeName === "") {
       Logger.warn("backClickHandler: no previously visted node");
       return;
@@ -568,6 +578,17 @@ export const TreeViewer = ({ data, heading }) => {
       );
       return;
     }
+    if (historyStruct.currentlyViewingNodeName !== "") {
+      const viewingNode =
+        nameToNodeMapping[historyStruct.currentlyViewingNodeName];
+      if (!viewingNode) {
+        Logger.error("backClickHandler: error retrieving node from name");
+      } else {
+        manageInfoViewer(viewingNode, VConf.OPEN_INFO_VIEWER);
+      }
+    } else {
+      manageInfoViewer({}, VConf.CLOSE_INFO_VIEWER);
+    }
     setNewVisibleRoot(previouslyVisitedNode, false);
   };
 
@@ -576,9 +597,11 @@ export const TreeViewer = ({ data, heading }) => {
    * It goes forward one level in the tree, if that exists.
    */
   const forwardClickHandler = () => {
-    const forwardNodeName = historyRecorder.goForward(
-      getCurrentRootName(currentPath)
+    const historyStruct = historyRecorder.goForward(
+      getCurrentRootName(currentPath),
+      curViewingNodeID.current
     );
+    const forwardNodeName = historyStruct.currentRootName;
     if (forwardNodeName === "") {
       Logger.warn("forwardClickHandler: no forward node");
       return;
@@ -589,6 +612,19 @@ export const TreeViewer = ({ data, heading }) => {
         "forwardClickHandler: error finding the forward node given name"
       );
       return;
+    }
+    if (historyStruct.currentlyViewingNodeName !== "") {
+      const currentlyViewingNode =
+        nameToNodeMapping[historyStruct.currentlyViewingNodeName];
+      if (!currentlyViewingNode) {
+        Logger.error(
+          "forwardClickHandler: error getting currently viewing node from name"
+        );
+      } else {
+        manageInfoViewer(currentlyViewingNode, VConf.OPEN_INFO_VIEWER);
+      }
+    } else {
+      manageInfoViewer({}, VConf.CLOSE_INFO_VIEWER);
     }
     setNewVisibleRoot(forwardNode, false);
   };
@@ -627,6 +663,8 @@ export const TreeViewer = ({ data, heading }) => {
       clickedLink = clickedLink.substring(0, hashIndex);
     }
     const searchResult = findNodeWithLink(data, clickedLink);
+
+    const curRootName = getCurrentRootName(currentPath);
     if (searchResult.parent == null && searchResult.node == null) {
       //external link
       window.open(clickedLink, "_blank");
@@ -645,6 +683,7 @@ export const TreeViewer = ({ data, heading }) => {
         );
       }
     }
+    historyRecorder.addBackwardHistory(curRootName, curViewingNodeID.current);
     manageInfoViewer(searchResult.node, VConf.OPEN_INFO_VIEWER);
   };
 
@@ -778,7 +817,7 @@ export const TreeViewer = ({ data, heading }) => {
               disabled={zoomManager && !zoomManager.canZoomOut()}
               onClick={zoomOutHandler}
             >
-              <RemoveIcon
+              <ZoomOutIcon
                 classes={{
                   root: styles.button,
                 }}
@@ -788,7 +827,7 @@ export const TreeViewer = ({ data, heading }) => {
               disabled={zoomManager && !zoomManager.canZoomIn()}
               onClick={zoomInHandler}
             >
-              <AddIcon
+              <ZoomInIcon
                 classes={{
                   root: styles.button,
                 }}
