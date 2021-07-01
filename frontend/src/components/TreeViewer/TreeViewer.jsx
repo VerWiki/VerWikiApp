@@ -430,9 +430,17 @@ export const TreeViewer = ({ data, heading }) => {
    * @param {Node} clickedNode : The node which was clicked on, else {} if no node clicked
    * @param {int} managerOption : The action to take. Must be one of the following options:
    * VConf.TOGGLE_INFO_VIEWER, VConf.OPEN_INFO_VIEWER, VConf.CLOSE_INFO_VIEWER
+   * @param {bool} addHistory : whether to add to the history, default true
    * @returns null
    */
-  const manageInfoViewer = (clickedNode, managerOption) => {
+  const manageInfoViewer = (clickedNode, managerOption, addHistory = true) => {
+    if (addHistory) {
+      historyRecorder.addBackwardHistory(
+        getCurrentRootName(currentPath),
+        curViewingNodeID.current
+      );
+    }
+
     if (clickedNode === {} && managerOption !== VConf.CLOSE_INFO_VIEWER) {
       Logger.error(
         "manageInfoViewer: empty node passed in when trying to open or toggle the infoViewer!"
@@ -506,10 +514,6 @@ export const TreeViewer = ({ data, heading }) => {
    */
   const rightClickHandler = (event, clickedNode) => {
     event.preventDefault();
-    historyRecorder.addBackwardHistory(
-      getCurrentRootName(currentPath),
-      curViewingNodeID.current
-    );
     manageInfoViewer(clickedNode, VConf.TOGGLE_INFO_VIEWER);
   };
 
@@ -584,10 +588,10 @@ export const TreeViewer = ({ data, heading }) => {
       if (!viewingNode) {
         Logger.error("backClickHandler: error retrieving node from name");
       } else {
-        manageInfoViewer(viewingNode, VConf.OPEN_INFO_VIEWER);
+        manageInfoViewer(viewingNode, VConf.OPEN_INFO_VIEWER, false);
       }
     } else {
-      manageInfoViewer({}, VConf.CLOSE_INFO_VIEWER);
+      manageInfoViewer({}, VConf.CLOSE_INFO_VIEWER, false);
     }
     setNewVisibleRoot(previouslyVisitedNode, false);
   };
@@ -622,10 +626,10 @@ export const TreeViewer = ({ data, heading }) => {
           "forwardClickHandler: error getting currently viewing node from name"
         );
       } else {
-        manageInfoViewer(currentlyViewingNode, VConf.OPEN_INFO_VIEWER);
+        manageInfoViewer(currentlyViewingNode, VConf.OPEN_INFO_VIEWER, false);
       }
     } else {
-      manageInfoViewer({}, VConf.CLOSE_INFO_VIEWER);
+      manageInfoViewer({}, VConf.CLOSE_INFO_VIEWER, false);
     }
     setNewVisibleRoot(forwardNode, false);
   };
@@ -665,7 +669,6 @@ export const TreeViewer = ({ data, heading }) => {
     }
     const searchResult = findNodeWithLink(data, clickedLink);
 
-    const curRootName = getCurrentRootName(currentPath);
     if (searchResult.parent == null && searchResult.node == null) {
       //external link
       window.open(clickedLink, "_blank");
@@ -684,7 +687,6 @@ export const TreeViewer = ({ data, heading }) => {
         );
       }
     }
-    historyRecorder.addBackwardHistory(curRootName, curViewingNodeID.current);
     manageInfoViewer(searchResult.node, VConf.OPEN_INFO_VIEWER);
   };
 
