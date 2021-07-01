@@ -45,7 +45,7 @@ export class HistoryRecorder {
    * Pops and returns the previously visited node; adds the currently
    * root node to the forward history so that the forward history works.
    * @param {String} currentRootName: The name of the currently visible root
-   * @param {string} currentlyViewingNodeName : Node whose article is being seen in infoViewer, "" if infoViewer not open
+   * @param {String} currentlyViewingNodeName : Node whose article is being seen in infoViewer, "" if infoViewer not open
    * @returns {String} previously visited node name
    */
   goBackward(currentRootName, currentlyViewingNodeName) {
@@ -69,12 +69,10 @@ export class HistoryRecorder {
    */
   goForward(currentRootName, currentlyViewingNodeName) {
     if (!this.canGoForward()) return "";
-    if (this.backwardHistory.length === 0 || true) {
-      this.backwardHistory.push({
-        currentRootName: currentRootName,
-        currentlyViewingNodeName: currentlyViewingNodeName,
-      });
-    }
+    this.backwardHistory.push({
+      currentRootName: currentRootName,
+      currentlyViewingNodeName: currentlyViewingNodeName,
+    });
     const historyStruct = this.forwardHistory.pop();
     return historyStruct;
   }

@@ -506,7 +506,6 @@ export const TreeViewer = ({ data, heading }) => {
    */
   const rightClickHandler = (event, clickedNode) => {
     event.preventDefault();
-    console.log("Right click handler");
     historyRecorder.addBackwardHistory(
       getCurrentRootName(currentPath),
       curViewingNodeID.current
