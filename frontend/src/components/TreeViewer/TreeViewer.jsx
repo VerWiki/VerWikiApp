@@ -577,6 +577,7 @@ export const TreeViewer = ({ data, heading }) => {
       );
       return;
     }
+    // Open/close the infoviewer depending on if in this state we were viewing a node
     if (historyStruct.currentlyViewingNodeName !== "") {
       const viewingNode =
         nameToNodeMapping[historyStruct.currentlyViewingNodeName];
@@ -612,6 +613,7 @@ export const TreeViewer = ({ data, heading }) => {
       );
       return;
     }
+    //Open/close the infoviewer depending on if we were viewing any node's article in this current state
     if (historyStruct.currentlyViewingNodeName !== "") {
       const currentlyViewingNode =
         nameToNodeMapping[historyStruct.currentlyViewingNodeName];

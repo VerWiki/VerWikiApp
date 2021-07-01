@@ -21,11 +21,16 @@ export class HistoryRecorder {
   }
 
   /**
-   * Adds a node to the backward history
+   * Adds a historyStruct to the backward history, in the form of {
+        currentRootName: <String>,
+        currentlyViewingNodeName: <String>,
+      }
    * @param {string} currentRootName : Current root of the visible tree
    * @param {string} currentlyViewingNodeName : Node whose article is being seen in infoViewer, "" if infoViewer not open
    */
   addBackwardHistory(currentRootName, currentlyViewingNodeName) {
+    //Check that we are not adding a duplicate entry into the history - can happen if the user left-clicked on the same node
+    //again without going to another infoview article
     if (
       this.backwardHistory.length === 0 ||
       this.backwardHistory[this.backwardHistory.length - 1].currentRootName !==
@@ -42,11 +47,15 @@ export class HistoryRecorder {
   }
 
   /**
-   * Pops and returns the previously visited node; adds the currently
-   * root node to the forward history so that the forward history works.
+   * Pops and returns the previous historyStruct; adds the currently
+   * root node and the currently viewing node to the forward history (in the form of a historyStruct)
+   * so that the forward history works.
    * @param {String} currentRootName: The name of the currently visible root
    * @param {String} currentlyViewingNodeName : Node whose article is being seen in infoViewer, "" if infoViewer not open
-   * @returns {String} previously visited node name
+   * @returns {struct} in the form of {
+        currentRootName: <String>,
+        currentlyViewingNodeName: <String>,
+      }
    */
   goBackward(currentRootName, currentlyViewingNodeName) {
     if (!this.canGoBackward()) return "";
@@ -61,11 +70,14 @@ export class HistoryRecorder {
   }
 
   /**
-   * Pops and returns the forward visited node; adds the currently
+   * Pops and returns the forward visited node and article being viewed in the infoViewer; adds the currently
    * root node to the backward history so that the backward history works.
    * @param {String} currentRootName The name of the currently visible root
    * @param {string} currentlyViewingNodeName : Node whose article is being seen in infoViewer, "" if infoViewer not open
-   * @returns {String} the name of the next node in the forward history
+   * @returns {struct} in the form of {
+        currentRootName: <String>,
+        currentlyViewingNodeName: <String>,
+      }
    */
   goForward(currentRootName, currentlyViewingNodeName) {
     if (!this.canGoForward()) return "";
