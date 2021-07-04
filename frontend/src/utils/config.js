@@ -22,7 +22,7 @@ export const TreeConf = Object.freeze({
 
   LABEL_ROTATE_OFFSET: 0, //Offset of label in relation to node
   LABEL_HEIGHT_OFFSET: -15, //Height of the label in relation to the "dot"
-  LABEL_TRUNCATION_LENGTH: 8,
+  LABEL_TRUNCATION_LENGTH: 8, // Max length of the displayed name post truncation
   MIN_FONT_SIZE: 8, //Smallest font size. Note - font size may be scaled up when the browser window gets larger
   MAX_FONT_SIZE: 17, // Largest font size. Note - font size may be scaled down when the browser window gets smaller
   LABEL_NODE_SPACING: 7, //How far the node "dot" and its label are
