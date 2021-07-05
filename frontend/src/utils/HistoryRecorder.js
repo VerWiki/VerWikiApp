@@ -21,46 +21,71 @@ export class HistoryRecorder {
   }
 
   /**
-   * Adds a node to the backward history
-   * @param {Node} nodeName : Node to add to the backward history
+   * Adds a historyStruct to the backward history, in the form of {
+        currentRootName: <String>,
+        currentlyViewingNodeName: <String>,
+      }
+   * @param {string} currentRootName : Current root of the visible tree
+   * @param {string} currentlyViewingNodeName : Node whose article is being seen in infoViewer, "" if infoViewer not open
    */
-  addBackwardHistory(nodeName) {
+  addBackwardHistory(currentRootName, currentlyViewingNodeName) {
+    //Check that we are not adding a duplicate entry into the history - can happen if the user left-clicked on the same node
+    //again without going to another infoview article
     if (
       this.backwardHistory.length === 0 ||
-      this.backwardHistory[this.backwardHistory.length - 1] !== nodeName
+      this.backwardHistory[this.backwardHistory.length - 1].currentRootName !==
+        currentRootName ||
+      this.backwardHistory[this.backwardHistory.length - 1]
+        .currentlyViewingNodeName !== currentlyViewingNodeName
     ) {
-      this.backwardHistory.push(nodeName);
+      this.backwardHistory.push({
+        currentRootName: currentRootName,
+        currentlyViewingNodeName: currentlyViewingNodeName,
+      });
     }
     this.forwardHistory = [];
   }
 
   /**
-   * Pops and returns the previously visited node; adds the currently
-   * root node to the forward history so that the forward history works.
+   * Pops and returns the previous historyStruct; adds the currently
+   * root node and the currently viewing node to the forward history (in the form of a historyStruct)
+   * so that the forward history works.
    * @param {String} currentRootName: The name of the currently visible root
-   * @returns {String} previously visited node name
+   * @param {String} currentlyViewingNodeName : Node whose article is being seen in infoViewer, "" if infoViewer not open
+   * @returns {struct} in the form of {
+        currentRootName: <String>,
+        currentlyViewingNodeName: <String>,
+      }
    */
-  goBackward(currentRootName) {
+  goBackward(currentRootName, currentlyViewingNodeName) {
     if (!this.canGoBackward()) return "";
     // Pop the last node from the current path and add
     // it to the forwardHistory
-    const previouslyVisitedNodeName = this.backwardHistory.pop();
-    this.forwardHistory.push(currentRootName);
-    return previouslyVisitedNodeName;
+    const historyStruct = this.backwardHistory.pop();
+    this.forwardHistory.push({
+      currentRootName: currentRootName,
+      currentlyViewingNodeName: currentlyViewingNodeName,
+    });
+    return historyStruct;
   }
 
   /**
-   * Pops and returns the forward visited node; adds the currently
+   * Pops and returns the forward visited node and article being viewed in the infoViewer; adds the currently
    * root node to the backward history so that the backward history works.
    * @param {String} currentRootName The name of the currently visible root
-   * @returns {String} the name of the next node in the forward history
+   * @param {string} currentlyViewingNodeName : Node whose article is being seen in infoViewer, "" if infoViewer not open
+   * @returns {struct} in the form of {
+        currentRootName: <String>,
+        currentlyViewingNodeName: <String>,
+      }
    */
-  goForward(currentRootName) {
+  goForward(currentRootName, currentlyViewingNodeName) {
     if (!this.canGoForward()) return "";
-    if (this.backwardHistory.length === 0) {
-      this.backwardHistory.push(currentRootName);
-    }
-    const forwardNodeName = this.forwardHistory.pop();
-    return forwardNodeName;
+    this.backwardHistory.push({
+      currentRootName: currentRootName,
+      currentlyViewingNodeName: currentlyViewingNodeName,
+    });
+    const historyStruct = this.forwardHistory.pop();
+    return historyStruct;
   }
 }

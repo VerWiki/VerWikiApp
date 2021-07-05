@@ -13,8 +13,8 @@ import Button from "@material-ui/core/Button";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
 import NavigateBeforeRounded from "@material-ui/icons/NavigateBeforeRounded";
 import NavigateNextRounded from "@material-ui/icons/NavigateNextRounded";
-import AddIcon from "@material-ui/icons/Add";
-import RemoveIcon from "@material-ui/icons/Remove";
+import ZoomInIcon from "@material-ui/icons/ZoomIn";
+import ZoomOutIcon from "@material-ui/icons/ZoomOut";
 import HomeRounded from "@material-ui/icons/HomeRounded";
 import { HistoryRecorder } from "../../utils/HistoryRecorder";
 import "fontsource-roboto";
@@ -386,7 +386,10 @@ export const TreeViewer = ({ data, heading }) => {
     const path = pathToAncestor(newRoot, nameToNodeMapping);
     path.reverse(); // We want ancestor -> clicked node
     if (addHistory) {
-      historyRecorder.addBackwardHistory(getCurrentRootName(currentPath));
+      historyRecorder.addBackwardHistory(
+        getCurrentRootName(currentPath),
+        curViewingNodeID.current
+      );
     }
     Logger.debug("The new path is ", path);
 
@@ -427,9 +430,17 @@ export const TreeViewer = ({ data, heading }) => {
    * @param {Node} clickedNode : The node which was clicked on, else {} if no node clicked
    * @param {int} managerOption : The action to take. Must be one of the following options:
    * VConf.TOGGLE_INFO_VIEWER, VConf.OPEN_INFO_VIEWER, VConf.CLOSE_INFO_VIEWER
+   * @param {bool} addHistory : whether to add to the history, default true
    * @returns null
    */
-  const manageInfoViewer = (clickedNode, managerOption) => {
+  const manageInfoViewer = (clickedNode, managerOption, addHistory = true) => {
+    if (addHistory) {
+      historyRecorder.addBackwardHistory(
+        getCurrentRootName(currentPath),
+        curViewingNodeID.current
+      );
+    }
+
     if (clickedNode === {} && managerOption !== VConf.CLOSE_INFO_VIEWER) {
       Logger.error(
         "manageInfoViewer: empty node passed in when trying to open or toggle the infoViewer!"
@@ -554,9 +565,11 @@ export const TreeViewer = ({ data, heading }) => {
    * It goes back one level in the tree.
    */
   const backClickHandler = () => {
-    const previouslyVisitedNodeName = historyRecorder.goBackward(
-      getCurrentRootName(currentPath)
+    const historyStruct = historyRecorder.goBackward(
+      getCurrentRootName(currentPath),
+      curViewingNodeID.current
     );
+    const previouslyVisitedNodeName = historyStruct.currentRootName;
     if (previouslyVisitedNodeName === "") {
       Logger.warn("backClickHandler: no previously visted node");
       return;
@@ -568,6 +581,18 @@ export const TreeViewer = ({ data, heading }) => {
       );
       return;
     }
+    // Open/close the infoviewer depending on if in this state we were viewing a node
+    if (historyStruct.currentlyViewingNodeName !== "") {
+      const viewingNode =
+        nameToNodeMapping[historyStruct.currentlyViewingNodeName];
+      if (!viewingNode) {
+        Logger.error("backClickHandler: error retrieving node from name");
+      } else {
+        manageInfoViewer(viewingNode, VConf.OPEN_INFO_VIEWER, false);
+      }
+    } else {
+      manageInfoViewer({}, VConf.CLOSE_INFO_VIEWER, false);
+    }
     setNewVisibleRoot(previouslyVisitedNode, false);
   };
 
@@ -576,9 +601,11 @@ export const TreeViewer = ({ data, heading }) => {
    * It goes forward one level in the tree, if that exists.
    */
   const forwardClickHandler = () => {
-    const forwardNodeName = historyRecorder.goForward(
-      getCurrentRootName(currentPath)
+    const historyStruct = historyRecorder.goForward(
+      getCurrentRootName(currentPath),
+      curViewingNodeID.current
     );
+    const forwardNodeName = historyStruct.currentRootName;
     if (forwardNodeName === "") {
       Logger.warn("forwardClickHandler: no forward node");
       return;
@@ -589,6 +616,20 @@ export const TreeViewer = ({ data, heading }) => {
         "forwardClickHandler: error finding the forward node given name"
       );
       return;
+    }
+    //Open/close the infoviewer depending on if we were viewing any node's article in this current state
+    if (historyStruct.currentlyViewingNodeName !== "") {
+      const currentlyViewingNode =
+        nameToNodeMapping[historyStruct.currentlyViewingNodeName];
+      if (!currentlyViewingNode) {
+        Logger.error(
+          "forwardClickHandler: error getting currently viewing node from name"
+        );
+      } else {
+        manageInfoViewer(currentlyViewingNode, VConf.OPEN_INFO_VIEWER, false);
+      }
+    } else {
+      manageInfoViewer({}, VConf.CLOSE_INFO_VIEWER, false);
     }
     setNewVisibleRoot(forwardNode, false);
   };
@@ -627,6 +668,7 @@ export const TreeViewer = ({ data, heading }) => {
       clickedLink = clickedLink.substring(0, hashIndex);
     }
     const searchResult = findNodeWithLink(data, clickedLink);
+
     if (searchResult.parent == null && searchResult.node == null) {
       //external link
       window.open(clickedLink, "_blank");
@@ -778,7 +820,7 @@ export const TreeViewer = ({ data, heading }) => {
               disabled={zoomManager && !zoomManager.canZoomOut()}
               onClick={zoomOutHandler}
             >
-              <RemoveIcon
+              <ZoomOutIcon
                 classes={{
                   root: styles.button,
                 }}
@@ -788,7 +830,7 @@ export const TreeViewer = ({ data, heading }) => {
               disabled={zoomManager && !zoomManager.canZoomIn()}
               onClick={zoomInHandler}
             >
-              <AddIcon
+              <ZoomInIcon
                 classes={{
                   root: styles.button,
                 }}

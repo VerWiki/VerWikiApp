@@ -174,10 +174,12 @@ function renderTree(
     .text((node) => {
       if (hoverText === node.data.name) return node.data.name;
 
-      // if name length more than the LABEL_MAX_LENGTH plus buffer
-      if (node.data.name.length > TreeConf.LABEL_MAX_LENGTH + 3) {
-        // truncate at LABEL_MAX_LENGTH
-        return node.data.name.substr(0, TreeConf.LABEL_MAX_LENGTH) + "...";
+      // if name length more than the LABEL_TRUNCATION_LENGTH plus buffer
+      if (node.data.name.length > TreeConf.LABEL_TRUNCATION_LENGTH + 3) {
+        // truncate at LABEL_TRUNCATION_LENGTH
+        return (
+          node.data.name.substr(0, TreeConf.LABEL_TRUNCATION_LENGTH) + "..."
+        );
       } else {
         // else return full name
         return node.data.name;
