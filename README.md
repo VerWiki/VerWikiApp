@@ -88,3 +88,14 @@ The backend in this app runs with Python Flask, and connects to a mongoDB. The f
 8. You can also run the server locally by running `python server.py`.
 9. The `black` python linter will be installed with the Conda environment. You can lint your code by running `black ./backend`. The linter will also be run automatically when you commit any Python files.
 10. You can run all tests in the backend, with line coverage `pytest --cov-report term-missing --cov=path/to/backend/folder path/to/backend/folder`.
+
+## Using Local Logger
+To use the local logger:
+1. Include the path to the logger folder by adding "sys.path.append(/path/to/logger/folder)"
+2. Import Logger and Level by adding "from logger import Logger, Level"
+3. To log, first create the logger ( logger = Logger("logger-name", level) )
+4. The level can be chosen from Level.debug, Level.warning, Level.error, and Level.info
+5. These are in order of importance. For example if the level is debug, then everything gets printed but if the level is error, then warning and debug messages are suppressed
+6. To log a message, all you need to do is write "logger.error("The error message")"
+7. You can switch "error" with the other levels in step above to give different messages.
+8. The logs can now be found under the "logs" folder under the top backend folder.
