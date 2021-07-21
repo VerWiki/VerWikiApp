@@ -51,6 +51,15 @@ export class ZoomManager {
     return this.curZoom;
   }
 
+  //TODO add to readme about currentZoom possibly being momentarily above maxZoom
+  setCurZoom(curZoom) {
+    if (this.getMaxZoom() < curZoom) {
+      Logger.error("new current zoom larger than maxZoom");
+    }
+    this.curZoom = curZoom;
+    return this.curZoom;
+  }
+
   getCurZoom() {
     return this.curZoom;
   }

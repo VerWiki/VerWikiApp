@@ -375,6 +375,7 @@ export const TreeViewer = ({ data, heading }) => {
    * @return {bool} returns whether the newVisibleRoot was set or not
    */
   const setNewVisibleRoot = (newRoot, addHistory = true, force = false) => {
+    console.log(zoomManager.getCurZoom());
     if (newRoot.name == null || newRoot.name === undefined) {
       Logger.warn("setNewVisibleRoot: Node has no name");
       return false;
@@ -388,10 +389,10 @@ export const TreeViewer = ({ data, heading }) => {
     if (addHistory) {
       historyRecorder.addBackwardHistory(
         getCurrentRootName(currentPath),
-        curViewingNodeID.current
+        curViewingNodeID.current,
+        zoomManager.getCurZoom()
       );
     }
-    Logger.debug("The new path is ", path);
 
     //Set new max zoom based on the max depth of this new subtree
     const maxDepth = calculateMaxDepth(newRoot);
@@ -437,7 +438,8 @@ export const TreeViewer = ({ data, heading }) => {
     if (addHistory) {
       historyRecorder.addBackwardHistory(
         getCurrentRootName(currentPath),
-        curViewingNodeID.current
+        curViewingNodeID.current,
+        zoomManager.getCurZoom()
       );
     }
 
@@ -546,17 +548,17 @@ export const TreeViewer = ({ data, heading }) => {
 
   const zoomOutHandler = () => {
     if (zoomManager.canZoomOut()) {
-      zoomManager.zoomOut();
       const currentRoot = nameToNodeMapping[getCurrentRootName(currentPath)];
-      setNewVisibleRoot(currentRoot, false, true);
+      setNewVisibleRoot(currentRoot, true, true);
+      zoomManager.zoomOut();
     }
   };
 
   const zoomInHandler = () => {
     if (zoomManager.canZoomIn()) {
-      zoomManager.zoomIn();
       const currentRoot = nameToNodeMapping[getCurrentRootName(currentPath)];
-      setNewVisibleRoot(currentRoot, false, true);
+      setNewVisibleRoot(currentRoot, true, true);
+      zoomManager.zoomIn();
     }
   };
 
@@ -567,8 +569,10 @@ export const TreeViewer = ({ data, heading }) => {
   const backClickHandler = () => {
     const historyStruct = historyRecorder.goBackward(
       getCurrentRootName(currentPath),
-      curViewingNodeID.current
+      curViewingNodeID.current,
+      zoomManager.getCurZoom()
     );
+    zoomManager.setCurZoom(historyStruct.currentZoom);
     const previouslyVisitedNodeName = historyStruct.currentRootName;
     if (previouslyVisitedNodeName === "") {
       Logger.warn("backClickHandler: no previously visted node");
@@ -603,8 +607,10 @@ export const TreeViewer = ({ data, heading }) => {
   const forwardClickHandler = () => {
     const historyStruct = historyRecorder.goForward(
       getCurrentRootName(currentPath),
-      curViewingNodeID.current
+      curViewingNodeID.current,
+      zoomManager.getCurZoom()
     );
+    zoomManager.setCurZoom(historyStruct.currentZoom);
     const forwardNodeName = historyStruct.currentRootName;
     if (forwardNodeName === "") {
       Logger.warn("forwardClickHandler: no forward node");
@@ -802,8 +808,16 @@ export const TreeViewer = ({ data, heading }) => {
       zoomManager ? zoomManager.getCurZoom() : VConf.INTIAL_ZOOM
     );
     // Trim the subtree to Zoomanager.curZoom and set it as the new tree
+    console.log("Setting new trimmed data");
     setTrimmedData(setOpacity(subTree, hoveredNodeLink, VConf.FADE_OPACITY));
-  }, [currentPath, nameToNodeMapping, hoveredNodeLink, data, zoomManager]);
+  }, [
+    currentPath,
+    nameToNodeMapping,
+    hoveredNodeLink,
+    data,
+    zoomManager,
+    //zoomManager.getCurZoom(), //TODO: This effect does not get called when only the zoom is updated -> how can we get this to happen?
+  ]);
 
   return (
     <div>
