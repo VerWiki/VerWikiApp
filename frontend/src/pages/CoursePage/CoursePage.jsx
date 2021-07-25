@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from "react";
-import styles from "./CoursePage.module.css";
-import { Navigation } from "../../components/Navigation/Navigation";
 import { TreeViewer } from "../../components/TreeViewer/TreeViewer";
 import { useParams } from "react-router-dom";
 import { courseData } from "../../model/courseData";
@@ -12,8 +10,10 @@ export const CoursePage = () => {
   const [treeObj, setTreeObj] = useState({});
 
   useEffect(() => {
-    fetch(`http://localhost:3003/get-tree-by-id/${courseId}`)
-      .then((res) => res.json())
+    fetch(`/get-tree-by-id/${courseId}`)
+      .then((res) => {
+        return res.json();
+      })
       .then(
         (result) => {
           setTreeObj(result);
@@ -29,14 +29,8 @@ export const CoursePage = () => {
   if (error) {
     Viewer = <h2>{`Error: ${error.message}`}</h2>;
   } else {
-    Viewer = <TreeViewer data={treeObj} />;
+    Viewer = <TreeViewer data={treeObj} heading={courseData[courseId].name} />;
   }
 
-  return (
-    <>
-      <Navigation />
-      <h1 className={styles.heading}>{courseData[courseId].name}</h1>
-      {Viewer}
-    </>
-  );
+  return <div>{Viewer}</div>;
 };

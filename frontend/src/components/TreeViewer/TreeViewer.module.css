@@ -1,3 +1,47 @@
+.treeViewerContainer {
+  margin: 0 10px;
+}
+
 .button {
-  color: #757575; /* grey.600 */
+  color: #2d94ed;
+}
+.heading {
+  color: #2d94ed;
+  font-size: 25px;
+}
+
+.backButton {
+  color: #2d94ed;
+  font-size: 25px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  position: relative;
+  transition: 0.2s;
+  left: -20px;
+}
+
+.backButton:hover {
+  color: black;
+  left: 0;
+}
+
+.backButtonArrow {
+  display: flex;
+  visibility: hidden;
+  opacity: 0;
+  position: relative;
+  align-items: center;
+  transition: 0.2s;
+  left: 10px;
+}
+
+.backButton:hover .backButtonArrow {
+  visibility: visible;
+  opacity: 1;
+  left: 0;
+}
+
+.search {
+  width: 200px;
 }

@@ -1,5 +1,6 @@
 import React from "react";
 import "./App.css";
+import "./grid.css";
 import { Switch, Route, BrowserRouter as Router } from "react-router-dom";
 import { ExplorePage } from "./pages/ExplorePage/ExplorePage";
 import { CoursePage } from "./pages/CoursePage/CoursePage";
@@ -9,10 +10,10 @@ import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 const theme = createMuiTheme({
   palette: {
     primary: {
-      main: "#008796",
+      main: "#2d94ed",
     },
     secondary: {
-      main: "#960f00",
+      main: "#dc990a",
     },
   },
   typography: {

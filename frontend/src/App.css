@@ -1,3 +1,43 @@
 .App {
   text-align: center;
 }
+
+.article {
+  display: none;
+  margin: 2%;
+  width: 96%;
+  height: 80%;
+  overflow-y: scroll;
+  animation-name: fadeIn;
+  animation-duration: 1s;
+}
+
+
+@keyframes fadeIn {
+  from {opacity: 0;}
+  to {opacity: 1;}
+}
+
+@keyframes fadeOut {
+  from {opacity: 1;}
+  to {opacity: 0;}
+}
+
+.scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar {
+  scrollbar-width: none;
+}
+
+
+@keyframes fadeIn {
+  from {opacity: 0;}
+  to {opacity: 1;}
+}
+
+@keyframes fadeOut {
+  from {opacity: 1;}
+  to {opacity: 0;}
+}

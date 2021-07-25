@@ -1,6 +1,9 @@
 .nav {
-  background-color: rgb(196, 196, 196);
-  padding: 20px;
+  background-color: white;
+  font-size: 15px;
+  position: fixed;
+  top: 0;
+  width: 100%;
 }
 
 .nav ul {
@@ -11,7 +14,6 @@
 
 .nav ul li {
   display: inline;
-  padding: 0 10px;
 }
 
 .link {
@@ -37,5 +39,5 @@
 .link:active {
   text-decoration: none;
   color: white;
-  background-color: rgb(116, 116, 116);
+  background-color: #2d94ed;
 }

@@ -2,6 +2,37 @@ from pymongo import MongoClient, errors
 
 VERWIKI_DB_NAME = "verwiki"
 TREES_TABLE_NAME = "radialTrees"
+LINKS_TABLE_NAME = "nodeLinks"
+
+
+class Utils:
+    @staticmethod
+    def add_child_counts(tree: object) -> object:
+        """
+        Recursive function to add the numChildren field of each node in the tree.
+        tree: The "data" field of the tree (not the entire tree itself).
+        returns the updated tree.
+        """
+        children = tree.get("children", [])
+        tree["numChildren"] = len(children)
+        for i, child in enumerate(children):
+            subtree = Utils.add_child_counts(child)
+            tree["children"][i] = subtree
+        return tree
+
+    @staticmethod
+    def pretty_printer(d: object, indent: int = 0):
+        """
+        Prints a python dictionary in a readable fashion.
+        d = python dictionary to print.
+        indent = how much to indent the children in each level.
+        """
+        for key, value in d.items():
+            print("\t" * indent + str(key))
+            if isinstance(value, dict):
+                Utils.pretty_printer(value, indent + 1)
+            else:
+                print("\t" * (indent + 1) + str(value))
 
 
 def get_tree_by_id(id: int) -> object:
@@ -23,6 +54,26 @@ def get_tree_by_id(id: int) -> object:
         print("ERROR MALFORMED DATA IN DATABASE")
         raise TypeError(f"Malformed data in DB for key {id}")
     return output["data"]
+
+
+## TODO THIS FUNCTION IS DEPRECATED TO BE REMOVED
+def get_link_by_node_id(node_id: str) -> str:
+    """
+    Gets the associated wiki link for the given node ID, and returns it.
+    """
+    try:
+        client = validate_and_retrieve_client()
+    except Exception as e:
+        raise e
+    output = client[VERWIKI_DB_NAME][LINKS_TABLE_NAME].find_one({"id": node_id})
+    client.close()
+    if not output:
+        raise KeyError(f"No link found for node {node_id}")
+    if "link" not in output:
+        # We should never get this; data should be validated before entering DB!
+        print("ERROR MALFORMED DATA IN DATABASE")
+        raise TypeError(f"Malformed data in DB for key {node_id}")
+    return output["link"]
 
 
 def validate_and_retrieve_client() -> MongoClient:
@@ -57,7 +108,3 @@ def validate_and_retrieve_client() -> MongoClient:
             init collections and data by running repopulate_db.py"
         )
     return client
-
-
-if __name__ == "__main__":
-    pass
