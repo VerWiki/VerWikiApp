@@ -362,6 +362,7 @@ export const TreeViewer = ({ data, heading }) => {
   const [infoViewingLink, setInfoViewingLink] = useState("");
   const curViewingNodeID = useRef("");
   const contentRef = createRef();
+  const [curZoomLevel, setCurZoomLevel] = useState(VConf.INTIAL_ZOOM);
 
   /**
    * Given a node, this function resets the path to indicate that the node will
@@ -550,7 +551,7 @@ export const TreeViewer = ({ data, heading }) => {
     if (zoomManager.canZoomOut()) {
       const currentRoot = nameToNodeMapping[getCurrentRootName(currentPath)];
       setNewVisibleRoot(currentRoot, true, true);
-      zoomManager.zoomOut();
+      setCurZoomLevel(zoomManager.zoomOut());
     }
   };
 
@@ -558,7 +559,7 @@ export const TreeViewer = ({ data, heading }) => {
     if (zoomManager.canZoomIn()) {
       const currentRoot = nameToNodeMapping[getCurrentRootName(currentPath)];
       setNewVisibleRoot(currentRoot, true, true);
-      zoomManager.zoomIn();
+      setCurZoomLevel(zoomManager.zoomIn());
     }
   };
 
@@ -573,6 +574,7 @@ export const TreeViewer = ({ data, heading }) => {
       zoomManager.getCurZoom()
     );
     zoomManager.setCurZoom(historyStruct.currentZoom);
+    setCurZoomLevel(historyStruct.currentZoom);
     const previouslyVisitedNodeName = historyStruct.currentRootName;
     if (previouslyVisitedNodeName === "") {
       Logger.warn("backClickHandler: no previously visted node");
@@ -611,6 +613,7 @@ export const TreeViewer = ({ data, heading }) => {
       zoomManager.getCurZoom()
     );
     zoomManager.setCurZoom(historyStruct.currentZoom);
+    setCurZoomLevel(historyStruct.currentZoom);
     const forwardNodeName = historyStruct.currentRootName;
     if (forwardNodeName === "") {
       Logger.warn("forwardClickHandler: no forward node");
@@ -816,6 +819,7 @@ export const TreeViewer = ({ data, heading }) => {
     hoveredNodeLink,
     data,
     zoomManager,
+    curZoomLevel,
     //zoomManager.getCurZoom(), //TODO: This effect does not get called when only the zoom is updated -> how can we get this to happen?
   ]);
 
