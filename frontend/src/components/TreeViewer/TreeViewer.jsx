@@ -374,7 +374,13 @@ export const TreeViewer = ({ data, heading }) => {
    * already or not
    * @return {bool} returns whether the newVisibleRoot was set or not
    */
-  const setNewVisibleRoot = (newRoot, addHistory = true, force = false) => {
+  const setNewVisibleRoot = (
+    newRoot,
+    addHistory = true,
+    force = false,
+    zoom = null
+  ) => {
+    console.log("CURRENT ZOOM IS " + zoomManager.getCurZoom());
     if (newRoot.name == null || newRoot.name === undefined) {
       Logger.warn("setNewVisibleRoot: Node has no name");
       return false;
@@ -388,13 +394,17 @@ export const TreeViewer = ({ data, heading }) => {
     if (addHistory) {
       historyRecorder.addBackwardHistory(
         getCurrentRootName(currentPath),
-        curViewingNodeID.current
+        curViewingNodeID.current,
+        zoomManager.getCurZoom()
       );
     }
     Logger.debug("The new path is ", path);
 
     //Set new max zoom based on the max depth of this new subtree
     const maxDepth = calculateMaxDepth(newRoot);
+    if (zoom !== null) {
+      zoomManager.updateMaxZoom(zoom);
+    }
     zoomManager.updateMaxZoom(maxDepth);
     setCurrentPath(path);
     return true;
@@ -437,7 +447,8 @@ export const TreeViewer = ({ data, heading }) => {
     if (addHistory) {
       historyRecorder.addBackwardHistory(
         getCurrentRootName(currentPath),
-        curViewingNodeID.current
+        curViewingNodeID.current,
+        zoomManager.getCurZoom()
       );
     }
 
@@ -548,7 +559,7 @@ export const TreeViewer = ({ data, heading }) => {
     if (zoomManager.canZoomOut()) {
       zoomManager.zoomOut();
       const currentRoot = nameToNodeMapping[getCurrentRootName(currentPath)];
-      setNewVisibleRoot(currentRoot, false, true);
+      setNewVisibleRoot(currentRoot, true, true);
     }
   };
 
@@ -556,7 +567,7 @@ export const TreeViewer = ({ data, heading }) => {
     if (zoomManager.canZoomIn()) {
       zoomManager.zoomIn();
       const currentRoot = nameToNodeMapping[getCurrentRootName(currentPath)];
-      setNewVisibleRoot(currentRoot, false, true);
+      setNewVisibleRoot(currentRoot, true, true);
     }
   };
 
@@ -567,7 +578,8 @@ export const TreeViewer = ({ data, heading }) => {
   const backClickHandler = () => {
     const historyStruct = historyRecorder.goBackward(
       getCurrentRootName(currentPath),
-      curViewingNodeID.current
+      curViewingNodeID.current,
+      zoomManager.getCurZoom()
     );
     const previouslyVisitedNodeName = historyStruct.currentRootName;
     if (previouslyVisitedNodeName === "") {
@@ -593,7 +605,12 @@ export const TreeViewer = ({ data, heading }) => {
     } else {
       manageInfoViewer({}, VConf.CLOSE_INFO_VIEWER, false);
     }
-    setNewVisibleRoot(previouslyVisitedNode, false);
+    setNewVisibleRoot(
+      previouslyVisitedNode,
+      false,
+      false,
+      historyStruct.curZoomLevel
+    );
   };
 
   /**
@@ -603,7 +620,8 @@ export const TreeViewer = ({ data, heading }) => {
   const forwardClickHandler = () => {
     const historyStruct = historyRecorder.goForward(
       getCurrentRootName(currentPath),
-      curViewingNodeID.current
+      curViewingNodeID.current,
+      zoomManager.getCurZoom()
     );
     const forwardNodeName = historyStruct.currentRootName;
     if (forwardNodeName === "") {
@@ -631,7 +649,7 @@ export const TreeViewer = ({ data, heading }) => {
     } else {
       manageInfoViewer({}, VConf.CLOSE_INFO_VIEWER, false);
     }
-    setNewVisibleRoot(forwardNode, false);
+    setNewVisibleRoot(forwardNode, false, false, historyStruct.curZoomLevel);
   };
 
   /**
