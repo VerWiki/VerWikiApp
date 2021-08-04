@@ -812,13 +812,13 @@ export const TreeViewer = ({ data, heading }) => {
     );
     // Trim the subtree to Zoomanager.curZoom and set it as the new tree
     console.log("Setting new trimmed data");
-    zoomManager
-      ? console.log(
-          zoomManager.getCurZoom(),
-          "The problem is when you zoom in -> click on another root, then clicking back doesnt track accurate history. Printing backward history shows the issue.",
-          "Another issue found, doing anything that should add to the backward history, after pressing zoom in, doesnt add it to the history. Try zooming in and out, and pressing back button."
-        )
-      : console.log("ZoomManager doesnt exist");
+    // zoomManager
+    //   ? console.log(
+    //       zoomManager.getCurZoom(),
+    //       "The problem is when you zoom in -> click on another root, then clicking back doesnt track accurate history. Printing backward history shows the issue.",
+    //       "Another issue found, doing anything that should add to the backward history, after pressing zoom in, doesnt add it to the history. Try zooming in and out, and pressing back button."
+    //     )
+    //   : console.log("ZoomManager doesnt exist");
 
     historyRecorder
       ? console.log(historyRecorder.backwardHistory)

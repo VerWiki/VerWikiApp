@@ -33,15 +33,17 @@ export class HistoryRecorder {
   addBackwardHistory(currentRootName, currentlyViewingNodeName, currentZoom) {
     //Check that we are not adding a duplicate entry into the history - can happen if the user left-clicked on the same node
     //again without going to another infoview article
+    console.log("Considering adding backward history");
     if (
       this.backwardHistory.length === 0 ||
       this.backwardHistory[this.backwardHistory.length - 1].currentRootName !==
         currentRootName ||
       this.backwardHistory[this.backwardHistory.length - 1]
         .currentlyViewingNodeName !== currentlyViewingNodeName ||
-      this.backwardHistory[this.backwardHistory.length - 1].currentZoom ===
+      this.backwardHistory[this.backwardHistory.length - 1].currentZoom !==
         currentZoom
     ) {
+      console.log("Adding backward history");
       this.backwardHistory.push({
         currentRootName: currentRootName,
         currentlyViewingNodeName: currentlyViewingNodeName,
