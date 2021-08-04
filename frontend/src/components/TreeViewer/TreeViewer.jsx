@@ -376,7 +376,6 @@ export const TreeViewer = ({ data, heading }) => {
    * @return {bool} returns whether the newVisibleRoot was set or not
    */
   const setNewVisibleRoot = (newRoot, addHistory = true, force = false) => {
-    //console.log(zoomManager.getCurZoom());
     if (newRoot.name == null || newRoot.name === undefined) {
       Logger.warn("setNewVisibleRoot: Node has no name");
       return false;
@@ -811,19 +810,6 @@ export const TreeViewer = ({ data, heading }) => {
       zoomManager ? zoomManager.getCurZoom() : VConf.INTIAL_ZOOM
     );
     // Trim the subtree to Zoomanager.curZoom and set it as the new tree
-    console.log("Setting new trimmed data");
-    // zoomManager
-    //   ? console.log(
-    //       zoomManager.getCurZoom(),
-    //       "The problem is when you zoom in -> click on another root, then clicking back doesnt track accurate history. Printing backward history shows the issue.",
-    //       "Another issue found, doing anything that should add to the backward history, after pressing zoom in, doesnt add it to the history. Try zooming in and out, and pressing back button."
-    //     )
-    //   : console.log("ZoomManager doesnt exist");
-
-    historyRecorder
-      ? console.log(historyRecorder.backwardHistory)
-      : console.log("history Recorder does not exist.");
-
     setTrimmedData(setOpacity(subTree, hoveredNodeLink, VConf.FADE_OPACITY));
   }, [
     currentPath,
@@ -832,7 +818,6 @@ export const TreeViewer = ({ data, heading }) => {
     data,
     zoomManager,
     curZoomLevel,
-    //zoomManager.getCurZoom(), //TODO: This effect does not get called when only the zoom is updated -> how can we get this to happen?
   ]);
 
   return (
