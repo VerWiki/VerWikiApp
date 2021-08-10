@@ -24,11 +24,13 @@ export class HistoryRecorder {
    * Adds a historyStruct to the backward history, in the form of {
         currentRootName: <String>,
         currentlyViewingNodeName: <String>,
+        currentZoom: <int>
       }
    * @param {string} currentRootName : Current root of the visible tree
    * @param {string} currentlyViewingNodeName : Node whose article is being seen in infoViewer, "" if infoViewer not open
+   * @param {int} currentZoom : The current zoom level
    */
-  addBackwardHistory(currentRootName, currentlyViewingNodeName) {
+  addBackwardHistory(currentRootName, currentlyViewingNodeName, currentZoom) {
     //Check that we are not adding a duplicate entry into the history - can happen if the user left-clicked on the same node
     //again without going to another infoview article
     if (
@@ -36,11 +38,14 @@ export class HistoryRecorder {
       this.backwardHistory[this.backwardHistory.length - 1].currentRootName !==
         currentRootName ||
       this.backwardHistory[this.backwardHistory.length - 1]
-        .currentlyViewingNodeName !== currentlyViewingNodeName
+        .currentlyViewingNodeName !== currentlyViewingNodeName ||
+      this.backwardHistory[this.backwardHistory.length - 1].currentZoom !==
+        currentZoom
     ) {
       this.backwardHistory.push({
         currentRootName: currentRootName,
         currentlyViewingNodeName: currentlyViewingNodeName,
+        currentZoom: currentZoom,
       });
     }
     this.forwardHistory = [];
@@ -52,12 +57,14 @@ export class HistoryRecorder {
    * so that the forward history works.
    * @param {String} currentRootName: The name of the currently visible root
    * @param {String} currentlyViewingNodeName : Node whose article is being seen in infoViewer, "" if infoViewer not open
+   * @param {int} currentZoom : The current zoom level
    * @returns {struct} in the form of {
         currentRootName: <String>,
         currentlyViewingNodeName: <String>,
+        currentZoom: <int>
       }
    */
-  goBackward(currentRootName, currentlyViewingNodeName) {
+  goBackward(currentRootName, currentlyViewingNodeName, currentZoom) {
     if (!this.canGoBackward()) return "";
     // Pop the last node from the current path and add
     // it to the forwardHistory
@@ -65,6 +72,7 @@ export class HistoryRecorder {
     this.forwardHistory.push({
       currentRootName: currentRootName,
       currentlyViewingNodeName: currentlyViewingNodeName,
+      currentZoom: currentZoom,
     });
     return historyStruct;
   }
@@ -74,16 +82,19 @@ export class HistoryRecorder {
    * root node to the backward history so that the backward history works.
    * @param {String} currentRootName The name of the currently visible root
    * @param {string} currentlyViewingNodeName : Node whose article is being seen in infoViewer, "" if infoViewer not open
+   * @param {int} currentZoom : The current zoom level
    * @returns {struct} in the form of {
         currentRootName: <String>,
         currentlyViewingNodeName: <String>,
+        currentZoom: <int>,
       }
    */
-  goForward(currentRootName, currentlyViewingNodeName) {
+  goForward(currentRootName, currentlyViewingNodeName, currentZoom) {
     if (!this.canGoForward()) return "";
     this.backwardHistory.push({
       currentRootName: currentRootName,
       currentlyViewingNodeName: currentlyViewingNodeName,
+      currentZoom: currentZoom,
     });
     const historyStruct = this.forwardHistory.pop();
     return historyStruct;
