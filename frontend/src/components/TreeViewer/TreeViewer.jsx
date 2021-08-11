@@ -362,6 +362,7 @@ export const TreeViewer = ({ data, heading }) => {
   const [infoViewingLink, setInfoViewingLink] = useState("");
   const curViewingNodeID = useRef("");
   const contentRef = createRef();
+  const [curZoomLevel, setCurZoomLevel] = useState(VConf.INTIAL_ZOOM);
 
   /**
    * Given a node, this function resets the path to indicate that the node will
@@ -388,10 +389,10 @@ export const TreeViewer = ({ data, heading }) => {
     if (addHistory) {
       historyRecorder.addBackwardHistory(
         getCurrentRootName(currentPath),
-        curViewingNodeID.current
+        curViewingNodeID.current,
+        zoomManager.getCurZoom()
       );
     }
-    Logger.debug("The new path is ", path);
 
     //Set new max zoom based on the max depth of this new subtree
     const maxDepth = calculateMaxDepth(newRoot);
@@ -437,7 +438,8 @@ export const TreeViewer = ({ data, heading }) => {
     if (addHistory) {
       historyRecorder.addBackwardHistory(
         getCurrentRootName(currentPath),
-        curViewingNodeID.current
+        curViewingNodeID.current,
+        zoomManager.getCurZoom()
       );
     }
 
@@ -546,17 +548,17 @@ export const TreeViewer = ({ data, heading }) => {
 
   const zoomOutHandler = () => {
     if (zoomManager.canZoomOut()) {
-      zoomManager.zoomOut();
       const currentRoot = nameToNodeMapping[getCurrentRootName(currentPath)];
-      setNewVisibleRoot(currentRoot, false, true);
+      setNewVisibleRoot(currentRoot, true, true);
+      setCurZoomLevel(zoomManager.zoomOut());
     }
   };
 
   const zoomInHandler = () => {
     if (zoomManager.canZoomIn()) {
-      zoomManager.zoomIn();
       const currentRoot = nameToNodeMapping[getCurrentRootName(currentPath)];
-      setNewVisibleRoot(currentRoot, false, true);
+      setNewVisibleRoot(currentRoot, true, true);
+      setCurZoomLevel(zoomManager.zoomIn());
     }
   };
 
@@ -567,8 +569,11 @@ export const TreeViewer = ({ data, heading }) => {
   const backClickHandler = () => {
     const historyStruct = historyRecorder.goBackward(
       getCurrentRootName(currentPath),
-      curViewingNodeID.current
+      curViewingNodeID.current,
+      zoomManager.getCurZoom()
     );
+    zoomManager.setCurZoom(historyStruct.currentZoom);
+    setCurZoomLevel(historyStruct.currentZoom);
     const previouslyVisitedNodeName = historyStruct.currentRootName;
     if (previouslyVisitedNodeName === "") {
       Logger.warn("backClickHandler: no previously visted node");
@@ -603,8 +608,11 @@ export const TreeViewer = ({ data, heading }) => {
   const forwardClickHandler = () => {
     const historyStruct = historyRecorder.goForward(
       getCurrentRootName(currentPath),
-      curViewingNodeID.current
+      curViewingNodeID.current,
+      zoomManager.getCurZoom()
     );
+    zoomManager.setCurZoom(historyStruct.currentZoom);
+    setCurZoomLevel(historyStruct.currentZoom);
     const forwardNodeName = historyStruct.currentRootName;
     if (forwardNodeName === "") {
       Logger.warn("forwardClickHandler: no forward node");
@@ -803,7 +811,14 @@ export const TreeViewer = ({ data, heading }) => {
     );
     // Trim the subtree to Zoomanager.curZoom and set it as the new tree
     setTrimmedData(setOpacity(subTree, hoveredNodeLink, VConf.FADE_OPACITY));
-  }, [currentPath, nameToNodeMapping, hoveredNodeLink, data, zoomManager]);
+  }, [
+    currentPath,
+    nameToNodeMapping,
+    hoveredNodeLink,
+    data,
+    zoomManager,
+    curZoomLevel,
+  ]);
 
   return (
     <div>
