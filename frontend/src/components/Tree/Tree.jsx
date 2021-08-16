@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import styles from "./Tree.module.css";
-import { select, hierarchy, tree, linkRadial, ascending } from "d3";
+import { select, hierarchy, tree, linkRadial, ascending, event } from "d3";
 import ResizeObserver from "resize-observer-polyfill";
 import "./Tree.module.css";
 import { usePrevious, sigmoid, autoBox } from "../../utils/utils";
@@ -89,6 +89,28 @@ function renderTree(
 
   // Create the node group, which will hold the nodes and labels
   const nodeGroup = svg.selectAll(".node-group").data(root.descendants());
+  const tooltipGroup = svg
+    .append("g")
+    .attr("opacity", 0)
+    .attr("class", "abcd")
+    .attr(
+      "transform",
+      (d) => `
+        translate(100,100)
+      `
+    );
+
+  const tooltip = tooltipGroup
+    .append("rect")
+    .attr("width", 130)
+    .attr("height", 30)
+    .attr("fill", "#69a3b2");
+
+  const tooltipText = tooltipGroup
+    .append("text")
+    .text("Right click this node")
+    .attr("x", 5)
+    .attr("y", 20);
 
   // Append a `g` element, to group SVG shapes together.
   // More info at https://stackoverflow.com/questions/17057809/d3-js-what-is-g-in-appendg-d3-js-code
@@ -102,6 +124,7 @@ function renderTree(
     .on("contextmenu", onRightClick);
 
   nodeGroup.exit().remove();
+  // svg.selectAll("abcd").exit().remove();
 
   // Add nodes to the node group
   nodeGroupEnter
@@ -133,6 +156,26 @@ function renderTree(
         return TreeConf.VIEWING_NODE_SIZE;
       }
       return TreeConf.NODE_SIZE;
+    })
+    .on("mouseover", function (d) {
+      const dx = d.x;
+      const dy = d.y;
+
+      tooltipGroup.style("opacity", 0.9);
+      tooltipGroup.attr("transform", (d) => {
+        console.log(dx, dy);
+
+        return `
+          translate(10,10)
+        `;
+      });
+      // div
+      //   .html(formatTime(d.date) + "<br/>" + d.close)
+      //   .style("left", d3.event.pageX + "px")
+      //   .style("top", d3.event.pageY - 28 + "px");
+    })
+    .on("mouseout", function (d) {
+      tooltipGroup.style("opacity", 0);
     });
 
   // Add labels to the node group
