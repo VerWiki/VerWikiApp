@@ -28,7 +28,11 @@ yarn-error.log*
 .eslintcache
 
 # python
-*/__pycache__
+*/__pycache__*
 backend-coverage.txt
 node_modules
+
+#Swap files
+*~
+*.swp
 backend/tests/__pycache__
