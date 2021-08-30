@@ -1153,3 +1153,282 @@ tree4["data"] = Utils.add_child_counts(tree4["data"])
 
 result = radialTrees.insert_one(tree4)
 print(result.inserted_id)
+
+tree5 = {
+    "id": 5,
+    "data": {
+        "name": "PSY370",
+        "children": [
+            {
+                "name": "Search-Inference Framework",
+                "url": "https://cwsl.ca/wiki/doku.php?id=operationalizing_problem_solving#newel_and_simonthe_search-inference_framework",
+                "children": [
+                    {
+                        "name": "General Problem Solver",
+                        "url": "https://cwsl.ca/wiki/doku.php?id=operationalizing_problem_solving#the_gps_and_the_4_key_elements_to_a_problem",
+                        "children": [],
+                    },
+                    {
+                        "name": "Combinatorial Explosion",
+                        "url": "https://cwsl.ca/wiki/doku.php?id=operationalizing_problem_solving#problem_formulation_in_a_theory_of_problem_solving_and_the_central_difficulties_of_search-inferenceholyoak_1990",
+                        "children": [],
+                    },
+                    {
+                        "name": "2 Problem Solving Methods",
+                        "url": "https://cwsl.ca/wiki/doku.php?id=operationalizing_problem_solving#two_problem_solving_methods_and_the_mutilated_chessboard_problemholyoak_part_2",
+                        "children": [
+                            {
+                                "name": "Means-End Heuristic",
+                                "url": "https://cwsl.ca/wiki/doku.php?id=operationalizing_problem_solving#newel_and_simon_holyoak_and_the_means-end_heuristic",
+                                "children": [],
+                            }
+                        ],
+                    },
+                    {
+                        "name": "2 Types of Problems",
+                        "url": "https://cwsl.ca/wiki/doku.php?id=operationalizing_problem_solving#two_types_of_problems_and_the_flawed_assumptions_of_the_gps",
+                        "children": [],
+                    },
+                ],
+            },
+            {
+                "name": "Gestalt Framework",
+                "url": "https://cwsl.ca/wiki/doku.php?id=operationalizing_problem_solving#introducing_gestalt_psychologythe_mental_set_restructuring_and_the_9-dot_problem",
+                "children": [
+                    {
+                        "name": "Insight",
+                        "url": "https://cwsl.ca/wiki/doku.php?id=operationalizing_problem_solving#the_gestalt_school_revisitedinsight_restructuring_and_the_9-dot_problem",
+                        "children": [],
+                    },
+                    {
+                        "name": "S-Learning Curve",
+                        "url": "https://cwsl.ca/wiki/doku.php?id=operationalizing_problem_solving#restructuring_and_learning_to_learnthorndike_s_learning_theory_1898_harlowe_s_learning_sets_and_the_s-learning_curve",
+                        "children": [],
+                    },
+                    {
+                        "name": "Kohler (1929)",
+                        "url": "https://cwsl.ca/wiki/doku.php?id=operationalizing_problem_solving#gestaltist_s_reply_to_thorndike_1898kohler_s_insight_experiments_1929_concerning_sultan_the_chimpanzee",
+                        "children": [],
+                    },
+                    {
+                        "name": "9-Dot Problem",
+                        "url": "https://cwsl.ca/wiki/doku.php?id=operationalizing_problem_solving#problem_formulation_and_restructuring_within_the_gestalt_paradigmthe_9-dot_problem",
+                        "children": [],
+                    },
+                    {
+                        "name": "Duncker Radiation Problem (1945)",
+                        "url": "https://cwsl.ca/wiki/doku.php?id=operationalizing_problem_solving#duncker_1945the_2_methods_of_reformulation_and_the_radiation_problem",
+                        "children": [],
+                    },
+                    {
+                        "name": "Functional Fixedness (Maier’s Two Cord Problem)",
+                        "url": "https://cwsl.ca/wiki/doku.php?id=operationalizing_problem_solving#restructuring_fixation_and_functional_fixednessduncker_s_second_method_of_reformualtion_1945_and_maier_s_two-cord_problem_1931",
+                        "children": [],
+                    },
+                    {
+                        "name": "Wertheimer (1959)",
+                        "url": "https://cwsl.ca/wiki/doku.php?id=operationalizing_problem_solving#wertheimer_1959the_implication_of_attention_in_problem_solving",
+                        "children": [],
+                    },
+                    {
+                        "name": "Chunking and Expertise",
+                        "url": "https://cwsl.ca/wiki/doku.php?id=operationalizing_problem_solving#restructuring_mental_sets_chunking_and_the_role_of_expertisedegroot_1965_chase_and_simon_1973",
+                        "children": [],
+                    },
+                ],
+            },
+            {
+                "name": "Insight Debate",
+                "url": "https://cwsl.ca/wiki/doku.php?id=theoretical_debate_and_experimental_competition_on_insight#theoretical_debate_and_experimental_competition_on_insight",
+                "children": [
+                    {
+                        "name": "Think Outside the Box: Weisberg and Alba (1981)",
+                        "url": "https://cwsl.ca/wiki/doku.php?id=theoretical_debate_and_experimental_competition_on_insight#think_outside_the_box_and_the_business_as_usual_perspectiveweisberg_and_alba_s_challenging_of_the_gestaltist_s_notion_of_fixation_1981",
+                        "children": [
+                            {
+                                "name": "Criticism: Dominowski (1981); Casselman and Meyer (1970)",
+                                "url": "https://cwsl.ca/wiki/doku.php?id=theoretical_debate_and_experimental_competition_on_insight#criticism_of_weisberg_and_alba_1981_by_dominoswki_1981_and_casselman_and_meyer_1970confusing_necessity_and_sufficiency_and_the_single_difficulty_hypothesis",
+                                "children": [],
+                            }
+                        ],
+                    },
+                    {
+                        "name": "Feeling of Knowing and Feeling of Warmth",
+                        "url": "https://cwsl.ca/wiki/doku.php?id=theoretical_debate_and_experimental_competition_on_insight#feeling_of_knowing_feeling_of_warmth_and_insight_problem_solvingmetcalfe_and_wiebbe_19861987_and_their_challenging_of_the_assumptions_of_the_search-inference_framework",
+                        "children": [
+                            {
+                                "name": "Metcalfe and Wiebbe (1987)",
+                                "url": "https://cwsl.ca/wiki/doku.php?id=theoretical_debate_and_experimental_competition_on_insight#experiment_3metcalfe_and_wiebbe_1987",
+                                "children": [],
+                            }
+                        ],
+                    },
+                    {
+                        "name": "Verbal Overshadowing (Schooler)",
+                        "url": "https://cwsl.ca/wiki/doku.php?id=theoretical_debate_and_experimental_competition_on_insight#schooler_ohlssen_and_brooks_1993verbal_overshadowing_it_s_effects_on_insight_and_criticisms_of_the_construct",
+                        "children": [
+                            {
+                                "name": "Individual Differences and Insight",
+                                "url": "https://cwsl.ca/wiki/doku.php?id=theoretical_debate_and_experimental_competition_on_insight#schooler_mccleod_brooks_and_melcher_1993individual_differences_and_their_implications_for_insight_problem_solving",
+                                "children": [],
+                            },
+                            {
+                                "name": "Criticism of Verbal Overshadowing",
+                                "url": "https://cwsl.ca/wiki/doku.php?id=theoretical_debate_and_experimental_competition_on_insight#criticisms_of_verbal_overshadowing_and_the_implications_of_attention_in_insight",
+                                "children": [],
+                            },
+                            {
+                                "name": "Weisberg and Fleck (2004)",
+                                "url": "https://cwsl.ca/wiki/doku.php?id=theoretical_debate_and_experimental_competition_on_insight#insight_the_candle_problem_and_verbal_overshadowingfleck_and_weisberg_2004",
+                                "children": [],
+                            },
+                        ],
+                    },
+                    {
+                        "name": "Cognitive Leaping (Baker-Sennet and Cici 1996)",
+                        "url": "https://cwsl.ca/wiki/doku.php?id=theoretical_debate_and_experimental_competition_on_insight#baker-sennet_and_cici_1996cognitive_leaping_pattern_completion_and_a_hybrid_approach_to_formalizing_insight",
+                        "children": [],
+                    },
+                    {
+                        "name": "Notice Invariance Heuristic (Kaplan and Simon 1990)",
+                        "url": "https://cwsl.ca/wiki/doku.php?id=theoretical_debate_and_experimental_competition_on_insight#rebuttal_from_the_search-inference_frameworkkaplan_and_simon_s_in_search_of_insight_1990_the_notice_invariants_heuristic_and_the_importance_of_selectivity_in_search",
+                        "children": [
+                            {
+                                "name": "Mutilated Chessboard Problem",
+                                "url": "https://cwsl.ca/wiki/doku.php?id=theoretical_debate_and_experimental_competition_on_insight#notice_invariance_and_the_mutilated_chessboardprescience_and_pitfalls_of_kaplan_and_simon_s_explanation_of_insight",
+                                "children": [],
+                            },
+                            {
+                                "name": "Gick and McGary (1992)",
+                                "url": "https://cwsl.ca/wiki/doku.php?id=theoretical_debate_and_experimental_competition_on_insight#replication_of_the_notice_invariance_heuristic_in_insightgick_and_mcgarry_1992_and_the_effects_of_indexing_past_failures",
+                                "children": [],
+                            },
+                            {
+                                "name": "Covert Attention (Thomas and Lleras 2009)",
+                                "url": "https://cwsl.ca/wiki/doku.php?id=theoretical_debate_and_experimental_competition_on_insight#insight_and_covert_shifts_of_attentionthomas_and_lleras_2009",
+                                "children": [],
+                            },
+                            {
+                                "name": "Weisberg Criticism 2 (1996)",
+                                "url": "https://cwsl.ca/wiki/doku.php?id=theoretical_debate_and_experimental_competition_on_insight#weisberg_s_second_response_to_the_insight_debate_1996problematic_assumptions_of_insight_problems_and_a_cluster_analysis_by_gilhooly_and_murphy_2005",
+                                "children": [],
+                            },
+                            {
+                                "name": "Hemispheric Lateralization (Beeman and Kounios 2015)",
+                                "url": "https://cwsl.ca/wiki/doku.php?id=theoretical_debate_and_experimental_competition_on_insight#the_effects_of_cultural_artifacts_on_insightslepian_et_al_2010",
+                                "children": [],
+                            },
+                            {
+                                "name": "Positive Manifold for Insight (Gilhooly and Murphy 2005)",
+                                "url": "https://cwsl.ca/wiki/doku.php?id=theoretical_debate_and_experimental_competition_on_insight#response_by_gilhooly_and_murphy_2005a_cluster_analysis_of_insight_problems",
+                                "children": [],
+                            },
+                            {
+                                "name": "Slepian et al. (2010)",
+                                "url": "https://cwsl.ca/wiki/doku.php?id=theoretical_debate_and_experimental_competition_on_insight#the_effects_of_cultural_artifacts_on_insightslepian_et_al_2010",
+                                "children": [],
+                            },
+                        ],
+                    },
+                ],
+            },
+            {
+                "name": "Creativity",
+                "url": "https://cwsl.ca/wiki/doku.php?id=creativity_and_analogy#the_psychology_of_creativityinsight_incubation_and_analogy_in_problem_solving",
+                "children": [
+                    {
+                        "name": "4 Phases in Creativity (Wallas 1926)",
+                        "url": "https://cwsl.ca/wiki/doku.php?id=creativity_and_analogy#introduction_to_creativity4_steps_to_the_creative_process_wallas_1926",
+                        "children": [],
+                    },
+                    {
+                        "name": "Boden (1990)",
+                        "url": "https://cwsl.ca/wiki/doku.php?id=creativity_and_analogy#beyond_a_common-sense_definition_of_creativity_and_it_s_use_of_analogyboden_19961998",
+                        "children": [],
+                    },
+                    {
+                        "name": "Analogy",
+                        "url": "https://cwsl.ca/wiki/doku.php?id=creativity_and_analogy#introduction_to_analogy_and_it_s_role_in_creativityholyoak_1990",
+                        "children": [
+                            {
+                                "name": "Structure Mapping Theory",
+                                "url": "https://cwsl.ca/wiki/doku.php?id=creativity_and_analogy#the_structure-mapping_theory_of_analogical_learninggentner_1989",
+                                "children": [],
+                            }
+                        ],
+                    },
+                ],
+            },
+            {
+                "name": "Motivation",
+                "url": "https://cwsl.ca/wiki/doku.php?id=intrinsic_and_extrinsic_motivation#mechanisms_for_creativitymodels_of_motivation",
+                "children": [
+                    {
+                        "name": "Intrinsic and Extrinsic Motivation (Amabile 1983)",
+                        "url": "https://cwsl.ca/wiki/doku.php?id=intrinsic_and_extrinsic_motivation#mechanisms_for_creativitymodels_of_motivation",
+                        "children": [],
+                    },
+                    {
+                        "name": "Reversal Theory and Metamotivation (Apter)",
+                        "url": "https://cwsl.ca/wiki/doku.php?id=intrinsic_and_extrinsic_motivation#introduction_to_reversal_theory_and_metamotivationapter_1984_and_motivation_as_changes_in_arousal",
+                        "children": [],
+                    },
+                    {
+                        "name": "Optimal Arousal Theory (Hebb 1955)",
+                        "url": "https://cwsl.ca/wiki/doku.php?id=intrinsic_and_extrinsic_motivation#reversal_theory_versus_homeostatic_theories_of_motivationapter_1984_and_hebb_s_optimal_arousal_theory_1955",
+                        "children": [],
+                    },
+                ],
+            },
+            {
+                "name": "Rationality",
+                "url": "https://cwsl.ca/wiki/doku.php?id=rationality_thinking_dispositions_and_cognitive_styles#rationality_thinking_dispositions_and_levels_of_analysis_in_cognitive_science",
+                "children": [
+                    {
+                        "name": "2 Cognitive Styles",
+                        "url": "https://cwsl.ca/wiki/doku.php?id=rationality_thinking_dispositions_and_cognitive_styles#psychotechnologies_second-order_thinking_and_enhancing_cognitive_scope_through_rationalityan_alternative_definition_of_the_cognitive_style",
+                        "children": [],
+                    },
+                    {
+                        "name": "Rationality Debate",
+                        "url": "https://cwsl.ca/wiki/doku.php?id=rationality_debate#the_rationality_debate",
+                        "children": [],
+                    },
+                ],
+            },
+            {
+                "name": "Analogical Transfer Fortress Problem (Gick and Holyoak 1980)",
+                "url": "https://cwsl.ca/wiki/doku.php?id=theoretical_debate_and_experimental_competition_on_insight#analogical_transfer_and_insight_problem_solvinggick_and_holyoak_1980",
+                "children": [
+                    {
+                        "name": "Multiple Marriage Problem (Lockheart, Lamon and Gick 1998)",
+                        "url": "https://cwsl.ca/wiki/doku.php?id=theoretical_debate_and_experimental_competition_on_insight#response_to_gick_and_holyoak_by_lockheart_lamon_and_gick_1988propositional_versus_procedural_similarity_in_facilitating_insight_and_the_multiple_marriage_problem",
+                        "children": [],
+                    },
+                    {
+                        "name": "Needham and Begg 1991",
+                        "url": "https://cwsl.ca/wiki/doku.php?id=theoretical_debate_and_experimental_competition_on_insight#explaining_analogical_transfer_in_insight_problemsneedham_and_begg_1991_and_transfer_appropriate_processing",
+                        "children": [
+                            {
+                                "name": "Transfer Appropriate Processing",
+                                "url": "https://cwsl.ca/wiki/doku.php?id=theoretical_debate_and_experimental_competition_on_insight#transfer-appropriate_processing_in_memory_and_it_s_implications_for_insight",
+                                "children": [],
+                            }
+                        ],
+                    },
+                    {
+                        "name": "Gick and Lockheart (1995)",
+                        "url": "https://cwsl.ca/wiki/doku.php?id=theoretical_debate_and_experimental_competition_on_insight#insight_and_automaticitycognitive_and_affective_components_of_insight_gick_and_lockhart_1995",
+                        "children": [],
+                    },
+                ],
+                "": {},
+            },
+        ],
+    },
+}
+
+tree5["data"] = Utils.add_child_counts(tree5["data"])
+
+result = radialTrees.insert_one(tree5)
+print(result.inserted_id)
